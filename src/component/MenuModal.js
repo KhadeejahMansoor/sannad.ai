@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, ListOrdered } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
   useBooksByCompiler,
@@ -323,10 +323,7 @@ export default function MenuModal({
                   aria-label="Jump to hadith number"
                   className="w-6 h-6 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded"
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 12H19" stroke="black" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M14 7L19 12L14 17" stroke="black" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <ListOrdered size={22} color="black" strokeWidth={1.8} />
                 </div>
                 <div
                   onClick={() => setIsSearchVisible(!isSearchVisible)}

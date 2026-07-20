@@ -249,13 +249,7 @@ export const statsAPI = {
 };
 
 export const utilityAPI = {
-  getCompilers: () => apiRequest('/hadiths').then(response => {
-    if (response.success && response.data) {
-      const compilers = [...new Set(response.data.map(hadith => hadith.compiler).filter(Boolean))];
-      return { success: true, data: compilers };
-    }
-    return { success: false, data: [] };
-  }),
+  getCompilers: () => apiRequest('/compiler'),
   getGrades: () => apiRequest('/hadiths').then(response => {
     if (response.success && response.data) {
       const grades = [...new Set(response.data.map(hadith => hadith.grade).filter(Boolean))];

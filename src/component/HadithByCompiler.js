@@ -702,7 +702,7 @@ function InlinePanels({ hadith }) {
 
   return (
     <div className="mt-4 mb-6">
-      <div className="flex gap-6 mb-4 px-2">
+      <div className="flex justify-between mb-4 px-2">
         {['Contents', 'Reference', 'Commentary', 'Ayat'].map(tab => (
           <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
             <div className="inline-flex flex-col items-start">

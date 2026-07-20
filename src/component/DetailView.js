@@ -270,7 +270,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <>
  {/* ─── MOBILE: tabbed view ─── */}
  <div className="md:hidden">
- <div className="flex gap-34 mb-4 px-4">
+ <div className="flex justify-between mb-4 px-4">
  {["Contents", "Reference", "Commentary", "Ayat"].map(tab => (
  <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
  <div className={`inline-flex flex-col ${tab === "Ayat" ? "items-center" : "items-start"}`}>

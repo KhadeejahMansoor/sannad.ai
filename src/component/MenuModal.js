@@ -153,6 +153,7 @@ const RotatingHadithSlider = ({
 
 const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, setSelectedHadithNumber, compilerLabel = 'Azami' }) => {
   const hashModalRef = useRef(null);
+  const router = useRouter();
 
   // The lock used to sit in the effect below, with this cleanup:
   //     if (!isOpen) document.body.style.overflow = '';
@@ -172,6 +173,11 @@ const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, set
   }, [onClose]);
 
   const handleGoClick = () => {
+    // Navigate to the single-hadith page: /hadith/{compiler}-{number}
+    // e.g. Azami 3230 -> /hadith/azami-3230. Matches the URL the search uses.
+    // Spaces in multi-word compilers (e.g. "Ibn Majah") become hyphens.
+    const slug = `${String(compilerLabel).toLowerCase().trim().replace(/\s+/g, '-')}-${selectedHadithNumber}`;
+    router.push(`/hadith/${slug}`);
     onClose();
     if (onCompleteClose) onCompleteClose();
   };

@@ -25,6 +25,13 @@ const DesktopSearchBox = ({ searchText, setSearchText, onSearchClick, onFilterCl
     <textarea
       value={searchText}
       onChange={(e) => setSearchText(e.target.value)}
+      onKeyDown={(e) => {
+        // Plain Enter submits; Shift+Enter still inserts a newline.
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          if (searchText.trim()) onSearchClick();
+        }
+      }}
       rows={4}
       className="absolute left-6 top-5 w-[730px] h-[130px] resize-none outline-none bg-transparent text-xl font-medium"
     />
@@ -179,6 +186,12 @@ export default function FrontScreen() {
             rows={4}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (searchText.trim()) handleSearch();
+              }
+            }}
             className="w-full h-full resize-none outline-none bg-transparent text-sm"
           />
           <button className="absolute bottom-4 left-4 text-[#676767]" onClick={handleFilterClick}>

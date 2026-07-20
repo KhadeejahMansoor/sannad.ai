@@ -2,7 +2,7 @@
 import './globals.css';
 import { inter } from '../lib/fonts';
 import { LanguageProvider } from '../lib/LanguageContext';
-
+export const dynamic = 'force-dynamic';
 export const metadata = {
   title: 'Hadith App',
   description: 'Hadith Translator App',

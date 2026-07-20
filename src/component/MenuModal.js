@@ -12,145 +12,6 @@ import { useScrollLock } from '../lib/useScrollLock';
 import { useLanguage, pickLabel } from '../lib/LanguageContext';
 import HadithText from './HadithText';
 
-// ─── Hash slider modal (unchanged) ─────────────────────────────────────
-// Number-pad style modal for jumping directly to a hadith number.
-// Same behavior as before; only re-pasted so this file is self-contained.
-const RotatingHadithSlider = ({
-  min = 1,
-  max = 7563,
-  value = 3250,
-  onChange = () => {},
-  onNavigate = () => {},
-  title = "Bukhari",
-  primaryColor = "#059669",
-  visibleLines = 21,
-  className = ""
-}) => {
-  const [currentValue, setCurrentValue] = useState(value);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState(0);
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
-  const containerRef = useRef(null);
-  const searchInputRef = useRef(null);
-
-  const handleValueChange = (newValue) => {
-    const clampedValue = Math.max(min, Math.min(max, newValue));
-    setCurrentValue(clampedValue);
-    onChange(clampedValue);
-  };
-
-  const handleMouseDown = (e) => { setIsDragging(true); setDragStart(e.clientX); };
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    const deltaX = e.clientX - dragStart;
-    const valueChange = Math.round(deltaX * 0.5);
-    const newValue = Math.max(min, Math.min(max, currentValue + valueChange));
-    if (newValue !== currentValue) {
-      handleValueChange(newValue);
-      setDragStart(e.clientX);
-    }
-  };
-  const handleMouseUp = () => setIsDragging(false);
-  const handleTouchStart = (e) => { setIsDragging(true); setDragStart(e.touches[0].clientX); };
-  const handleTouchMove = (e) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const deltaX = e.touches[0].clientX - dragStart;
-    const valueChange = Math.round(deltaX * 0.5);
-    const newValue = Math.max(min, Math.min(max, currentValue + valueChange));
-    if (newValue !== currentValue) {
-      handleValueChange(newValue);
-      setDragStart(e.touches[0].clientX);
-    }
-  };
-  const handleTouchEnd = () => setIsDragging(false);
-  const handleWheel = (e) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? 1 : -1;
-    handleValueChange(Math.max(min, Math.min(max, currentValue + delta)));
-  };
-
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd);
-    }
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDragging, currentValue, dragStart]);
-
-  useEffect(() => { setCurrentValue(value); }, [value]);
-
-  useEffect(() => {
-    if (showSearch && searchInputRef.current) {
-      searchInputRef.current.focus();
-      searchInputRef.current.select();
-    }
-  }, [showSearch]);
-
-  const handleNumberClick = () => {
-    if (!showSearch) setSearchValue(currentValue.toString()); else setSearchValue('');
-    setShowSearch(!showSearch);
-  };
-  const handleSearchSubmit = () => {
-    const numValue = parseInt(searchValue, 10);
-    if (!isNaN(numValue) && numValue >= min && numValue <= max) {
-      handleValueChange(numValue);
-      setShowSearch(false);
-      setSearchValue('');
-      setTimeout(() => onNavigate(), 100);
-    }
-  };
-  const handleSearchChange = (e) => {
-    const v = e.target.value;
-    if (v === '' || /^\d+$/.test(v)) setSearchValue(v);
-  };
-  const handleKeyPress = (e) => { if (e.key === 'Enter') handleSearchSubmit(); };
-
-  return (
-    <div className={`w-full max-w-sm mx-auto bg-white rounded-3xl px-8 py-4 ${className}`}>
-      <div className="text-center mb-2">
-        <h3 className="text-xl font-medium text-gray-600 mb-2">{title}</h3>
-        <div
-          className="text-4xl font-bold text-gray-900 mb-1 cursor-pointer hover:text-[#523230] transition-colors active:scale-95 transform"
-          onClick={handleNumberClick}
-        >
-          {currentValue}
-        </div>
-        {showSearch && (
-          <div className="mt-4 px-4">
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchValue}
-              onChange={handleSearchChange}
-              onKeyPress={handleKeyPress}
-              placeholder={`Enter number (${min}-${max})`}
-              className="w-full px-4 py-2 text-base text-gray-900 bg-white border-2 border-[#523230] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#523230] focus:border-transparent"
-            />
-          </div>
-        )}
-      </div>
-      <div
-        ref={containerRef}
-        className="relative h-0 flex items-end justify-between mb-0 cursor-grab active:cursor-grabbing select-none px-1 overflow-hidden"
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onWheel={handleWheel}
-        style={{ touchAction: 'none' }}
-      />
-    </div>
-  );
-};
-
 const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, setSelectedHadithNumber, compilerLabel = 'Azami' }) => {
   const hashModalRef = useRef(null);
   const router = useRouter();
@@ -184,43 +45,127 @@ const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, set
 
   if (!isOpen) return null;
 
+  const min = 1;
+  const max = 7563;
+  const value = Math.max(min, Math.min(max, Number(selectedHadithNumber) || min));
+
+  const setValue = (n) => {
+    const clamped = Math.max(min, Math.min(max, Math.round(n)));
+    setSelectedHadithNumber(clamped);
+  };
+
+  // Ruler: 13 ticks centered on the current value, ~5 apart, so scrubbing feels
+  // fine-grained. The middle tick is the current position (maroon).
+  const TICKS = 13;
+  const STEP = 5;
+  const ticks = Array.from({ length: TICKS }, (_, i) => i - Math.floor(TICKS / 2)); // -6..+6
+
+  // Drag state for the ruler
+  const dragRef = { current: null };
+  let startX = 0;
+  let startVal = value;
+
+  const onPointerDown = (e) => {
+    startX = (e.touches ? e.touches[0].clientX : e.clientX);
+    startVal = value;
+    const move = (ev) => {
+      const x = (ev.touches ? ev.touches[0].clientX : ev.clientX);
+      const dx = x - startX;
+      // ~6px of drag = 1 hadith
+      setValue(startVal - Math.round(dx / 6));
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+      window.removeEventListener('touchmove', move);
+      window.removeEventListener('touchend', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+    window.addEventListener('touchmove', move, { passive: false });
+    window.addEventListener('touchend', up);
+  };
+
+  // Label positions under the ruler: prev/current/next rounded to nearest 50.
+  const midLabel = Math.round(value / 50) * 50;
+  const leftLabel = Math.max(min, midLabel - 50);
+  const rightLabel = Math.min(max, midLabel + 50);
+
   return (
     <div className="fixed inset-0 z-[5000] backdrop-blur-[2px] bg-[#060606]/50 flex items-end justify-center">
       <div
         ref={hashModalRef}
-        className="w-full bg-white shadow-xl flex flex-col overflow-hidden font-[Inter]"
-        style={{ height: '300px' }}
+        className="w-full max-w-[420px] bg-white rounded-t-[22px] shadow-xl flex flex-col overflow-hidden font-[Inter]"
       >
-        <div className="w-[101px] h-0 outline-2 outline-offset-[-1px] outline-[#666666] mx-auto mt-2 mb-1" />
-        <div className="flex items-center justify-between px-4 pt-2 pb-2 border-b border-gray-100">
-          <div className="text-black text-2xl font-semibold">{compilerLabel}</div>
-          <button onClick={onClose} className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded-full">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </div>
-        <div className="flex-1 bg-white flex flex-col justify-center items-center px-4 pt-4 pb-6 overflow-hidden">
-          <div className="mb-0 w-full flex justify-center">
-            <RotatingHadithSlider
-              min={1}
-              max={7563}
-              value={selectedHadithNumber}
-              onChange={setSelectedHadithNumber}
-              onNavigate={handleGoClick}
-              title={compilerLabel}
-              primaryColor="#523230"
-              visibleLines={29}
-            />
-          </div>
-          <div className="mt-2">
-            <button
-              onClick={handleGoClick}
-              className="w-[331px] bg-[#523230] text-white py-3 rounded-lg font-medium text-base hover:bg-[#412725] transition-colors"
-            >
-              Go
+        {/* Grab handle */}
+        <div className="mx-auto mt-3 mb-1 h-[5px] w-10 rounded-full bg-[#DDD8D0]" />
+
+        {/* Header: compiler name + hash chip + close */}
+        <div className="flex items-center justify-between px-5 pt-2 pb-4">
+          <div className="text-[#523230] text-base font-medium">{compilerLabel}</div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-[9px] bg-[#F1E9E6] flex items-center justify-center text-[#523230] text-lg font-semibold">#</div>
+            <button onClick={onClose} className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded-full text-[#6B5B55]">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
           </div>
+        </div>
+
+        <div className="px-5 pb-6">
+          {/* Editable number box */}
+          <div className="text-center mb-4">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={value}
+              onChange={(e) => {
+                const v = e.target.value.replace(/[^\d]/g, '');
+                if (v === '') { setSelectedHadithNumber(''); return; }
+                setValue(parseInt(v, 10));
+              }}
+              className="w-[130px] text-center text-[26px] font-medium text-[#2E1F1D] border-[1.5px] border-[#523230] rounded-[12px] py-2 outline-none focus:ring-2 focus:ring-[#EDE4E1]"
+            />
+          </div>
+
+          {/* Ruler slider — drag to scrub */}
+          <div
+            className="relative select-none cursor-grab active:cursor-grabbing mb-1"
+            style={{ touchAction: 'none' }}
+            onMouseDown={onPointerDown}
+            onTouchStart={onPointerDown}
+          >
+            <div className="flex items-end justify-between h-[34px] px-0.5">
+              {ticks.map((t) => {
+                const isCenter = t === 0;
+                const isMajor = Math.abs(t) % 3 === 0;
+                return (
+                  <div
+                    key={t}
+                    style={{
+                      width: isCenter ? 2 : 1,
+                      height: isCenter ? 34 : isMajor ? 22 : 14,
+                      background: isCenter ? '#523230' : isMajor ? '#C3B3AB' : '#D9CDC5',
+                    }}
+                  />
+                );
+              })}
+            </div>
+            <div className="flex justify-between text-[11px] text-[#9A8A85] mt-1.5 px-0.5">
+              <span>{leftLabel}</span>
+              <span className="text-[#523230] font-medium">{midLabel}</span>
+              <span>{rightLabel}</span>
+            </div>
+          </div>
+
+          {/* Go */}
+          <button
+            onClick={handleGoClick}
+            className="w-full mt-5 bg-[#523230] text-white py-3 rounded-[12px] font-medium text-base hover:bg-[#412725] transition-colors"
+          >
+            Go
+          </button>
         </div>
       </div>
     </div>

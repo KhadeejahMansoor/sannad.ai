@@ -324,9 +324,9 @@ export default function MenuModal({
                   className="w-6 h-6 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <text x="7" y="11" fontSize="8" fontWeight="700" fill="black" textAnchor="middle" fontFamily="Inter, Arial, sans-serif">1</text>
-                    <text x="7" y="19" fontSize="8" fontWeight="700" fill="black" textAnchor="middle" fontFamily="Inter, Arial, sans-serif">2</text>
-                    <text x="16" y="10" fontSize="8" fontWeight="700" fill="black" textAnchor="middle" fontFamily="Inter, Arial, sans-serif">3</text>
+                    <text x="8" y="12" fontSize="10" fontWeight="700" fill="black" textAnchor="middle" fontFamily="Inter, Arial, sans-serif">1</text>
+                    <text x="8" y="21" fontSize="10" fontWeight="700" fill="black" textAnchor="middle" fontFamily="Inter, Arial, sans-serif">2</text>
+                    <text x="17" y="10" fontSize="10" fontWeight="700" fill="black" textAnchor="middle" fontFamily="Inter, Arial, sans-serif">3</text>
                   </svg>
                 </div>
                 <div

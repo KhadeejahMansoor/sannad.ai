@@ -319,7 +319,7 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
           hadith_text_arabic: r.final_hadith,
           hadith_text_english: r.post_clause_english,
           arabic_intro_clause: null,
-          english_narrator: null,
+          english_narrator: r.english_narrator,
           book: r.book,
           book_stripped_english: r.book_stripped_english,
           chapter: r.chapter,
@@ -327,6 +327,7 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
           machine_clause: r.machine_clause,
           ayat: r.ayat,
           matched_hadith: r.matched_hadith,
+          final_grader: r.final_grader,
           commentary: r.commentary_1,
           score: r.score,
         }));

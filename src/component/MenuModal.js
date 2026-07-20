@@ -308,48 +308,48 @@ export default function MenuModal({
         <div className="fixed inset-0 z-[2000] backdrop-blur-[2px] bg-[#060606]/40 flex items-end justify-center">
           <div
             ref={modalRef}
-            className="w-full h-[75%] bg-white shadow-md flex flex-col overflow-hidden font-[Inter]"
+            className="w-full h-[75%] bg-white shadow-md flex flex-col overflow-hidden font-[Inter] rounded-t-[22px]"
           >
-            <div className="w-[101px] h-0 outline-2 outline-offset-[-1px] outline-[#666666] mx-auto mt-2 mb-1" />
+            <div className="mx-auto mt-3 mb-2 h-[5px] w-10 rounded-full bg-[#DDD8D0]" />
 
-            {/* Header: compiler label + hash + search icons */}
-            <div className="flex items-center justify-between px-4 pt-2 pb-2">
-              <div className="text-black text-2xl font-semibold">
+            {/* Header: maroon band with compiler label + hash + search icons */}
+            <div className="mx-3 rounded-[14px] bg-[#523230] flex items-center justify-between px-4 py-3">
+              <div className="text-white text-lg font-medium">
                 {compilerLabel || 'Compiler'}
               </div>
-              <div className="flex items-center gap-3">
-                <div
+              <div className="flex items-center gap-4 text-[#E9D9D2]">
+                <button
                   onClick={handleHashClick}
-                  className="w-6 h-6 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded"
+                  aria-label="Jump to number"
+                  className="cursor-pointer flex items-center justify-center hover:text-white transition-colors"
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M3.74806 16.1587H6.81191L5.89777 20.6989C5.87768 20.8049 5.86764 20.9125 5.86777 21.0204C5.86777 21.5124 6.20891 21.7837 6.6812 21.7837C7.16334 21.7837 7.51477 21.5222 7.61549 21.0302L8.59949 16.1587H13.3506L12.4369 20.6989C12.4069 20.7992 12.3971 20.9201 12.3971 21.0204C12.3971 21.5124 12.7386 21.7837 13.2208 21.7837C13.7029 21.7837 14.0543 21.5222 14.1551 21.0302L15.1283 16.1587H18.7142C19.2666 16.1587 19.6485 15.7571 19.6485 15.2145C19.6485 14.7727 19.3472 14.4109 18.8951 14.4109H15.4896L16.5555 9.10737H20.0711C20.6239 9.10737 21.0053 8.7058 21.0053 8.16323C21.0053 7.72137 20.7041 7.35965 20.2519 7.35965H16.9069L17.7306 3.3118C17.7405 3.25137 17.7606 3.12065 17.7606 2.99037C17.7606 2.49794 17.4092 2.2168 16.9271 2.2168C16.3648 2.2168 16.1136 2.52794 16.0129 3.00023L15.1292 7.35965H10.3776L11.2013 3.3118C11.2112 3.25137 11.2313 3.12065 11.2313 2.99037C11.2313 2.49794 10.8696 2.2168 10.3978 2.2168C9.8252 2.2168 9.56377 2.52794 9.47334 3.00023L8.58963 7.35965H5.2952C4.74234 7.35965 4.36091 7.78137 4.36091 8.3338C4.36091 8.78594 4.6622 9.10737 5.11434 9.10737H8.2382L7.1732 14.4109H3.92891C3.37606 14.4109 2.99463 14.8327 2.99463 15.3851C2.99463 15.8372 3.29591 16.1587 3.74806 16.1587ZM8.95091 14.4109L10.0262 9.10737H14.7769L13.7021 14.4109H8.95091Z"
-                      fill="black"
+                      fill="currentColor"
                     />
                   </svg>
-                </div>
-                <div
+                </button>
+                <button
                   onClick={() => setIsSearchVisible(!isSearchVisible)}
-                  className="w-6 h-6 cursor-pointer flex items-center justify-center ml-[20px]"
+                  aria-label="Search"
+                  className={`cursor-pointer flex items-center justify-center transition-colors ${isSearchVisible ? 'text-white' : 'hover:text-white'}`}
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="24" height="24" fill="white" fillOpacity="0.01" />
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       fillRule="evenodd"
                       clipRule="evenodd"
                       d="M16.0002 10.4002C16.0002 13.493 13.493 16.0002 10.4002 16.0002C7.3074 16.0002 4.8002 13.493 4.8002 10.4002C4.8002 7.3074 7.3074 4.8002 10.4002 4.8002C13.493 4.8002 16.0002 7.3074 16.0002 10.4002ZM14.8943 16.0256C13.6626 17.0111 12.1002 17.6002 10.4002 17.6002C6.42375 17.6002 3.2002 14.3766 3.2002 10.4002C3.2002 6.42375 6.42375 3.2002 10.4002 3.2002C14.3766 3.2002 17.6002 6.42375 17.6002 10.4002C17.6002 12.1002 17.0111 13.6626 16.0256 14.8943L20.566 19.4344C20.8783 19.7469 20.8783 20.2535 20.566 20.566C20.2535 20.8783 19.7469 20.8783 19.4344 20.566L14.8943 16.0256Z"
-                      fill={isSearchVisible ? '#296851' : '#000714'}
-                      fillOpacity="0.9"
+                      fill="currentColor"
                     />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
 
             {isSearchVisible && (
               <div className="px-4 py-3">
-                <div className="relative flex items-center w-full h-10 bg-white rounded-[5px] border border-[#35A47A]">
+                <div className="relative flex items-center w-full h-10 bg-white rounded-[10px] border border-[#E4DCD6]">
                   <Search className="absolute left-3 text-gray-400" size={17} />
                   <input
                     type="text"

@@ -58,10 +58,10 @@ export default function HadithText({ text, className = '' }) {
               title={alt}
               style={{
                 display: 'inline-block',
-                height: '24px',
+                height: '1.4em',
                 width: 'auto',
-                verticalAlign: '-0.4em',
-                margin: '0 3px',
+                verticalAlign: '-0.35em',
+                margin: '0 2px',
               }}
             />
           );

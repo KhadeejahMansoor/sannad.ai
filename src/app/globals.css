@@ -1,0 +1,99 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+/* Hide scrollbar but keep scrolling functionality */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+:root {
+  --background: #F6F4F1;
+  --foreground: #171717;
+
+  /* Color variables */
+  --green-inline: #523230;  /* emerald-500 for hover effects */
+  --main-color: #1f2937;    /* gray-800 */
+  --orange-inline: #f97316; /* orange-500 */
+  --purple: #8b5cf6;        /* violet-500 */
+  --secondary-dark: #374151; /* gray-700 */
+
+  /* Collection button colors */
+  --variable-collection-button-green: #059669;
+  --variable-collection-unclicked-green: #523230;
+  --variable-collection-clicked-green: #047857;
+
+  /* Text and other colors */
+  --white: #ffffff;
+
+  /* Typography */
+  --body-text-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-geist-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-geist-mono: 'Monaco', 'Menlo', monospace;
+
+  /* Shadows */
+  --button-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --drop-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --toggle-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .bg-green-inline {
+    background-color: #523230 !important;
+  }
+
+  .bg-green-inline\/20 {
+    background-color: rgba(82, 50, 48, 0.2);
+  }
+
+  .bg-orange-inline {
+    background-color: rgba(255, 135, 44, 1);
+  }
+
+  .bg-orange-inline\/20 {
+    background-color: rgba(255, 135, 44, 0.2);
+  }
+
+  .border-green-inline {
+    border-color: #523230;
+  }
+
+  .text-green-inline {
+    color: #523230;
+  }
+
+  .shadow-button-shadow {
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .shadow-drop-shadow {
+    box-shadow: 0px 4px 4px 0px rgba(82, 50, 48, 0.18);
+  }
+
+  .hover\:bg-green-inline:hover {
+    background-color: #523230;
+  }
+}
+
+/* Arabic typography */
+.arabic-text {
+  font-family: var(--font-noto-arabic);
+}
+
+*:lang(ar),
+[dir="rtl"],
+.arabic {
+  font-family: 'Noto Sans Arabic', sans-serif !important;
+}

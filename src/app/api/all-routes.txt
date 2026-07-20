@@ -1,0 +1,805 @@
+﻿===== C:\Users\deeja\Downloads\hadith-website\src\app\api\books-by-compiler\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const compiler = searchParams.get('compiler');
+
+    if (!compiler) {
+      return NextResponse.json(
+        { success: false, error: 'compiler parameter required' },
+        { status: 400 }
+      );
+    }
+
+    // One table now. The old UNION across azami_hadiths + sevenbooks_hadiths
+    // is gone â€” all nine compilers live in `hadiths`.
+    const result = await pool.query(`
+      SELECT DISTINCT book
+      FROM hadiths
+      WHERE compiler = $1
+        AND book IS NOT NULL
+        AND TRIM(book) != ''
+      ORDER BY book
+    `, [compiler]);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows.map(r => r.book)
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch books', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\chapters\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const language = searchParams.get('lang') || 'en';
+
+    const result = await pool.query(`
+      SELECT DISTINCT TRIM(chapter) AS chapter FROM (
+        SELECT chapter FROM azami_hadiths
+        WHERE chapter IS NOT NULL AND TRIM(chapter) != ''
+        UNION
+        SELECT chapter FROM sevenbooks_hadiths
+        WHERE chapter IS NOT NULL AND TRIM(chapter) != ''
+      ) AS combined
+      ORDER BY chapter
+    `);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch chapters', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\chapters-by-book\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const compiler = searchParams.get('compiler');
+    const book = searchParams.get('book');
+
+    if (!compiler || !book) {
+      return NextResponse.json(
+        { success: false, error: 'compiler and book parameters both required' },
+        { status: 400 }
+      );
+    }
+
+    const result = await pool.query(`
+      SELECT DISTINCT chapter FROM (
+        SELECT chapter FROM azami_hadiths
+        WHERE compiler = $1 AND book = $2 AND chapter IS NOT NULL AND TRIM(chapter) != ''
+        UNION
+        SELECT chapter FROM sevenbooks_hadiths
+        WHERE compiler = $1 AND book = $2 AND chapter IS NOT NULL AND TRIM(chapter) != ''
+      ) AS combined
+      ORDER BY chapter
+    `, [compiler, book]);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows.map(r => r.chapter)
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch chapters', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\compiler\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT compiler FROM (
+        SELECT compiler FROM azami_hadiths WHERE compiler IS NOT NULL
+        UNION
+        SELECT compiler FROM sevenbooks_hadiths WHERE compiler IS NOT NULL
+      ) AS combined
+      ORDER BY compiler
+    `);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch compiler' },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\grades\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    const result = await pool.query(`
+      SELECT DISTINCT grade FROM (
+        SELECT grade FROM azami_hadiths WHERE grade IS NOT NULL AND grade != ''
+        UNION
+        SELECT final_grade AS grade FROM sevenbooks_hadiths WHERE final_grade IS NOT NULL AND final_grade != ''
+      ) AS combined
+      ORDER BY grade
+    `);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch grades', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\hadith\random\route.js =====
+// src/app/api/hadith/random/route.js
+import { pool } from '../../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const language = searchParams.get('lang') || 'en';
+    const textColumn = language === 'ar' ? 'final_hadith' : 'post_clause_english';
+
+    const baseQuery = `
+      SELECT
+        'azami-' || id::text AS id,
+        hadith_number,
+        compiler,
+        volume,
+        book,
+        section,
+        chapter,
+        grade,
+        commentary,
+        hadith_sources AS reference,
+        ${textColumn} AS hadith_text,
+        'azami' AS source
+      FROM azami_hadiths
+      WHERE ${textColumn} IS NOT NULL AND TRIM(${textColumn}) != ''
+
+      UNION ALL
+
+      SELECT
+        'sevenbooks-' || id::text AS id,
+        hadith_number,
+        compiler,
+        volume,
+        book,
+        NULL AS section,
+        chapter,
+        final_grade AS grade,
+        commentary_darussalam AS commentary,
+        NULL AS reference,
+        ${textColumn} AS hadith_text,
+        'sevenbooks' AS source
+      FROM sevenbooks_hadiths
+      WHERE ${textColumn} IS NOT NULL AND TRIM(${textColumn}) != ''
+    `;
+
+    const result = await pool.query(`
+      SELECT * FROM (${baseQuery}) AS combined
+      ORDER BY RANDOM()
+      LIMIT 1
+    `);
+
+    if (result.rows.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'No hadiths found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch random hadith', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\hadith\[number]\route.js =====
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\hadith-by-id\[hadithId]\route.js =====
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\hadith-by-id\[hadithId]\neighbors\route.js =====
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\hadiths\route.js =====
+// src/app/api/hadiths/route.js
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+
+    const language = searchParams.get('lang') || 'en';
+    const compiler = searchParams.get('compiler');
+    const grade = searchParams.get('grade');
+    const chapter = searchParams.get('chapter');
+    const section = searchParams.get('section');
+    const limit = parseInt(searchParams.get('limit')) || 20;
+    const offset = parseInt(searchParams.get('offset')) || 0;
+
+    // Pick the language-appropriate text column
+    // Arabic = full hadith in Arabic; English = post-clause English translation
+    const textColumn = language === 'ar' ? 'final_hadith' : 'post_clause_english';
+
+    // Build the unified subquery that combines both collections.
+    // Each table is normalized to the same column shape so they can UNION cleanly.
+    const baseQuery = `
+      SELECT
+        'azami-' || id::text AS id,
+        hadith_number,
+        compiler,
+        volume,
+        book,
+        section,
+        chapter,
+        grade,
+        commentary,
+        hadith_sources AS reference,
+        ${textColumn} AS hadith_text,
+        NULL::boolean AS is_verified,
+        'azami' AS source
+      FROM azami_hadiths
+      WHERE ${textColumn} IS NOT NULL AND TRIM(${textColumn}) != ''
+
+      UNION ALL
+
+      SELECT
+        'sevenbooks-' || id::text AS id,
+        hadith_number,
+        compiler,
+        volume,
+        book,
+        NULL AS section,
+        chapter,
+        final_grade AS grade,
+        commentary_darussalam AS commentary,
+        NULL AS reference,
+        ${textColumn} AS hadith_text,
+        NULL::boolean AS is_verified,
+        'sevenbooks' AS source
+      FROM sevenbooks_hadiths
+      WHERE ${textColumn} IS NOT NULL AND TRIM(${textColumn}) != ''
+    `;
+
+    // Wrap the union and apply filters
+    let query = `SELECT * FROM (${baseQuery}) AS combined WHERE 1=1`;
+    const params = [];
+    let paramCount = 0;
+
+    if (compiler) {
+      paramCount++;
+      query += ` AND LOWER(compiler) = LOWER($${paramCount})`;
+      params.push(compiler);
+    }
+
+    if (grade) {
+      paramCount++;
+      query += ` AND LOWER(grade) = LOWER($${paramCount})`;
+      params.push(grade);
+    }
+
+    if (chapter) {
+      paramCount++;
+      query += ` AND LOWER(chapter) LIKE LOWER($${paramCount})`;
+      params.push(`%${chapter}%`);
+    }
+
+    if (section) {
+      paramCount++;
+      query += ` AND LOWER(section) LIKE LOWER($${paramCount})`;
+      params.push(`%${section}%`);
+    }
+
+    // Order and paginate
+    query += ` ORDER BY hadith_number LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}`;
+    params.push(limit, offset);
+
+    const result = await pool.query(query, params);
+
+    // Count query (same filters, no limit/offset)
+    let countQuery = `SELECT COUNT(*) as total FROM (${baseQuery}) AS combined WHERE 1=1`;
+    const countParams = [];
+    let countParamCount = 0;
+
+    if (compiler) {
+      countParamCount++;
+      countQuery += ` AND LOWER(compiler) = LOWER($${countParamCount})`;
+      countParams.push(compiler);
+    }
+    if (grade) {
+      countParamCount++;
+      countQuery += ` AND LOWER(grade) = LOWER($${countParamCount})`;
+      countParams.push(grade);
+    }
+    if (chapter) {
+      countParamCount++;
+      countQuery += ` AND LOWER(chapter) LIKE LOWER($${countParamCount})`;
+      countParams.push(`%${chapter}%`);
+    }
+    if (section) {
+      countParamCount++;
+      countQuery += ` AND LOWER(section) LIKE LOWER($${countParamCount})`;
+      countParams.push(`%${section}%`);
+    }
+
+    const countResult = await pool.query(countQuery, countParams);
+    const total = parseInt(countResult.rows[0].total);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows,
+      pagination: {
+        total,
+        limit,
+        offset,
+        hasMore: offset + limit < total
+      }
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch hadiths', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\hadiths-by-filters\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+// Azami's compiler value. Used only to keep the `source` field the frontend
+// already expects. If the UI stops caring about azami-vs-sevenbooks, delete this.
+const AZAMI = 'Ø§Ù„Ø£Ø¹Ø¸Ù…ÙŠ';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const compiler = searchParams.get('compiler');
+    const book     = searchParams.get('book')    || null;
+    const chapter  = searchParams.get('chapter') || null;
+    const section  = searchParams.get('section') || null;
+    const limit    = parseInt(searchParams.get('limit'))  || 50;
+    const offset   = parseInt(searchParams.get('offset')) || 0;
+
+    if (!compiler) {
+      return NextResponse.json(
+        { success: false, error: 'compiler parameter required' },
+        { status: 400 }
+      );
+    }
+
+    // â”€â”€ WHERE clause, built up from the optional filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    const params = [compiler];
+    let where = 'h.compiler = $1';
+
+    if (book) {
+      params.push(book);
+      where += ` AND h.book = $${params.length}`;
+    }
+    if (chapter) {
+      params.push(chapter);
+      where += ` AND h.chapter = $${params.length}`;
+    }
+    if (section) {
+      // Only Azami rows have a section â€” every other compiler is NULL here.
+      // So a section filter still naturally narrows to Azami, same as before.
+      params.push(section);
+      where += ` AND h.section = $${params.length}`;
+    }
+
+    // â”€â”€ Count â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Counted straight off the table. The old code counted a subquery wrapping
+    // a UNION; there's nothing to wrap now.
+    const countResult = await pool.query(
+      `SELECT COUNT(*) AS total FROM hadiths h WHERE ${where}`,
+      params
+    );
+    const total = parseInt(countResult.rows[0].total);
+
+    // â”€â”€ Rows â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    //
+    // ORDER BY: hadith_number is TEXT (it has to be â€” "7008A", "8571C" exist).
+    // Sorting text gives 1, 10, 100, 2... so instead we strip the letters,
+    // cast the digits to a number, and sort on that. hadith_number is the
+    // tiebreaker, which keeps 7008A / 7008B / 7008C adjacent and in order.
+    //
+    // Aliases below are unchanged from the old route on purpose â€” the frontend
+    // components read these exact names. Two of them are now permanently NULL:
+    //
+    //   reference  â€” was azami_hadiths.hadith_sources
+    //   duplicates â€” was azami_hadiths.duplicates
+    //
+    // Neither column exists in AllBooks_July13.xlsx. They're returned as NULL
+    // so the shape stays stable and nothing crashes. If you want that data back,
+    // it has to reappear in the source spreadsheet.
+    params.push(limit, offset);
+
+    const result = await pool.query(`
+      SELECT
+        h.id::text                                     AS hadith_id,
+        h.hadith_number,
+        h.compiler,
+        h.volume,
+        h.book,
+        h.section,
+        h.chapter,
+        h.final_grade                                  AS grade,
+        COALESCE(NULLIF(TRIM(h.final_grader), ''), 'Unknown') AS final_grader,
+        h.commentary_1                                 AS commentary,
+        NULL::text                                     AS reference,
+        NULL::text                                     AS duplicates,
+        h.post_clause_english                          AS hadith_text,
+        h.final_hadith                                 AS hadith_text_arabic,
+        h.machine_clause,
+        h.intro_clause                                 AS arabic_intro_clause,
+        m.english                                      AS english_narrator,
+        CASE WHEN h.compiler = '${AZAMI}' THEN 'azami' ELSE 'sevenbooks' END AS source
+      FROM hadiths h
+      LEFT JOIN machine_clauses m ON h.machine_clause = m.machine_clause
+      WHERE ${where}
+      ORDER BY
+        NULLIF(regexp_replace(h.hadith_number, '\\D', '', 'g'), '')::bigint,
+        h.hadith_number
+      LIMIT $${params.length - 1} OFFSET $${params.length}
+    `, params);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows,
+      pagination: {
+        total,
+        limit,
+        offset,
+        hasMore: offset + limit < total,
+      },
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch hadiths', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\languages\route.js =====
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  // Hardcoded list of supported UI languages. When you start storing translations
+  // for real and want to filter by what's actually available, move this to a DB
+  // table (e.g. `languages` with an `is_active` flag) and query it here.
+  //
+  // The order here is the order they appear in the language picker.
+  const languages = [
+    { code: 'en', name: 'English',           native_name: 'English',          direction: 'ltr' },
+    { code: 'ar', name: 'Arabic',            native_name: 'Ø§Ù„Ø¹ÙŽØ±ÙŽØ¨ÙŠÙŽÙ‘Ø©',     direction: 'rtl' },
+    { code: 'ur', name: 'Urdu',              native_name: 'Ø§ÙØ±Ø¯ÙÙˆ',           direction: 'rtl' },
+    { code: 'bn', name: 'Bengali',           native_name: 'à¦¬à¦¾à¦‚à¦²à¦¾',           direction: 'ltr' },
+    { code: 'fa', name: 'Persian',           native_name: 'ÙØ§Ø±Ø³ÛŒ',           direction: 'rtl' },
+    { code: 'tr', name: 'Turkish',           native_name: 'TÃ¼rkÃ§e',          direction: 'ltr' },
+    { code: 'id', name: 'Indonesian',        native_name: 'Bahasa Indonesia', direction: 'ltr' },
+    { code: 'hi', name: 'Hindi',             native_name: 'à¤¹à¤¿à¤¨à¥à¤¦à¥€',          direction: 'ltr' },
+    { code: 'uz', name: 'Uzbek',             native_name: 'ÐŽÐ·Ð±ÐµÐºÑ‡Ð°',         direction: 'ltr' },
+  ];
+
+  return NextResponse.json({
+    success: true,
+    data: languages,
+  });
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\search\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const searchQuery = (searchParams.get('q') || '').trim();
+    const language = searchParams.get('lang') || 'en';
+
+    // Parse comma-separated arrays for multi-select filters.
+    // Empty / missing â†’ empty array (= no filter on that column).
+    const compilerCsv = (searchParams.get('compiler') || '').trim();
+    const gradeCsv = (searchParams.get('grade') || '').trim();
+    const compilers = compilerCsv ? compilerCsv.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const grades    = gradeCsv    ? gradeCsv.split(',').map(s => s.trim()).filter(Boolean)    : [];
+
+    const hasText = searchQuery.length > 0;
+    const hasFilters = compilers.length > 0 || grades.length > 0;
+
+    // Need EITHER text OR filters. Empty everything â†’ empty results (don't dump the whole DB).
+    if (!hasText && !hasFilters) {
+      return NextResponse.json({ success: true, data: [] });
+    }
+
+    const textColumn = language === 'ar' ? 'final_hadith' : 'post_clause_english';
+
+    // â”€â”€ Build the inner UNION subquery. If there's a text query, filter
+    //    inside each table for index efficiency. Otherwise leave it open.
+    const innerWhere = hasText ? `WHERE a.${textColumn} ILIKE $1` : '';
+    const innerWhereSeven = hasText ? `WHERE s.${textColumn} ILIKE $1` : '';
+
+    const baseQuery = `
+      SELECT
+        'azami-' || a.id::text AS hadith_id,
+        a.hadith_number,
+        a.compiler,
+        a.volume,
+        a.book,
+        a.section,
+        a.chapter,
+        a.grade,
+        'Azami'::text AS final_grader,
+        a.commentary,
+        a.hadith_sources AS reference,
+        NULL::text AS ayat,
+        a.duplicates,
+        NULL::boolean AS is_verified,
+        a.${textColumn} AS hadith_text,
+        a.final_hadith AS hadith_text_arabic,
+        a.post_clause_english AS hadith_text_english,
+        a.machine_clause,
+        a.intro_clause AS arabic_intro_clause,
+        m.english_name AS english_narrator,
+        'azami' AS source
+      FROM azami_hadiths a
+      LEFT JOIN machine_clause_translations m ON a.machine_clause = m.machine_clause
+      ${innerWhere}
+
+      UNION ALL
+
+      SELECT
+        'sevenbooks-' || s.id::text AS hadith_id,
+        s.hadith_number,
+        s.compiler,
+        s.volume,
+        s.book,
+        NULL AS section,
+        s.chapter,
+        s.final_grade AS grade,
+        COALESCE(NULLIF(TRIM(s.final_grader), ''), 'Unknown')::text AS final_grader,
+        s.commentary_darussalam AS commentary,
+        NULL AS reference,
+        NULL::text AS ayat,
+        NULL AS duplicates,
+        NULL::boolean AS is_verified,
+        s.${textColumn} AS hadith_text,
+        s.final_hadith AS hadith_text_arabic,
+        s.post_clause_english AS hadith_text_english,
+        s.machine_clause,
+        s.intro_clause AS arabic_intro_clause,
+        m.english_name AS english_narrator,
+        'sevenbooks' AS source
+      FROM sevenbooks_hadiths s
+      LEFT JOIN machine_clause_translations m ON s.machine_clause = m.machine_clause
+      ${innerWhereSeven}
+    `;
+
+    // â”€â”€ Build outer query with paramaterized filters â”€â”€
+    // $1 may or may not be the like pattern depending on hasText.
+    // We always pass language as the first slot AFTER the like pattern (if any).
+    const params = [];
+    let paramCount = 0;
+
+    if (hasText) {
+      params.push(`%${searchQuery}%`);
+      paramCount = 1;
+    }
+
+    paramCount++;
+    const langParamIdx = paramCount;
+    params.push(language);
+
+    let query = `
+      SELECT
+        *,
+        $${langParamIdx}::text AS language_code,
+        CASE WHEN $${langParamIdx} = 'ar' THEN 'Arabic' ELSE 'English' END AS language_name,
+        CASE WHEN $${langParamIdx} = 'ar' THEN 'rtl' ELSE 'ltr' END AS text_direction
+      FROM (${baseQuery}) AS combined
+      WHERE 1=1
+    `;
+
+    if (compilers.length > 0) {
+      paramCount++;
+      query += ` AND compiler = ANY($${paramCount}::text[])`;
+      params.push(compilers);
+    }
+    if (grades.length > 0) {
+      paramCount++;
+      query += ` AND grade = ANY($${paramCount}::text[])`;
+      params.push(grades);
+    }
+
+    query += ` ORDER BY source, hadith_number LIMIT 200`;
+
+    const result = await pool.query(query, params);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (error) {
+    console.error('Search error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Search failed', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\sections\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const language = searchParams.get('lang') || 'en';
+
+    // Note: Only azami_hadiths has sections; sevenbooks_hadiths does not.
+    const result = await pool.query(`
+      SELECT DISTINCT TRIM(section) AS section
+      FROM azami_hadiths
+      WHERE section IS NOT NULL AND TRIM(section) != ''
+      ORDER BY section
+    `);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch sections', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\sections-by-chapter\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+// Returns the list of distinct sections for a given (compiler, book, chapter).
+//
+// Pattern matches /api/chapters-by-book â€” UNION across azami_hadiths and
+// sevenbooks_hadiths so the route works for any compiler regardless of which
+// table the hadiths live in. sevenbooks_hadiths has no `section` column so
+// we expose NULL there; only azami rows actually contribute sections today.
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const compiler = searchParams.get('compiler');
+    const book     = searchParams.get('book');
+    const chapter  = searchParams.get('chapter');
+
+    if (!compiler || !book || !chapter) {
+      return NextResponse.json(
+        { success: false, error: 'compiler, book, and chapter parameters are all required' },
+        { status: 400 }
+      );
+    }
+
+    const result = await pool.query(`
+      SELECT DISTINCT section FROM (
+        SELECT section FROM azami_hadiths
+        WHERE compiler = $1 AND book = $2 AND chapter = $3
+          AND section IS NOT NULL AND TRIM(section) != ''
+        UNION
+        SELECT NULL AS section FROM sevenbooks_hadiths
+        WHERE compiler = $1 AND book = $2 AND chapter = $3
+          AND FALSE  -- sevenbooks has no sections; keep the UNION shape consistent
+      ) AS combined
+      WHERE section IS NOT NULL
+      ORDER BY section
+    `, [compiler, book, chapter]);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows.map(r => r.section),
+    });
+  } catch (error) {
+    console.error('Database error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch sections', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+===== C:\Users\deeja\Downloads\hadith-website\src\app\api\suggestions\route.js =====
+import { pool } from '../../../lib/db';
+import { NextResponse } from 'next/server';
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const term = searchParams.get('term') || '';
+    const language = searchParams.get('lang') || 'en';
+
+    if (term.trim().length < 2) {
+      return NextResponse.json({ success: true, data: [] });
+    }
+
+    const textColumn = language === 'ar' ? 'final_hadith' : 'post_clause_english';
+    const likePattern = `%${term}%`;
+
+    // Pull a few snippets from each table where the search column matches.
+    const result = await pool.query(`
+      SELECT DISTINCT suggestion FROM (
+        SELECT ${textColumn} AS suggestion FROM azami_hadiths
+        WHERE ${textColumn} ILIKE $1 LIMIT 5
+
+        UNION
+
+        SELECT ${textColumn} AS suggestion FROM sevenbooks_hadiths
+        WHERE ${textColumn} ILIKE $1 LIMIT 5
+      ) AS combined
+      LIMIT 10
+    `, [likePattern]);
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Suggestions error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch suggestions' },
+      { status: 500 }
+    );
+  }
+}
+

@@ -102,6 +102,7 @@ export default function ResultsScreen() {
                     finalGrader={hadith.final_grader}
                     narratorAr={isArabic ? hadith.arabic_intro_clause : undefined}
                     contentAr={isArabic ? hadith.hadith_text_arabic : undefined}
+                    chainAr={isArabic ? hadith.chain_clause : undefined}
                     hadithIdAr={isArabic ? `${hadith.compiler} ${hadith.hadith_number}` : undefined}
                     gradeAr={isArabic ? hadith.grade : undefined}
                     hadithLinkId={hadith.hadith_id}
@@ -134,6 +135,7 @@ export default function ResultsScreen() {
                     finalGrader={hadith.final_grader}
                     narratorAr={hadith.arabic_intro_clause}
                     contentAr={hadith.hadith_text_arabic}
+                    chainAr={hadith.chain_clause}
                     hadithIdAr={`${hadith.compiler} ${hadith.hadith_number}`}
                     gradeAr={hadith.grade}
                     isExpanded={expanded}

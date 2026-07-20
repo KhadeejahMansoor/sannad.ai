@@ -67,6 +67,7 @@ export default function HadithCard({
   // Arabic side
   narratorAr,
   contentAr,
+  chainAr,          // Arabic chain of narrators (isnad) — shown above the intro, when present
   hadithIdAr,      // Arabic display label, e.g. "الترمذي 1"
   gradeAr,
   // Behavior
@@ -195,6 +196,12 @@ export default function HadithCard({
         {/* ─── Arabic side ─── */}
         {hasArabic && (
           <div className={`bg-white rounded-[5px] px-5 py-4 flex flex-col ${bilingual ? 'md:flex-1' : ''}`} dir="rtl" lang="ar">
+            {chainAr && (
+              <p className="text-sm text-[#6B5B55] font-normal mb-2 leading-[28px]">
+                <HadithText text={chainAr} />
+              </p>
+            )}
+
             <p className="text-sm font-semibold text-black mb-5 leading-[28px]">
               {narratorAr}
             </p>

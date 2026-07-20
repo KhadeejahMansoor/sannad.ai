@@ -661,7 +661,7 @@ function DetailRow({ label, display, value, font, last }) {
  {display || label}
  </span>
  <div className={`flex-1 text-xs break-words ${font} text-black`}>
- {value || '—'}
+ {value ? <HadithText text={value} /> : '—'}
  </div>
  </div>
  );

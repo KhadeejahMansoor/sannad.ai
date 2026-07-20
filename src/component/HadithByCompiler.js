@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, BookOpen } from 'lucide-react';
 import Header from './Header';
 import HadithCard from './HadithCard';
+import HadithText from './HadithText';
 import HadithSlider from './HadithSlider';
 import BottomPopupMenu from './BottomPopupMenu';
 import MenuModal from './MenuModal';
@@ -715,7 +716,7 @@ function InlinePanels({ hadith }) {
                 <RowIcon type={item.type} />
               </span>
               <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.type}</span>
-              <div className="flex-1 text-sm text-black">{item.value || '—'}</div>
+              <div className="flex-1 text-sm text-black">{item.value ? <HadithText text={item.value} /> : '—'}</div>
             </div>
           ))}
         </div>
@@ -868,7 +869,7 @@ function Row({ innerRef, label, selected, open, here, isArabic, onClick }) {
       lang={isArabic ? 'ar' : 'en'}
     >
       {here && <span className="w-1.5 h-1.5 rounded-full bg-[#523230] flex-shrink-0" aria-hidden="true" />}
-      <span className="flex-1 break-words">{label}</span>
+      <span className="flex-1 break-words"><HadithText text={label} /></span>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { compilerFor } from "../lib/i18n";
 import { useLanguage } from "../lib/LanguageContext";
 import MatchedReferenceChips from "./MatchedReferenceChips";
 import AyatChips from "./AyatChips";
+import HadithText from "./HadithText";
 import { useOpenReference } from "../hooks/useOpenReference";
 
 export default function HadithDetailStatic({ isOpen, onClose, hadith, className = '' }) {
@@ -133,7 +134,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
                 dir={isArabic ? 'rtl' : 'ltr'}
                 lang={isArabic ? 'ar' : 'en'}
               >
-                {item.title}
+                <HadithText text={item.title} />
               </span>
             </div>
           ))}

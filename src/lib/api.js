@@ -1,5 +1,8 @@
 // lib/api.js - Complete API client library
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+// Empty string = relative URLs (e.g. "/api/languages"), which automatically
+// hit whatever domain the site is served from — localhost in dev, the live
+// domain in production. NEXT_PUBLIC_API_URL can still override if ever needed.
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 // Generic API function
 async function apiRequest(endpoint, options = {}) {

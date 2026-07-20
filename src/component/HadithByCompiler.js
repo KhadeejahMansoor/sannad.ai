@@ -366,7 +366,7 @@ export default function HadithByCompiler() {
                 ? (isArabic ? 'إخفاء الكتب' : 'Hide books')
                 : (isArabic ? 'إظهار الكتب' : 'Show books')
             }
-            className={`rounded-[5px] p-1 transition-colors cursor-pointer ${
+            className={`hidden md:inline-flex rounded-[5px] p-1 transition-colors cursor-pointer ${
               sidebarOpen
                 ? 'bg-[#523230] text-white'
                 : 'text-[#523230] hover:bg-[#EFE7E4]'

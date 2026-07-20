@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { BookOpen, Share2 } from "lucide-react";
 import HadithDetailBottomSheet from "./HadithDetailBottomSheet";
+import HadithText from "./HadithText";
 import { compilerFor, gradeFor } from "../lib/i18n";
 
 // Pretty-print the grader name returned from the API.
@@ -130,7 +131,7 @@ export default function HadithSlider({
                     <div className="relative bg-white rounded-[5px] p-6 w-full max-w-[1728px] flex-1 flex flex-col">
                         <div className="flex-1">
                             <p className="text-base font-bold text-black mb-4">{englishNarrator}</p>
-                            <p className="text-base text-black font-normal leading-[26px] mb-5 whitespace-pre-line">{englishContent}</p>
+                            <p className="text-base text-black font-normal leading-[26px] mb-5 whitespace-pre-line"><HadithText text={englishContent} /></p>
                         </div>
 
                         <div className="mt-auto pt-6">
@@ -169,7 +170,7 @@ export default function HadithSlider({
                                 {arabicNarrator}
                             </p>
                             <p className="text-base text-black font-normal leading-[26px] mb-5 whitespace-pre-line" lang="ar">
-                                {arabicContent}
+                                <HadithText text={arabicContent} />
                             </p>
                         </div>
 

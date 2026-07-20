@@ -88,9 +88,10 @@ export default function LanguageMenu({ onClose }) {
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ duration: 0.3 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white"
-        style={{ height: '530px', padding: '35px 18px 16px 18px' }}
+        className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-[22px]"
+        style={{ height: '530px', padding: '20px 18px 16px 18px' }}
       >
+        <div className="mx-auto mb-4 h-[5px] w-10 rounded-full bg-[#DDD8D0]" />
         <div className="scroll-hidden" style={{ height: '100%', overflowY: 'auto' }}>
           <div className="grid grid-cols-3 gap-3" style={{ rowGap: '16px' }}>
             {activeLanguages.map((lang) => (
@@ -114,17 +115,17 @@ export default function LanguageMenu({ onClose }) {
 
 function LanguageButton({ label, onClick, isSelected, disabled, useArabicFont }) {
   // Three states:
-  //   selected  — dark, this is the active language
-  //   available — white, tappable
+  //   selected  — maroon fill, this is the active language
+  //   available — white card, tappable
   //   disabled  — faded, "Soon", not tappable (no translation data yet)
   const base =
-    'w-full h-full rounded-[5px] border transition flex flex-col items-center justify-center gap-1 text-sm text-center';
+    'w-full h-full rounded-[16px] border transition flex flex-col items-center justify-center gap-1 text-center';
 
   const state = disabled
-    ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+    ? 'border-[#E4DCD6] bg-[#F6F4F1] text-[#B8ADA6] cursor-not-allowed'
     : isSelected
-      ? 'border-gray-300 bg-[#523230] text-white cursor-pointer'
-      : 'border-gray-300 bg-white text-black hover:bg-gray-100 cursor-pointer';
+      ? 'border-[#523230] bg-[#523230] text-white cursor-pointer'
+      : 'border-[#E4DCD6] bg-white text-[#2E1F1D] hover:bg-[#FAF5F3] cursor-pointer';
 
   return (
     <button
@@ -132,11 +133,10 @@ function LanguageButton({ label, onClick, isSelected, disabled, useArabicFont })
       disabled={disabled}
       aria-disabled={disabled}
       className={`${base} ${state} ${useArabicFont ? 'font-noto-arabic' : 'font-[var(--body-text-font-family)]'}`}
-      style={{ fontSize: '13px' }}
     >
-      <span>{label}</span>
+      <span style={{ fontSize: '15px', fontWeight: 500 }}>{label}</span>
       {disabled && (
-        <span className="text-[10px] font-normal text-gray-400">Soon</span>
+        <span className="text-[10px] font-normal text-[#B8ADA6]">Soon</span>
       )}
     </button>
   );

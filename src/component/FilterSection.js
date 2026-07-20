@@ -70,7 +70,7 @@ export default function FilterSection({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="w-full bg-white rounded-t-[22px] p-4"
+          className="w-full bg-[#ECEAE4] rounded-t-[22px] p-4"
         >
           <div className="flex flex-wrap gap-2 mb-9 mt-4 justify-center">
             {gradePills.map((key) => (
@@ -88,7 +88,7 @@ export default function FilterSection({
             ))}
           </div>
 
-          <hr className="my-4 border-[#E4DCD6] w-[350px] mx-auto" />
+          <hr className="my-4 border-[#DDD8D0] w-[350px] mx-auto" />
 
           <div className="flex flex-wrap gap-2 mb-8 mt-8 justify-center">
             {scholarPills.map((key) => (
@@ -106,13 +106,19 @@ export default function FilterSection({
             ))}
           </div>
 
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={isArabic ? '…ابحث في المجموعات' : 'Search hadith collections…'}
-            className="w-full border border-[#E4DCD6] rounded-[13px] px-4 py-3 text-sm text-[#523230] outline-none focus:border-[#523230] focus:ring-1 focus:ring-[#EDE4E1] placeholder:text-[#9A8A85]"
-          />
+          <div className="flex items-center gap-2 w-full bg-white border border-[#E4DCD6] rounded-[13px] px-4 py-3 focus-within:border-[#523230]">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" stroke="#9A8A85" strokeWidth="2" />
+              <path d="M20 20l-3.5-3.5" stroke="#9A8A85" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={isArabic ? '…ابحث في المجموعات' : 'Search hadith collections…'}
+              className="w-full bg-transparent text-sm text-[#523230] outline-none placeholder:text-[#9A8A85]"
+            />
+          </div>
 
           {searchQuery && (
             <ul className="mt-2 space-y-1 max-h-32 overflow-y-auto">

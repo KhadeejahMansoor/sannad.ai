@@ -324,9 +324,8 @@ export default function MenuModal({
                   className="w-6 h-6 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="9" stroke="black" strokeWidth="1.8" />
-                    <path d="M11 8.5L14.5 12L11 15.5" stroke="black" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M14 12H8" stroke="black" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M4 12H19" stroke="black" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M14 7L19 12L14 17" stroke="black" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
                 <div

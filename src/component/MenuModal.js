@@ -10,6 +10,7 @@ import {
 } from '@/hooks/useData';
 import { useScrollLock } from '../lib/useScrollLock';
 import { useLanguage, pickLabel } from '../lib/LanguageContext';
+import HadithText from './HadithText';
 
 // ─── Hash slider modal (unchanged) ─────────────────────────────────────
 // Number-pad style modal for jumping directly to a hadith number.
@@ -429,22 +430,25 @@ export default function MenuModal({
                 const isSelectedBook = sel.book === bookVal && !sel.chapter && !sel.section;
 
                 return (
-                  <div key={bookVal}>
+                  <div key={bookVal} className="mb-[7px]">
                     {/* Book row */}
-                    <div className="mb-2">
-                      <span
-                        onClick={() => handleBookClick(bookVal)}
-                        className={`inline-block h-[33px] px-3 leading-[33px] text-base font-bold text-black cursor-pointer rounded-[10px] transition-colors ${
-                          isSelectedBook ? 'bg-[#F2F2F2]' : 'hover:bg-zinc-100'
-                        }`}
-                      >
-                        {pickLabel(book, language)}
-                      </span>
+                    <div
+                      onClick={() => handleBookClick(bookVal)}
+                      className={`flex items-center gap-2 px-[18px] py-[12px] text-base font-medium cursor-pointer rounded-full border transition-colors ${
+                        isSelectedBook || isOpen
+                          ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230]'
+                          : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
+                      }`}
+                    >
+                      {(isSelectedBook || isOpen) && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#523230] flex-shrink-0" />
+                      )}
+                      <span className="flex-1"><HadithText text={pickLabel(book, language)} /></span>
                     </div>
 
                     {/* Chapters under the open book */}
                     {isOpen && (
-                      <div className="mr-3 mt-2">
+                      <div className="mr-3 mt-[7px] flex flex-col gap-[7px]">
                         {chapters.length === 0 && (
                           <div className="text-xs italic text-gray-400 px-2 py-1" dir="ltr">
                             No chapters available
@@ -457,20 +461,23 @@ export default function MenuModal({
                             sel.book === bookVal && sel.chapter === chapterVal && !sel.section;
                           return (
                             <div key={chapterVal}>
-                              <div className="mb-2">
-                                <span
-                                  onClick={() => handleChapterClick(chapterVal)}
-                                  className={`inline-block h-[33px] px-4 leading-[33px] text-black text-base font-normal cursor-pointer rounded-[12px] transition-colors ${
-                                    isSelectedChapter ? 'bg-[#F2F2F2]' : 'hover:bg-zinc-100'
-                                  }`}
-                                >
-                                  {pickLabel(chapter, language)}
-                                </span>
+                              <div
+                                onClick={() => handleChapterClick(chapterVal)}
+                                className={`flex items-center gap-2 px-[18px] py-[11px] text-[15px] cursor-pointer rounded-full border transition-colors ${
+                                  isSelectedChapter || chapOpen
+                                    ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230] font-medium'
+                                    : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
+                                }`}
+                              >
+                                {(isSelectedChapter || chapOpen) && (
+                                  <span className="w-1.5 h-1.5 rounded-full bg-[#523230] flex-shrink-0" />
+                                )}
+                                <span className="flex-1"><HadithText text={pickLabel(chapter, language)} /></span>
                               </div>
 
                               {/* Sections under the open chapter */}
                               {chapOpen && (
-                                <div className="mr-4 space-y-0.5">
+                                <div className="mr-3 mt-[7px] flex flex-col gap-[6px]">
                                   {sections.length === 0 && (
                                     <div className="text-xs italic text-gray-400 px-4 py-1" dir="ltr">
                                       No sections
@@ -483,15 +490,19 @@ export default function MenuModal({
                                       sel.chapter === chapterVal &&
                                       sel.section === sectionVal;
                                     return (
-                                      <div key={sectionVal}>
-                                        <span
-                                          onClick={() => handleSectionClick(sectionVal)}
-                                          className={`inline-block px-4 py-1.5 text-sm text-gray-700 cursor-pointer rounded-[12px] transition-colors leading-tight ${
-                                            isSelectedSection ? 'bg-[#F2F2F2]' : 'hover:bg-[#F2F2F2]'
-                                          }`}
-                                        >
-                                          {pickLabel(section, language)}
-                                        </span>
+                                      <div
+                                        key={sectionVal}
+                                        onClick={() => handleSectionClick(sectionVal)}
+                                        className={`flex items-center gap-2 px-[18px] py-[9px] text-sm cursor-pointer rounded-full border transition-colors ${
+                                          isSelectedSection
+                                            ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230] font-medium'
+                                            : 'bg-white border-[#E4DCD6] text-[#6B5B55] hover:bg-[#FAF5F3]'
+                                        }`}
+                                      >
+                                        {isSelectedSection && (
+                                          <span className="w-1.5 h-1.5 rounded-full bg-[#523230] flex-shrink-0" />
+                                        )}
+                                        <span className="flex-1"><HadithText text={pickLabel(section, language)} /></span>
                                       </div>
                                     );
                                   })}

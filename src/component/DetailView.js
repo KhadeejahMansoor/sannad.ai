@@ -283,12 +283,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  {activeTab === "Contents" && (
  <div className="bg-white rounded-[5px] p-4 mb-6">
- {[
+          {[
  { type: "Book", title: getField(book, arabicFields.book) },
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
  { type: "Hadith", title: isArabic || selectedLanguage === 'ar' ? `الجامع الكامل ${hadith_number}` : `al-Jami al-Kamil ${hadith_number}` },
- ].map((item, i) => (
+ ].filter((item) => item.type !== "Section" || item.title).map((item, i) => (
  <div key={i} className="flex items-start py-2 gap-3">
  <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
  <RowIcon type={item.type} />
@@ -344,7 +344,9 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
      /api/sections-by-chapter takes. */}
  <DetailRow label="Book" display={isArabic ? 'الكتاب' : 'Book'} value={getField(book, arabicFields.book)} font={getFont()} />
  <DetailRow label="Chapter" display={isArabic ? 'الباب' : 'Chapter'} value={getField(chapter, arabicFields.chapter)} font={getFont()} />
- <DetailRow label="Section" display={isArabic ? 'الفصل' : 'Section'} value={getField(section, arabicFields.section)} font={getFont()} />
+ {getField(section, arabicFields.section) && (
+   <DetailRow label="Section" display={isArabic ? 'الفصل' : 'Section'} value={getField(section, arabicFields.section)} font={getFont()} />
+ )}
  <DetailRow
  label="Hadith"
  display={isArabic ? 'الحديث' : 'Hadith'}
@@ -509,12 +511,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  {activeTab === "Contents" && (
  <div className="bg-white p-4">
- {[
+          {[
  { type: "Book", title: getField(book, arabicFields.book) },
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
  { type: "Hadith", title: isArabic || selectedLanguage === 'ar' ? `الجامع الكامل ${hadith_number}` : `al-Jami al-Kamil ${hadith_number}` },
- ].map((item, i) => (
+ ].filter((item) => item.type !== "Section" || item.title).map((item, i) => (
  <div key={i} className="flex items-start py-1">
  <span className="text-xs text-gray-400 w-[60px]">{item.type}</span>
  <div className={`flex-1 text-black text-xs ${getFont()}`} dir={getDir()}>

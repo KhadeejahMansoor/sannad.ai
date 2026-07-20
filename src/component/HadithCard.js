@@ -197,12 +197,12 @@ export default function HadithCard({
         {hasArabic && (
           <div className={`bg-white rounded-[5px] px-5 py-4 flex flex-col ${bilingual ? 'md:flex-1' : ''}`} dir="rtl" lang="ar">
             {chainAr && (
-              <p className="text-sm text-[#6B5B55] font-normal mb-2 leading-[28px]">
+              <p className="text-[15px] font-semibold text-black mb-2 leading-[30px]">
                 <HadithText text={chainAr} />
               </p>
             )}
 
-            <p className="text-sm font-semibold text-black mb-5 leading-[28px]">
+            <p className="text-[15px] font-semibold text-black mb-5 leading-[30px]">
               {narratorAr}
             </p>
 

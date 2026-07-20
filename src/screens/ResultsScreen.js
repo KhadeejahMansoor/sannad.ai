@@ -88,8 +88,11 @@ export default function ResultsScreen() {
               const expanded = expandedId === hadith.hadith_id;
               return (
                 <div key={hadith.hadith_id}>
-                  {/* The Arabic props were never passed here, so the mobile
-                      results card has always been English-only. Fixed. */}
+                  {/* Mobile: English only by default; Arabic only when the
+                      Arabic language is selected. We achieve this by only
+                      passing the Arabic props when isArabic is true — otherwise
+                      HadithCard has no Arabic data to show and renders English
+                      alone. Desktop (below) keeps both languages. */}
                   <HadithCard
                     showEnglish={!isArabic}
                     narrator={hadith.english_narrator ? `${hadith.english_narrator} reported,` : ''}
@@ -97,10 +100,10 @@ export default function ResultsScreen() {
                     hadithId={`${compilerFor(hadith.compiler, 'en')} ${hadith.hadith_number}`}
                     grade={gradeFor(hadith.grade, 'en')}
                     finalGrader={hadith.final_grader}
-                    narratorAr={hadith.arabic_intro_clause}
-                    contentAr={hadith.hadith_text_arabic}
-                    hadithIdAr={`${hadith.compiler} ${hadith.hadith_number}`}
-                    gradeAr={hadith.grade}
+                    narratorAr={isArabic ? hadith.arabic_intro_clause : undefined}
+                    contentAr={isArabic ? hadith.hadith_text_arabic : undefined}
+                    hadithIdAr={isArabic ? `${hadith.compiler} ${hadith.hadith_number}` : undefined}
+                    gradeAr={isArabic ? hadith.grade : undefined}
                     hadithLinkId={hadith.hadith_id}
                     isExpanded={expanded}
                     onToggleExpand={() => handleToggleExpand(hadith.hadith_id)}

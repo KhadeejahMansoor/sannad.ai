@@ -43,7 +43,17 @@ export default function HadithText({ text, className = '' }) {
           // r9 is the ﷺ glyph (U+FDFA) — a real character, not an image.
           if (code === 'r9') {
             return (
-              <span key={i} title={alt} aria-label={alt}>
+              <span
+                key={i}
+                title={alt}
+                aria-label={alt}
+                style={{
+                  display: 'inline-block',
+                  fontSize: '0.75em',
+                  lineHeight: 1,
+                  verticalAlign: '-0.05em',
+                }}
+              >
                 {'\uFDFA'}
               </span>
             );

@@ -741,7 +741,7 @@ function InlinePanels({ hadith }) {
           {referenceChips.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {referenceChips.map((chip, i) => (
-                <span key={i} className="h-[28px] px-3 inline-flex items-center justify-center bg-orange-100 text-orange-700 text-xs font-medium rounded-[10px]">
+                <span key={i} className="h-[28px] px-3 inline-flex items-center justify-center bg-[#EDE4E1] text-[#523230] text-xs font-medium rounded-[10px]">
                   {chip}
                 </span>
               ))}

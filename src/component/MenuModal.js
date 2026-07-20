@@ -440,10 +440,10 @@ export default function MenuModal({
                     {/* Book row */}
                     <div
                       onClick={() => handleBookClick(bookVal)}
-                      className={`flex items-center gap-2 px-3 py-[10px] text-sm font-medium cursor-pointer rounded-[8px] transition-colors ${
+                      className={`flex items-center gap-2 px-2 py-1.5 text-[13px] leading-[1.6] cursor-pointer rounded-[5px] transition-colors ${
                         isSelectedBook || isOpen
-                          ? 'bg-[#F1E9E6] text-black'
-                          : 'text-black hover:bg-[#FAF5F3]'
+                          ? 'bg-[#F1E9E6] text-[#2E1F1D] font-medium'
+                          : 'text-[#4A3B37] hover:bg-[#F5F0EE]'
                       }`}
                     >
                       {(isSelectedBook || isOpen) && (
@@ -474,10 +474,10 @@ export default function MenuModal({
                             <div key={chapterVal}>
                               <div
                                 onClick={() => handleChapterClick(chapterVal)}
-                                className={`flex items-center gap-2 px-3 py-[9px] text-[13px] cursor-pointer rounded-[8px] transition-colors ${
+                                className={`flex items-center gap-2 px-2 py-1.5 text-[13px] leading-[1.6] cursor-pointer rounded-[5px] transition-colors ${
                                   isSelectedChapter || chapOpen
-                                    ? 'bg-[#F1E9E6] text-black font-medium'
-                                    : 'text-black hover:bg-[#FAF5F3]'
+                                    ? 'bg-[#F1E9E6] text-[#2E1F1D] font-medium'
+                                    : 'text-[#4A3B37] hover:bg-[#F5F0EE]'
                                 }`}
                               >
                                 {(isSelectedChapter || chapOpen) && (
@@ -509,10 +509,10 @@ export default function MenuModal({
                                       <div
                                         key={sectionVal}
                                         onClick={() => handleSectionClick(sectionVal)}
-                                        className={`flex items-center gap-2 px-3 py-[8px] text-xs cursor-pointer rounded-[8px] transition-colors ${
+                                        className={`flex items-center gap-2 px-2 py-1.5 text-[13px] leading-[1.6] cursor-pointer rounded-[5px] transition-colors ${
                                           isSelectedSection
-                                            ? 'bg-[#F1E9E6] text-black font-medium'
-                                            : 'text-black hover:bg-[#FAF5F3]'
+                                            ? 'bg-[#F1E9E6] text-[#2E1F1D] font-medium'
+                                            : 'text-[#4A3B37] hover:bg-[#F5F0EE]'
                                         }`}
                                       >
                                         {isSelectedSection && (

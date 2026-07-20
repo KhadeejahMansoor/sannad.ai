@@ -86,7 +86,7 @@ function ScholarItem({ name, onClick, isSelected, isArabic }) {
   return (
     <div
       onClick={onClick}
-      className="mx-auto max-w-[390px] h-8 px-2 text-center font-bold text-gray-700 cursor-pointer transition-all duration-200 flex items-center justify-center rounded-[5px]"
+      className="mx-auto max-w-[390px] h-8 px-2 text-center font-normal text-black cursor-pointer transition-all duration-200 flex items-center justify-center rounded-[5px]"
       dir={isArabic ? 'rtl' : 'ltr'}
       lang={isArabic ? 'ar' : 'en'}
       style={{

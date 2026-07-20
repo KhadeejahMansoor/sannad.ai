@@ -121,14 +121,14 @@ export default function HadithCard({
       }`}>
         {/* ─── English side ─── */}
         {showEnglish && (
-        <div className={`bg-white rounded-[5px] px-5 py-4 ${bilingual ? 'md:flex-1' : ''}`}>
+        <div className={`bg-white rounded-[5px] px-5 py-4 flex flex-col ${bilingual ? 'md:flex-1' : ''}`}>
           <p className="text-sm font-semibold text-black mb-5">{narrator}</p>
 
           <p className="text-sm text-black font-normal leading-[22px] mt-2 mb-4 whitespace-pre-line">
             <HadithText text={content} />
           </p>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto">
             <div className="flex items-center gap-2 flex-wrap">
               {EnglishIdTag}
 
@@ -194,7 +194,7 @@ export default function HadithCard({
 
         {/* ─── Arabic side ─── */}
         {hasArabic && (
-          <div className={`bg-white rounded-[5px] px-5 py-4 ${bilingual ? 'md:flex-1' : ''}`} dir="rtl" lang="ar">
+          <div className={`bg-white rounded-[5px] px-5 py-4 flex flex-col ${bilingual ? 'md:flex-1' : ''}`} dir="rtl" lang="ar">
             <p className="text-sm font-semibold text-black mb-5 leading-[28px]">
               {narratorAr}
             </p>
@@ -203,7 +203,7 @@ export default function HadithCard({
               <HadithText text={contentAr} />
             </p>
 
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2 mt-auto">
               <div className="flex items-center gap-2 flex-wrap">
                 {ArabicIdTag}
 

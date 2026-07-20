@@ -112,17 +112,17 @@ export default function HadithCard({
   );
 
   return (
-    <div className="w-full mb-6 font-['Inter']">
+    <div className="w-full mb-8 font-['Inter']">
       {/* Two SEPARATE cards, like HadithSlider on /desktopcompiler — each side
           is its own white panel with a gap between them, not one box split by a
           border. bg-white / rounded moved onto the panels below; the divider
           border is gone. Nothing inside either panel changed. */}
-      <div className={`flex flex-col-reverse gap-4 ${
-        bilingual ? 'md:flex-row md:gap-6' : 'md:block'
+      <div className={`flex flex-col-reverse gap-5 ${
+        bilingual ? 'md:flex-row md:gap-8' : 'md:block'
       }`}>
         {/* ─── English side ─── */}
         {showEnglish && (
-        <div className={`bg-white rounded-[5px] px-5 py-4 flex flex-col ${bilingual ? 'md:flex-1' : ''}`}>
+        <div className={`bg-white rounded-[5px] px-6 py-6 flex flex-col ${bilingual ? 'md:flex-1' : ''}`}>
           <p className="text-sm font-semibold text-black mb-5">{narrator}</p>
 
           <p className="text-sm text-black font-normal leading-[22px] mt-2 mb-4 whitespace-pre-line">
@@ -195,7 +195,7 @@ export default function HadithCard({
 
         {/* ─── Arabic side ─── */}
         {hasArabic && (
-          <div className={`bg-white rounded-[5px] px-5 py-4 flex flex-col ${bilingual ? 'md:flex-1' : ''}`} dir="rtl" lang="ar">
+          <div className={`bg-white rounded-[5px] px-6 py-6 flex flex-col ${bilingual ? 'md:flex-1' : ''}`} dir="rtl" lang="ar">
             {chainAr && (
               <p className="text-[15px] font-semibold text-black mb-2 leading-[30px]">
                 <HadithText text={chainAr} />

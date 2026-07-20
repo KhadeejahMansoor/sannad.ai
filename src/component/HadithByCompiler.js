@@ -691,7 +691,7 @@ function InlinePanels({ hadith }) {
   const book    = pick(hadith?.book_stripped,    hadith?.book_stripped_english,    hadith?.book);
   const chapter = pick(hadith?.chapter_stripped, hadith?.chapter_stripped_english, hadith?.chapter);
   const section = pick(hadith?.section_stripped, hadith?.section_stripped_english, hadith?.section);
-  const reference = hadith?.reference || '';
+  const reference = hadith?.matched_hadith || '';
   const ayat      = hadith?.ayat || '';
   const commentary= hadith?.commentary || 'None';
   const hadithNumber = hadith?.hadith_number || '';

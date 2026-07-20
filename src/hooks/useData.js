@@ -263,10 +263,36 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
       import('../lib/supabaseClient'),
       import('../lib/i18n'),
     ])
-      .then(async ([{ supabase }, { compilerToDb, gradeToDb }]) => {
+      .then(async ([{ supabase }, { compilerToDb, gradeToDb, COMPILER_KEYS }]) => {
+        // ── "Compiler name + hadith number" typed into the search box ──
+        // e.g. "azami 1" or "1 azami". search_hadiths does text/metadata
+        // search only — hadith_number was never part of that, so this
+        // pattern always came back empty. Detect it, fetch by compiler
+        // filter alone, then match hadith_number client-side.
+        let compilerNumberHit = null;
+        const trimmedText = searchText ? searchText.trim() : '';
+        if (trimmedText) {
+          const m =
+            trimmedText.match(/^(\D+?)\s*#?\s*(\d+[A-Za-z]?)$/) ||
+            trimmedText.match(/^(\d+[A-Za-z]?)\s*#?\s*(\D+)$/);
+          if (m) {
+            const [, part1, part2] = m;
+            const namePart = /^\d/.test(part1) ? part2 : part1;
+            const numberPart = /^\d/.test(part1) ? part1 : part2;
+            const matchedKey = COMPILER_KEYS.find(
+              (k) => k.toLowerCase() === namePart.trim().toLowerCase()
+            );
+            if (matchedKey) {
+              compilerNumberHit = { compiler: matchedKey, number: numberPart.trim() };
+            }
+          }
+        }
+
         const { data: rows, error: rpcError } = await supabase.rpc('search_hadiths', {
-          q: searchText ? searchText.trim() : null,
-          f_compilers: compilersArr.length ? compilersArr.map(compilerToDb) : null,
+          q: compilerNumberHit ? null : (searchText ? searchText.trim() : null),
+          f_compilers: compilerNumberHit
+            ? [compilerToDb(compilerNumberHit.compiler)]
+            : (compilersArr.length ? compilersArr.map(compilerToDb) : null),
           f_grades:    gradesArr.length    ? gradesArr.map(gradeToDb)        : null,
           f_book: null,
           f_chapter: null,
@@ -275,10 +301,16 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
 
         if (rpcError) throw rpcError;
 
+        const filteredRows = compilerNumberHit
+          ? (rows || []).filter(
+              (r) => String(r.hadith_number).trim().toLowerCase() === compilerNumberHit.number.toLowerCase()
+            )
+          : rows;
+
         // Shape rows to the fields the cards read — same names /api/search used,
         // so ResultsScreen needs no changes.
         const AZAMI = 'الأعظمي';
-        const data = (rows || []).map((r) => ({
+        const data = (filteredRows || []).map((r) => ({
           hadith_id: `${r.compiler === AZAMI ? 'azami' : 'sevenbooks'}-${r.id}`,
           hadith_number: r.hadith_number,
           compiler: r.compiler,

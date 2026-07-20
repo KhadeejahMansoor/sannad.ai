@@ -142,7 +142,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
         <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="text-black text-xs font-medium font-['Inter'] ms-2 mb-2 text-start">{t.ayat}</div>
         <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="bg-white px-4 py-3 overflow-visible rounded-[5px]">
           <div className="text-black text-xs font-normal font-['Inter'] leading-[16px] text-start whitespace-pre-line">
-            {ayat ? <AyatChips ayat={ayat} /> : t.noAyat}
+            {ayat ? <AyatChips ayat={ayat} isArabic={isArabic} /> : t.noAyat}
           </div>
         </div>
       </div>
@@ -183,6 +183,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
           <MatchedReferenceChips
             value={hadith?.matched_hadith}
             onSelect={openRef}
+            isArabic={isArabic}
             emptyText={t.noReference}
           />
         </div>

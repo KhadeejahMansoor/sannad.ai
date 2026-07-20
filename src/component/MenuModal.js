@@ -84,6 +84,7 @@ const RotatingHadithSlider = ({
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging, currentValue, dragStart]);
 
   useEffect(() => { setCurrentValue(value); }, [value]);
@@ -184,7 +185,7 @@ const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, set
         className="w-full bg-white shadow-xl flex flex-col overflow-hidden font-[Inter]"
         style={{ height: '300px' }}
       >
-        <div className="w-[101px] h-0 outline outline-2 outline-offset-[-1px] outline-[#666666] mx-auto mt-2 mb-1" />
+        <div className="w-[101px] h-0 outline-2 outline-offset-[-1px] outline-[#666666] mx-auto mt-2 mb-1" />
         <div className="flex items-center justify-between px-4 pt-2 pb-2 border-b border-gray-100">
           <div className="text-black text-2xl font-semibold">{compilerLabel}</div>
           <button onClick={onClose} className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded-full">
@@ -358,7 +359,7 @@ export default function MenuModal({
             ref={modalRef}
             className="w-full h-[75%] bg-white shadow-md flex flex-col overflow-hidden font-[Inter]"
           >
-            <div className="w-[101px] h-0 outline outline-2 outline-offset-[-1px] outline-[#666666] mx-auto mt-2 mb-1" />
+            <div className="w-[101px] h-0 outline-2 outline-offset-[-1px] outline-[#666666] mx-auto mt-2 mb-1" />
 
             {/* Header: compiler label + hash + search icons */}
             <div className="flex items-center justify-between px-4 pt-2 pb-2">

@@ -96,7 +96,6 @@ export default function HadithByCompiler() {
     setExpandedBook(urlBook || null);
     setExpandedChapter(urlChapter || null);
     setPage(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlBook, urlChapter, urlSection]);
 
   // Reset selections when compiler changes — but skip the very first mount,

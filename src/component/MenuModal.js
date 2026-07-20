@@ -104,7 +104,13 @@ const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, set
         <div className="flex items-center justify-between px-5 pt-2 pb-4">
           <div className="text-[#523230] text-base font-medium">{compilerLabel}</div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-[9px] bg-[#F1E9E6] flex items-center justify-center text-[#523230] text-lg font-semibold">#</div>
+            <div className="w-8 h-8 rounded-[9px] bg-[#F1E9E6] flex items-center justify-center text-[#523230]">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 12H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M11 8L15 12L11 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M19 6V18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
             <button onClick={onClose} className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded-full text-[#6B5B55]">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

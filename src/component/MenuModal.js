@@ -434,10 +434,10 @@ export default function MenuModal({
                     {/* Book row */}
                     <div
                       onClick={() => handleBookClick(bookVal)}
-                      className={`flex items-center gap-2 px-[14px] py-[9px] text-sm font-medium cursor-pointer rounded-full border transition-colors ${
+                      className={`flex items-center gap-2 px-1 py-[10px] text-sm font-medium cursor-pointer border-b border-[#F0EAE5] transition-colors ${
                         isSelectedBook || isOpen
-                          ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230]'
-                          : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
+                          ? 'text-[#523230]'
+                          : 'text-[#523230] hover:text-[#6E4A44]'
                       }`}
                     >
                       {(isSelectedBook || isOpen) && (
@@ -463,10 +463,10 @@ export default function MenuModal({
                             <div key={chapterVal}>
                               <div
                                 onClick={() => handleChapterClick(chapterVal)}
-                                className={`flex items-center gap-2 px-[14px] py-[8px] text-[13px] cursor-pointer rounded-full border transition-colors ${
+                                className={`flex items-center gap-2 px-1 py-[9px] text-[13px] cursor-pointer border-b border-[#F0EAE5] transition-colors ${
                                   isSelectedChapter || chapOpen
-                                    ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230] font-medium'
-                                    : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
+                                    ? 'text-[#523230] font-medium'
+                                    : 'text-[#523230] hover:text-[#6E4A44]'
                                 }`}
                               >
                                 {(isSelectedChapter || chapOpen) && (
@@ -493,10 +493,10 @@ export default function MenuModal({
                                       <div
                                         key={sectionVal}
                                         onClick={() => handleSectionClick(sectionVal)}
-                                        className={`flex items-center gap-2 px-[14px] py-[7px] text-xs cursor-pointer rounded-full border transition-colors ${
+                                        className={`flex items-center gap-2 px-1 py-[8px] text-xs cursor-pointer border-b border-[#F0EAE5] transition-colors ${
                                           isSelectedSection
-                                            ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230] font-medium'
-                                            : 'bg-white border-[#E4DCD6] text-[#6B5B55] hover:bg-[#FAF5F3]'
+                                            ? 'text-[#523230] font-medium'
+                                            : 'text-[#6B5B55] hover:text-[#6E4A44]'
                                         }`}
                                       >
                                         {isSelectedSection && (

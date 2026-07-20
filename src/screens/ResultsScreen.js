@@ -234,7 +234,7 @@ function InlinePanels({ hadith }) {
     { type: 'Section', label: isArabic ? 'الفصل'  : 'Section', value: section },
     { type: 'Hadith',  label: isArabic ? 'الحديث' : 'Hadith',
       value: isArabic ? `الجامع الكامل ${hadithNumber}` : `al-Jami al-Kamil ${hadithNumber}` },
-  ].filter((row) => row.type !== 'Section' || row.value !== '—');
+  ].filter((row) => (row.type !== 'Section' && row.type !== 'Chapter') || row.value !== '—');
 
   return (
     <div className="mt-4 mb-6 flex flex-col md:flex-row gap-6">

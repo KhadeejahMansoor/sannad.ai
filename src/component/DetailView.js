@@ -288,7 +288,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
  { type: "Hadith", title: isArabic || selectedLanguage === 'ar' ? `الجامع الكامل ${hadith_number}` : `al-Jami al-Kamil ${hadith_number}` },
- ].filter((item) => item.type !== "Section" || item.title).map((item, i) => (
+ ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || item.title).map((item, i) => (
  <div key={i} className="flex items-start py-2 gap-3">
  <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
  <RowIcon type={item.type} />
@@ -343,7 +343,9 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {/* Book > Chapter > Section — the real hierarchy, and the parameter order
      /api/sections-by-chapter takes. */}
  <DetailRow label="Book" display={isArabic ? 'الكتاب' : 'Book'} value={getField(book, arabicFields.book)} font={getFont()} />
- <DetailRow label="Chapter" display={isArabic ? 'الباب' : 'Chapter'} value={getField(chapter, arabicFields.chapter)} font={getFont()} />
+ {getField(chapter, arabicFields.chapter) && (
+   <DetailRow label="Chapter" display={isArabic ? 'الباب' : 'Chapter'} value={getField(chapter, arabicFields.chapter)} font={getFont()} />
+ )}
  {getField(section, arabicFields.section) && (
    <DetailRow label="Section" display={isArabic ? 'الفصل' : 'Section'} value={getField(section, arabicFields.section)} font={getFont()} />
  )}
@@ -516,7 +518,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
  { type: "Hadith", title: isArabic || selectedLanguage === 'ar' ? `الجامع الكامل ${hadith_number}` : `al-Jami al-Kamil ${hadith_number}` },
- ].filter((item) => item.type !== "Section" || item.title).map((item, i) => (
+ ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || item.title).map((item, i) => (
  <div key={i} className="flex items-start py-1">
  <span className="text-xs text-gray-400 w-[60px]">{item.type}</span>
  <div className={`flex-1 text-black text-xs ${getFont()}`} dir={getDir()}>

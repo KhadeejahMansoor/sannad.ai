@@ -1,6 +1,7 @@
 // src/app/api/search/route.js
 import { pool } from '../../../lib/db';
 import { NextResponse } from 'next/server';
+import { compilerToDb, COMPILER_KEYS } from '../../../lib/i18n';
 
 const AZAMI = 'الأعظمي';
 
@@ -51,7 +52,35 @@ export async function GET(request) {
     //
     // Cost: two GIN lookups instead of one. A word in one script simply isn't
     // in the other's index, so the "wrong" half costs almost nothing.
+    // ── "Compiler name + hadith number" typed into the single search box ──
+    // e.g. "Tirmidhi 1234" or "1234 Tirmidhi". search_vector / search_vector_en
+    // are built from hadith CONTENT only — they never contain the compiler name
+    // or hadith_number, so this pattern always matched zero rows below. Detect
+    // it here and match h.compiler + h.hadith_number directly instead.
+    let compilerNumberHit = null;
     if (hasText) {
+      const m =
+        searchQuery.match(/^(\D+?)\s*#?\s*(\d+[A-Za-z]?)$/) ||
+        searchQuery.match(/^(\d+[A-Za-z]?)\s*#?\s*(\D+)$/);
+      if (m) {
+        const [, part1, part2] = m;
+        const namePart = /^\d/.test(part1) ? part2 : part1;
+        const numberPart = /^\d/.test(part1) ? part1 : part2;
+        const matchedKey = COMPILER_KEYS.find(
+          (k) => k.toLowerCase() === namePart.trim().toLowerCase()
+        );
+        if (matchedKey) {
+          compilerNumberHit = { compiler: compilerToDb(matchedKey), number: numberPart.trim() };
+        }
+      }
+    }
+
+    if (compilerNumberHit) {
+      params.push(compilerNumberHit.compiler);
+      conditions.push(`h.compiler = $${params.length}`);
+      params.push(compilerNumberHit.number);
+      conditions.push(`h.hadith_number = $${params.length}`);
+    } else if (hasText) {
       params.push(searchQuery);
       const q = `$${params.length}`;
       conditions.push(`(
@@ -79,7 +108,7 @@ export async function GET(request) {
     // digits, or the fallback order comes out 1, 10, 100, 2.
     const numericOrder = `NULLIF(regexp_replace(h.hadith_number, '\\D', '', 'g'), '')::bigint`;
 
-    const orderBy = hasText
+    const orderBy = hasText && !compilerNumberHit
       ? `GREATEST(
            ts_rank(h.search_vector,    websearch_to_tsquery('arabic',  $1)),
            ts_rank(h.search_vector_en, websearch_to_tsquery('english', $1))

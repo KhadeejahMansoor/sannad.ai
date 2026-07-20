@@ -210,7 +210,7 @@ const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, set
           <div className="mt-2">
             <button
               onClick={handleGoClick}
-              className="w-[331px] bg-[#523230] text-white py-3 rounded-lg font-medium text-base hover:bg-[#164A38] transition-colors"
+              className="w-[331px] bg-[#523230] text-white py-3 rounded-lg font-medium text-base hover:bg-[#412725] transition-colors"
             >
               Go
             </button>
@@ -540,7 +540,7 @@ export default function MenuModal({
             <div className="p-4 flex justify-center bg-white border-t border-gray-100">
               <button
                 onClick={handleGo}
-                className="w-[331px] bg-[#523230] text-white py-3 rounded-lg font-medium text-base hover:bg-[#164A38] transition-colors"
+                className="w-[331px] bg-[#523230] text-white py-3 rounded-lg font-medium text-base hover:bg-[#412725] transition-colors"
               >
                 Go
               </button>

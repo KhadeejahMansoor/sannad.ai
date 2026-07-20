@@ -270,12 +270,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <>
  {/* ─── MOBILE: tabbed view ─── */}
  <div className="md:hidden">
- <div className="flex justify-between mb-4 px-4">
+ <div className="flex justify-start gap-[22px] mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
  {["Contents", "Reference", "Commentary", "Ayat"].map(tab => (
  <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
- <div className={`inline-flex flex-col ${tab === "Ayat" ? "items-center" : "items-start"}`}>
- <div className={`text-sm font-medium ${activeTab === tab ? "text-black" : "text-gray-500"}`}>{tab}</div>
- {activeTab === tab && <div className={`h-[5px] bg-[#523230] mt-2.5 ${tab === "Ayat" ? "w-[63px]" : "w-full"}`} />}
+ <div className="inline-flex flex-col items-start">
+ <div className={`text-[13px] font-medium ${activeTab === tab ? "text-[#523230]" : "text-[#9A8A85]"}`}>{tab}</div>
+ {activeTab === tab && <div className="h-[2px] bg-[#523230] mt-[7px] w-full rounded-[2px]" />}
  </div>
  </div>
  ))}
@@ -295,7 +295,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </span>
  <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.type}</span>
  <div className={`flex-1 text-sm text-black ${getFont()}`} dir={getDir()}>
- {item.title || '—'}
+ {item.title ? <HadithText text={item.title} /> : '—'}
  </div>
  </div>
  ))}
@@ -496,12 +496,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </div>
  </div>
 
- <div className="flex justify-between mb-4 px-2">
+ <div className="flex justify-start gap-[22px] mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
  {["Contents", "Reference", "Commentary", "Ayat"].map(tab => (
  <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
- <div className={`inline-flex flex-col ${tab === "Ayat" ? "items-center" : "items-start"}`}>
- <div className={`text-sm font-medium ${activeTab === tab ? "text-black" : "text-gray-500"}`}>{tab}</div>
- {activeTab === tab && <div className="h-[3px] bg-[#523230] mt-2 w-full" />}
+ <div className="inline-flex flex-col items-start">
+ <div className={`text-[13px] font-medium ${activeTab === tab ? "text-[#523230]" : "text-[#9A8A85]"}`}>{tab}</div>
+ {activeTab === tab && <div className="h-[2px] bg-[#523230] mt-[7px] w-full rounded-[2px]" />}
  </div>
  </div>
  ))}
@@ -518,7 +518,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div key={i} className="flex items-start py-1">
  <span className="text-xs text-gray-400 w-[60px]">{item.type}</span>
  <div className={`flex-1 text-black text-xs ${getFont()}`} dir={getDir()}>
- {item.title || '—'}
+ {item.title ? <HadithText text={item.title} /> : '—'}
  </div>
  </div>
  ))}

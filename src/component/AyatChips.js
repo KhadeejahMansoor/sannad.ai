@@ -7,6 +7,12 @@
 //   import AyatChips from '@/component/AyatChips';
 //   <AyatChips ayat={hadith?.ayat} />
 //
+// Optionally pass `isArabic` to force the language instead of reading the global
+// LanguageContext. This matters for DetailView, which has its OWN local Arabic
+// toggle that is independent of the global context — without the prop, the chips
+// would keep reading the global context and never switch when that local toggle
+// flips.
+//
 // Renders nothing when there are no references, so the parent can decide whether
 // to show its "No ayat annotations available" empty state (or pass showEmpty).
 
@@ -45,8 +51,10 @@ function parseAyat(raw) {
   return out;
 }
 
-export default function AyatChips({ ayat, showEmpty = false }) {
-  const { isArabic } = useLanguage();
+export default function AyatChips({ ayat, showEmpty = false, isArabic: isArabicProp }) {
+  const ctx = useLanguage();
+  // Prefer an explicit prop; fall back to the global context when it isn't given.
+  const isArabic = isArabicProp !== undefined ? isArabicProp : ctx.isArabic;
   const refs = parseAyat(ayat);
 
   if (refs.length === 0) {
@@ -66,7 +74,8 @@ export default function AyatChips({ ayat, showEmpty = false }) {
           href={r.href}
           target="_blank"
           rel="noopener noreferrer"
-          title={`Open Qur'an ${r.label} on Quran.com`}          style={{
+          title={`Open Qur'an ${r.label} on Quran.com`}
+          style={{
             display: 'inline-flex',
             alignItems: 'center',
             padding: '4px 12px',

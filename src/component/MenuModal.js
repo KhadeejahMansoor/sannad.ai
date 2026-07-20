@@ -424,6 +424,12 @@ export default function MenuModal({
                 </div>
               )}
 
+              {compiler && !booksLoading && books.length > 0 && (
+                <div className="text-[11px] font-semibold tracking-wide text-gray-400 uppercase px-1 mb-2 mt-1">
+                  Books
+                </div>
+              )}
+
               {books.filter(matches).map((book) => {
                 const bookVal = book.value;
                 const isOpen = openBook === bookVal;
@@ -434,10 +440,10 @@ export default function MenuModal({
                     {/* Book row */}
                     <div
                       onClick={() => handleBookClick(bookVal)}
-                      className={`flex items-center gap-2 px-1 py-[10px] text-sm font-medium cursor-pointer border-b border-[#F0EAE5] transition-colors ${
+                      className={`flex items-center gap-2 px-3 py-[10px] text-sm font-medium cursor-pointer rounded-[8px] transition-colors ${
                         isSelectedBook || isOpen
-                          ? 'text-[#523230]'
-                          : 'text-[#523230] hover:text-[#6E4A44]'
+                          ? 'bg-[#F1E9E6] text-black'
+                          : 'text-black hover:bg-[#FAF5F3]'
                       }`}
                     >
                       {(isSelectedBook || isOpen) && (
@@ -449,6 +455,11 @@ export default function MenuModal({
                     {/* Chapters under the open book */}
                     {isOpen && (
                       <div className="mr-3 mt-[7px] flex flex-col gap-[7px]">
+                        {chapters.length > 0 && (
+                          <div className="text-[11px] font-semibold tracking-wide text-gray-400 uppercase px-1 mb-1 mt-1">
+                            Chapters
+                          </div>
+                        )}
                         {chapters.length === 0 && (
                           <div className="text-xs italic text-gray-400 px-2 py-1" dir="ltr">
                             No chapters available
@@ -463,10 +474,10 @@ export default function MenuModal({
                             <div key={chapterVal}>
                               <div
                                 onClick={() => handleChapterClick(chapterVal)}
-                                className={`flex items-center gap-2 px-1 py-[9px] text-[13px] cursor-pointer border-b border-[#F0EAE5] transition-colors ${
+                                className={`flex items-center gap-2 px-3 py-[9px] text-[13px] cursor-pointer rounded-[8px] transition-colors ${
                                   isSelectedChapter || chapOpen
-                                    ? 'text-[#523230] font-medium'
-                                    : 'text-[#523230] hover:text-[#6E4A44]'
+                                    ? 'bg-[#F1E9E6] text-black font-medium'
+                                    : 'text-black hover:bg-[#FAF5F3]'
                                 }`}
                               >
                                 {(isSelectedChapter || chapOpen) && (
@@ -478,6 +489,11 @@ export default function MenuModal({
                               {/* Sections under the open chapter */}
                               {chapOpen && (
                                 <div className="mr-3 mt-[7px] flex flex-col gap-[6px]">
+                                  {sections.length > 0 && (
+                                    <div className="text-[11px] font-semibold tracking-wide text-gray-400 uppercase px-1 mb-1 mt-1">
+                                      Sections
+                                    </div>
+                                  )}
                                   {sections.length === 0 && (
                                     <div className="text-xs italic text-gray-400 px-4 py-1" dir="ltr">
                                       No sections
@@ -493,10 +509,10 @@ export default function MenuModal({
                                       <div
                                         key={sectionVal}
                                         onClick={() => handleSectionClick(sectionVal)}
-                                        className={`flex items-center gap-2 px-1 py-[8px] text-xs cursor-pointer border-b border-[#F0EAE5] transition-colors ${
+                                        className={`flex items-center gap-2 px-3 py-[8px] text-xs cursor-pointer rounded-[8px] transition-colors ${
                                           isSelectedSection
-                                            ? 'text-[#523230] font-medium'
-                                            : 'text-[#6B5B55] hover:text-[#6E4A44]'
+                                            ? 'bg-[#F1E9E6] text-black font-medium'
+                                            : 'text-black hover:bg-[#FAF5F3]'
                                         }`}
                                       >
                                         {isSelectedSection && (

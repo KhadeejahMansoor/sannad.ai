@@ -409,7 +409,7 @@ export default function MenuModal({
             )}
 
             {/* List body */}
-            <div className="flex-1 overflow-auto px-4 py-2 scrollbar-hide" dir="rtl" lang="ar">
+            <div className="flex-1 overflow-auto px-4 py-2 scrollbar-hide" dir="ltr" lang="en">
               {!compiler && (
                 <div className="text-sm text-gray-500 italic px-2 py-4" dir="ltr">
                   No compiler selected.
@@ -434,7 +434,7 @@ export default function MenuModal({
                     {/* Book row */}
                     <div
                       onClick={() => handleBookClick(bookVal)}
-                      className={`flex items-center gap-2 px-[18px] py-[12px] text-base font-medium cursor-pointer rounded-full border transition-colors ${
+                      className={`flex items-center gap-2 px-[14px] py-[9px] text-sm font-medium cursor-pointer rounded-full border transition-colors ${
                         isSelectedBook || isOpen
                           ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230]'
                           : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
@@ -463,7 +463,7 @@ export default function MenuModal({
                             <div key={chapterVal}>
                               <div
                                 onClick={() => handleChapterClick(chapterVal)}
-                                className={`flex items-center gap-2 px-[18px] py-[11px] text-[15px] cursor-pointer rounded-full border transition-colors ${
+                                className={`flex items-center gap-2 px-[14px] py-[8px] text-[13px] cursor-pointer rounded-full border transition-colors ${
                                   isSelectedChapter || chapOpen
                                     ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230] font-medium'
                                     : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
@@ -493,7 +493,7 @@ export default function MenuModal({
                                       <div
                                         key={sectionVal}
                                         onClick={() => handleSectionClick(sectionVal)}
-                                        className={`flex items-center gap-2 px-[18px] py-[9px] text-sm cursor-pointer rounded-full border transition-colors ${
+                                        className={`flex items-center gap-2 px-[14px] py-[7px] text-xs cursor-pointer rounded-full border transition-colors ${
                                           isSelectedSection
                                             ? 'bg-[#EFE7E4] border-[#E4DCD6] text-[#523230] font-medium'
                                             : 'bg-white border-[#E4DCD6] text-[#6B5B55] hover:bg-[#FAF5F3]'

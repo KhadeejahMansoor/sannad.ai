@@ -725,7 +725,7 @@ function InlinePanels({ hadith }) {
             { type: 'Chapter', value: chapter },
             { type: 'Section', value: section },
             { type: 'Hadith', value: `al-Jami al-Kamil ${hadithNumber}` },
-          ].map((item, i) => (
+          ].filter((item) => item.type !== 'Section' || item.value).map((item, i) => (
             <div key={i} className="flex items-start py-2 gap-3">
               <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
                 <RowIcon type={item.type} />

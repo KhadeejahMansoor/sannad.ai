@@ -92,27 +92,29 @@ export default function BottomPopupMenu({
   animate={{ y: 0 }}
   exit={{ y: '100%' }}
   transition={{ duration: 0.3 }}
-  className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full bg-white px-8 pt-20 pb-16 rounded-t-[12px]"
+  className="md:hidden fixed bottom-0 left-0 right-0 z-50 w-full bg-[#F6F4F1] px-5 pt-4 pb-10 rounded-t-[22px]"
 >
+            {/* Grab handle */}
+            <div className="mx-auto mb-5 h-[5px] w-10 rounded-full bg-[#DDD8D0]" />
 
-            <div className="grid grid-cols-2 gap-x-8 gap-y-8 justify-items-center">
-              <PopupItem
-                icon={<Image src="/bookIcon.svg" alt="Hadith Icon" width={26} height={24} />}
+            <div className="flex flex-col gap-[10px]">
+              <PopupRow
+                icon={<Image src="/bookIcon.svg" alt="" width={22} height={20} />}
                 label="Hadith collections"
                 onClick={onCollectionClick}
               />
-              <PopupItem
-                icon={<CiGlobe size={27} />}
+              <PopupRow
+                icon={<CiGlobe size={22} />}
                 label="Language"
                 onClick={handleLanguageClickMobile}
               />
-              <PopupItem
-                icon={<FiBox size={27} />}
+              <PopupRow
+                icon={<FiBox size={22} />}
                 label="About hadith"
                 onClick={handleAboutHadithClick}
               />
-              <PopupItem
-                icon={<RiBuilding2Line size={26} />}
+              <PopupRow
+                icon={<RiBuilding2Line size={22} />}
                 label="About us"
                 onClick={onAboutUsClick}
               />
@@ -178,7 +180,27 @@ export default function BottomPopupMenu({
   );
 }
 
-/* ───── PopupItem for Mobile ───── */
+/* ───── PopupRow for Mobile (list-row design) ───── */
+function PopupRow({ icon, label, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      className="flex items-center gap-3 bg-white rounded-[16px] border border-[#E4DCD6] px-[14px] py-[13px] cursor-pointer transition-colors hover:bg-[#FAF5F3] active:scale-[0.99]"
+    >
+      <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-[12px] bg-[#ECEAE4] text-[#523230]">
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0 text-[14px] font-medium text-[#523230]">
+        {label}
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
+        <path d="M9 6l6 6-6 6" stroke="#9A8A85" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
+}
+
+/* ───── PopupItem for Mobile (legacy grid tile, no longer used) ───── */
 function PopupItem({ icon, label, onClick }) {
   const [isHovered, setIsHovered] = useState(false);
 

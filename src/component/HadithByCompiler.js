@@ -620,7 +620,7 @@ export default function HadithByCompiler() {
           <MenuModal
             onClose={() => setIsMenuOpen(false)}
             compiler={compilerArabic}
-            compilerLabel={compilerLabel}
+            compilerLabel={compilerFor(compilerArabic, language)}
           />
         </div>
       )}

@@ -70,17 +70,17 @@ export default function FilterSection({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="w-full bg-white rounded-none p-4"
+          className="w-full bg-white rounded-t-[22px] p-4"
         >
-          <div className="flex flex-wrap gap-5 mb-9 mt-4">
+          <div className="flex flex-wrap gap-2 mb-9 mt-4 justify-center">
             {gradePills.map((key) => (
               <button
                 key={key}
                 onClick={() => toggleItem(key, selectedTags, setSelectedTags)}
-                className={`w-[106px] h-[38px] rounded-[20px] text-sm font-medium transition-all duration-200 flex items-center justify-center ${
+                className={`h-[38px] px-5 rounded-full text-sm font-medium transition-all duration-200 flex items-center justify-center border ${
                   selectedTags.includes(key)
-                    ? 'bg-[#523230] text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-[#523230] border-[#523230] text-white'
+                    : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
                 }`}
               >
                 {gradeLabel(key, language)}
@@ -88,17 +88,17 @@ export default function FilterSection({
             ))}
           </div>
 
-          <hr className="my-4 border-gray-300 w-[350px] mx-auto" />
+          <hr className="my-4 border-[#E4DCD6] w-[350px] mx-auto" />
 
-          <div className="grid grid-cols-3 gap-5 mb-8 mt-8">
+          <div className="flex flex-wrap gap-2 mb-8 mt-8 justify-center">
             {scholarPills.map((key) => (
               <button
                 key={key}
                 onClick={() => toggleItem(key, selectedScholars, setSelectedScholars)}
-                className={`w-[106px] h-[38px] rounded-[20px] text-sm font-medium transition-all duration-200 flex items-center justify-center ${
+                className={`h-[38px] px-5 rounded-full text-sm font-medium transition-all duration-200 flex items-center justify-center border ${
                   selectedScholars.includes(key)
-                    ? 'bg-[#523230] text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-[#523230] border-[#523230] text-white'
+                    : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
                 }`}
               >
                 {compilerLabel(key, language)}
@@ -111,7 +111,7 @@ export default function FilterSection({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={isArabic ? '…ابحث في المجموعات' : 'Search hadith collections…'}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:border-gray-400 focus:ring-1 focus:ring-[#EDEDED]"
+            className="w-full border border-[#E4DCD6] rounded-[13px] px-4 py-3 text-sm text-[#523230] outline-none focus:border-[#523230] focus:ring-1 focus:ring-[#EDE4E1] placeholder:text-[#9A8A85]"
           />
 
           {searchQuery && (

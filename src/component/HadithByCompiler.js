@@ -84,6 +84,21 @@ export default function HadithByCompiler() {
   const chapterRefs = useRef({});
   const sidebarRef = useRef(null);
 
+  // Re-apply the URL's book/chapter/section whenever they change. Without this,
+  // pressing "Go" in the mobile MenuModal (which router.push-es to this same
+  // page with new params) updates the URL but NOT the filter state — the
+  // useState initializers only run once, at mount, and same-page navigations
+  // don't remount. This mirrors the current params into state on every change.
+  useEffect(() => {
+    setSelectedBook(urlBook || null);
+    setSelectedChapter(urlChapter || null);
+    setSelectedSection(urlSection || null);
+    setExpandedBook(urlBook || null);
+    setExpandedChapter(urlChapter || null);
+    setPage(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlBook, urlChapter, urlSection]);
+
   // Reset selections when compiler changes — but skip the very first mount,
   // because we want URL-supplied book/chapter/section to survive.
   // The same didMount ref is used for the book/chapter/section reset effects

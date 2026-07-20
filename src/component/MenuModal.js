@@ -425,7 +425,7 @@ export default function MenuModal({
               )}
 
               {compiler && !booksLoading && books.length > 0 && (
-                <div className="text-[11px] font-semibold tracking-wide text-gray-400 uppercase px-1 mb-2 mt-1">
+                <div className="text-[11px] font-semibold tracking-wide text-gray-400 px-1 mb-2 mt-1">
                   Books
                 </div>
               )}
@@ -456,7 +456,7 @@ export default function MenuModal({
                     {isOpen && (
                       <div className="mr-3 mt-[7px] flex flex-col gap-[7px]">
                         {chapters.length > 0 && (
-                          <div className="text-[11px] font-semibold tracking-wide text-gray-400 uppercase px-1 mb-1 mt-1">
+                          <div className="text-[11px] font-semibold tracking-wide text-gray-400 px-1 mb-1 mt-1">
                             Chapters
                           </div>
                         )}
@@ -490,7 +490,7 @@ export default function MenuModal({
                               {chapOpen && (
                                 <div className="mr-3 mt-[7px] flex flex-col gap-[6px]">
                                   {sections.length > 0 && (
-                                    <div className="text-[11px] font-semibold tracking-wide text-gray-400 uppercase px-1 mb-1 mt-1">
+                                    <div className="text-[11px] font-semibold tracking-wide text-gray-400 px-1 mb-1 mt-1">
                                       Sections
                                     </div>
                                   )}

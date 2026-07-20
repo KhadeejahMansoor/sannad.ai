@@ -6,6 +6,7 @@ import { AnimatePresence } from 'framer-motion';
 import FilterPopup from './FilterPopup';
 import { useLanguages } from '@/hooks/useData';
 import { useLanguage } from '../lib/LanguageContext';
+import { stripArabicDiacritics } from '../lib/arabic';
 
 export default function Header({ onEdit, onMenu }) {
   // The desktop language bar lives in THIS file — it is not <LanguageMenu>,
@@ -376,6 +377,7 @@ export default function Header({ onEdit, onMenu }) {
                         ? 'bg-[#523230] text-white'
                         : 'text-black hover:bg-gray-200'
                   }`}
+                  style={{ fontFamily: "'Noto Naskh Arabic', serif" }}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (disabled) return;
@@ -383,7 +385,7 @@ export default function Header({ onEdit, onMenu }) {
                     setShowLangBar(false);
                   }}
                 >
-                  {lang.native_name}
+                  {stripArabicDiacritics(lang.native_name)}
                 </button>
               );
             })}

@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { useLanguage } from '../lib/LanguageContext';
 import { useLanguages } from '../hooks/useData';
 import { gradeLabel, compilerLabel } from '../lib/i18n';
+import { stripArabicDiacritics } from '../lib/arabic';
 
 /* ───── Desktop‑only search box ───── */
 const DesktopSearchBox = ({ searchText, setSearchText, onSearchClick, onFilterClick, placeholder = 'Search hadith...' }) => (
@@ -296,8 +297,9 @@ export default function FrontScreen() {
                           ? 'bg-[#523230] text-white'
                           : 'text-black hover:bg-gray-200'
                     }`}
+                    style={{ fontFamily: "'Noto Naskh Arabic', serif" }}
                   >
-                    {lang.native_name}
+                    {stripArabicDiacritics(lang.native_name)}
                   </button>
                 );
               })}

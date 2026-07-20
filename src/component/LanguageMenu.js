@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { useLanguages } from '@/hooks/useData';
 import { useLanguage } from '@/lib/LanguageContext';
+import { stripArabicDiacritics } from '@/lib/arabic';
 
 export default function LanguageMenu({ onClose }) {
   const popupRef = useRef();
@@ -26,7 +27,7 @@ export default function LanguageMenu({ onClose }) {
 
     const link = document.createElement('link');
     link.href =
-      'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600&display=swap';
+      'https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;700&display=swap';
     link.rel = 'stylesheet';
     link.id = 'noto-arabic-font';
 
@@ -68,7 +69,7 @@ export default function LanguageMenu({ onClose }) {
     <>
       <style jsx global>{`
         .font-noto-arabic {
-          font-family: 'Noto Sans Arabic';
+          font-family: 'Noto Naskh Arabic';
           font-weight: 500 !important;
         }
       `}</style>
@@ -97,7 +98,7 @@ export default function LanguageMenu({ onClose }) {
             {activeLanguages.map((lang) => (
               <div key={lang.code} className="aspect-[107/104] w-full">
                 <LanguageButton
-                  label={lang.native_name}
+                  label={stripArabicDiacritics(lang.native_name)}
                   onClick={() => handleLanguageSelect(lang)}
                   // Highlight what's ACTUALLY active, read from the context.
                   isSelected={language === lang.code}

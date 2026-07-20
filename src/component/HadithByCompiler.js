@@ -578,11 +578,12 @@ export default function HadithByCompiler() {
                         hadithId={`${compilerFor(hadith.compiler, 'en')} ${hadith.hadith_number}`}
                         grade={gradeFor(hadith.grade, 'en')}
                         finalGrader={hadith.final_grader}
-                        /* Arabic side */
-                        narratorAr={hadith.arabic_intro_clause}
-                        contentAr={hadith.hadith_text_arabic}
-                        hadithIdAr={`${hadith.compiler} ${hadith.hadith_number}`}
-                        gradeAr={hadith.grade}
+                        /* Arabic side — mobile shows English only by default;
+                           Arabic only when the Arabic language is selected. */
+                        narratorAr={isArabic ? hadith.arabic_intro_clause : undefined}
+                        contentAr={isArabic ? hadith.hadith_text_arabic : undefined}
+                        hadithIdAr={isArabic ? `${hadith.compiler} ${hadith.hadith_number}` : undefined}
+                        gradeAr={isArabic ? hadith.grade : undefined}
                         /* Behavior */
                         hadithLinkId={hadith.hadith_id}
                         isExpanded={expanded}

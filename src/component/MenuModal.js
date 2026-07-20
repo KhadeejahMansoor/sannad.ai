@@ -430,7 +430,7 @@ export default function MenuModal({
                 </div>
               )}
 
-              {books.filter(matches).map((book) => {
+              {books.filter(matches).filter((book) => !openBook || book.value === openBook).map((book) => {
                 const bookVal = book.value;
                 const isOpen = openBook === bookVal;
                 const isSelectedBook = sel.book === bookVal && !sel.chapter && !sel.section;
@@ -465,7 +465,7 @@ export default function MenuModal({
                             No chapters available
                           </div>
                         )}
-                        {chapters.filter(matches).map((chapter) => {
+                        {chapters.filter(matches).filter((chapter) => !openChapter || chapter.value === openChapter).map((chapter) => {
                           const chapterVal = chapter.value;
                           const chapOpen = openChapter === chapterVal;
                           const isSelectedChapter =
@@ -499,7 +499,7 @@ export default function MenuModal({
                                       No sections
                                     </div>
                                   )}
-                                  {sections.filter(matches).map((section) => {
+                                  {sections.filter(matches).filter((section) => !sel.section || section.value === sel.section).map((section) => {
                                     const sectionVal = section.value;
                                     const isSelectedSection =
                                       sel.book === bookVal &&

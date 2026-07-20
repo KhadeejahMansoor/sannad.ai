@@ -298,32 +298,34 @@ export default function MenuModal({
     setIsHashModalOpen(true);
   };
 
-  // Tapping a book: toggle it open/closed. Mark it as the current selection
-  // (book level) and clear any chapter/section selection.
+  // Tapping a book: open it and select it. Clears any chapter/section.
   const handleBookClick = (book) => {
     if (openBook === book) {
+      // Tapping the already-open book collapses back to the full list.
       setOpenBook(null);
       setOpenChapter(null);
+      setSel({ book: null, chapter: null, section: null });
     } else {
       setOpenBook(book);
       setOpenChapter(null);
+      setSel({ book, chapter: null, section: null });
     }
-    setSel({ book, chapter: null, section: null });
   };
 
-  // Tapping a chapter: toggle it open/closed; selection moves down to chapter.
+  // Tapping a chapter: open it, keep the book, clear section.
   const handleChapterClick = (chapter) => {
     if (openChapter === chapter) {
       setOpenChapter(null);
+      setSel((prev) => ({ book: prev.book, chapter: null, section: null }));
     } else {
       setOpenChapter(chapter);
+      setSel((prev) => ({ book: prev.book, chapter, section: null }));
     }
-    setSel({ book: openBook, chapter, section: null });
   };
 
-  // Tapping a section: leaf — selection moves down to section. No expansion below.
+  // Tapping a section: leaf — keep book + chapter, set section.
   const handleSectionClick = (section) => {
-    setSel({ book: openBook, chapter: openChapter, section });
+    setSel((prev) => ({ book: prev.book, chapter: prev.chapter, section }));
   };
 
   const handleGo = () => {

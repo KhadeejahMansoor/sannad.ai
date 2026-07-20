@@ -72,8 +72,12 @@ function styleFor(compiler) {
   return key ? COMPILER_STYLES[key] : DEFAULT_STYLE;
 }
 
-export default function MatchedReferenceChips({ value, onSelect, emptyText }) {
-  const { isArabic } = useLanguage();
+export default function MatchedReferenceChips({ value, onSelect, emptyText, isArabic: isArabicProp }) {
+  const ctx = useLanguage();
+  // Prefer an explicit prop; fall back to the global context when it isn't given.
+  // DetailView has its OWN local Arabic toggle, separate from the global context,
+  // so without this the chips would ignore that toggle and stay English.
+  const isArabic = isArabicProp !== undefined ? isArabicProp : ctx.isArabic;
 
   const chips = (value || "")
     // split on both Latin and Arabic commas, plus semicolons / newlines

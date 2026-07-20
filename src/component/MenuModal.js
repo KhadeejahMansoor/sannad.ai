@@ -9,6 +9,7 @@ import {
   useSectionsByChapter,
 } from '@/hooks/useData';
 import { useScrollLock } from '../lib/useScrollLock';
+import { useLanguage, pickLabel } from '../lib/LanguageContext';
 
 // ─── Hash slider modal (unchanged) ─────────────────────────────────────
 // Number-pad style modal for jumping directly to a hadith number.
@@ -239,6 +240,7 @@ export default function MenuModal({
   compilerLabel,       // English label for the header
 }) {
   const router = useRouter();
+  const { language } = useLanguage();
   const [searchText, setSearchText] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
@@ -339,9 +341,11 @@ export default function MenuModal({
   };
 
   // Filter applied to all three lists when the user types in the search box.
-  const matches = (s) =>
-    !searchText.trim() ||
-    (s && s.toLowerCase().includes(searchText.trim().toLowerCase()));
+  const matches = (item) => {
+    if (!searchText.trim()) return true;
+    const label = pickLabel(item, language) || '';
+    return label.toLowerCase().includes(searchText.trim().toLowerCase());
+  };
 
   return (
     <>
@@ -420,20 +424,21 @@ export default function MenuModal({
               )}
 
               {books.filter(matches).map((book) => {
-                const isOpen = openBook === book;
-                const isSelectedBook = sel.book === book && !sel.chapter && !sel.section;
+                const bookVal = book.value;
+                const isOpen = openBook === bookVal;
+                const isSelectedBook = sel.book === bookVal && !sel.chapter && !sel.section;
 
                 return (
-                  <div key={book}>
+                  <div key={bookVal}>
                     {/* Book row */}
                     <div className="mb-2">
                       <span
-                        onClick={() => handleBookClick(book)}
+                        onClick={() => handleBookClick(bookVal)}
                         className={`inline-block h-[33px] px-3 leading-[33px] text-base font-bold text-black cursor-pointer rounded-[10px] transition-colors ${
                           isSelectedBook ? 'bg-[#F2F2F2]' : 'hover:bg-zinc-100'
                         }`}
                       >
-                        {book}
+                        {pickLabel(book, language)}
                       </span>
                     </div>
 
@@ -446,19 +451,20 @@ export default function MenuModal({
                           </div>
                         )}
                         {chapters.filter(matches).map((chapter) => {
-                          const chapOpen = openChapter === chapter;
+                          const chapterVal = chapter.value;
+                          const chapOpen = openChapter === chapterVal;
                           const isSelectedChapter =
-                            sel.book === book && sel.chapter === chapter && !sel.section;
+                            sel.book === bookVal && sel.chapter === chapterVal && !sel.section;
                           return (
-                            <div key={chapter}>
+                            <div key={chapterVal}>
                               <div className="mb-2">
                                 <span
-                                  onClick={() => handleChapterClick(chapter)}
+                                  onClick={() => handleChapterClick(chapterVal)}
                                   className={`inline-block h-[33px] px-4 leading-[33px] text-black text-base font-normal cursor-pointer rounded-[12px] transition-colors ${
                                     isSelectedChapter ? 'bg-[#F2F2F2]' : 'hover:bg-zinc-100'
                                   }`}
                                 >
-                                  {chapter}
+                                  {pickLabel(chapter, language)}
                                 </span>
                               </div>
 
@@ -471,19 +477,20 @@ export default function MenuModal({
                                     </div>
                                   )}
                                   {sections.filter(matches).map((section) => {
+                                    const sectionVal = section.value;
                                     const isSelectedSection =
-                                      sel.book === book &&
-                                      sel.chapter === chapter &&
-                                      sel.section === section;
+                                      sel.book === bookVal &&
+                                      sel.chapter === chapterVal &&
+                                      sel.section === sectionVal;
                                     return (
-                                      <div key={section}>
+                                      <div key={sectionVal}>
                                         <span
-                                          onClick={() => handleSectionClick(section)}
+                                          onClick={() => handleSectionClick(sectionVal)}
                                           className={`inline-block px-4 py-1.5 text-sm text-gray-700 cursor-pointer rounded-[12px] transition-colors leading-tight ${
                                             isSelectedSection ? 'bg-[#F2F2F2]' : 'hover:bg-[#F2F2F2]'
                                           }`}
                                         >
-                                          {section}
+                                          {pickLabel(section, language)}
                                         </span>
                                       </div>
                                     );

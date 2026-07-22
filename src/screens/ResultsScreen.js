@@ -252,7 +252,7 @@ function InlinePanels({ hadith }) {
     { type: 'Book',    label: isArabic ? 'الكتاب' : 'Book',    value: book },
     { type: 'Chapter', label: isArabic ? 'الباب'  : 'Chapter', value: chapter },
     { type: 'Section', label: isArabic ? 'الفصل'  : 'Section', value: section },
-    { type: 'Hadith',  label: isArabic ? 'الحديث' : 'Hadith',
+    { type: 'Hadith',  label: isArabic ? 'الترقيم' : 'Numbering',
       value: buildHadithLabel(hadith, {
         isArabic,
         fallback: isArabic ? `الجامع الكامل ${hadithNumber}` : `al-Jami al-Kamil ${hadithNumber}`,

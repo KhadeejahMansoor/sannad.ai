@@ -795,7 +795,7 @@ function InlinePanels({ hadith }) {
             { type: 'Book', value: book },
             { type: 'Chapter', value: chapter },
             { type: 'Section', value: section },
-            { type: 'Hadith', value: buildHadithLabel(hadith, {
+            { type: 'Hadith', label: isArabic ? 'الترقيم' : 'Numbering', value: buildHadithLabel(hadith, {
               isArabic,
               fallback: `al-Jami al-Kamil ${hadithNumber}`,
             }) },
@@ -804,7 +804,7 @@ function InlinePanels({ hadith }) {
               <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
                 <RowIcon type={item.type} />
               </span>
-              <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.type}</span>
+              <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.label || item.type}</span>
               <div className="flex-1 text-sm text-black">{item.value ? <HadithText text={item.value} /> : '—'}</div>
             </div>
           ))}

@@ -310,13 +310,13 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  { type: "Book", title: getField(book, arabicFields.book) },
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
- { type: "Hadith", title: hadithRowLabel },
+ { type: "Hadith", label: isArabic || selectedLanguage === 'ar' ? 'الترقيم' : 'Numbering', title: hadithRowLabel },
  ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || !isBlank(item.title)).map((item, i) => (
  <div key={i} className="flex items-start py-2 gap-3">
  <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
  <RowIcon type={item.type} />
  </span>
- <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.type}</span>
+ <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.label || item.type}</span>
  <div className={`flex-1 text-sm text-black ${getFont()}`} dir={getDir()}>
  {item.title ? <HadithText text={item.title} /> : '—'}
  </div>
@@ -374,7 +374,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  )}
  <DetailRow
  label="Hadith"
- display={isArabic ? 'الحديث' : 'Hadith'}
+ display={isArabic ? 'الترقيم' : 'Numbering'}
  value={hadithRowLabel}
  font={getFont()}
  last
@@ -540,10 +540,10 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  { type: "Book", title: getField(book, arabicFields.book) },
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
- { type: "Hadith", title: hadithRowLabel },
+ { type: "Hadith", label: isArabic || selectedLanguage === 'ar' ? 'الترقيم' : 'Numbering', title: hadithRowLabel },
  ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || !isBlank(item.title)).map((item, i) => (
  <div key={i} className="flex items-start py-1">
- <span className="text-xs text-gray-400 w-[60px]">{item.type}</span>
+ <span className="text-xs text-gray-400 w-[60px]">{item.label || item.type}</span>
  <div className={`flex-1 text-black text-xs ${getFont()}`} dir={getDir()}>
  {item.title ? <HadithText text={item.title} /> : '—'}
  </div>

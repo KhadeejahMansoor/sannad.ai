@@ -225,12 +225,8 @@ export function useChapters() {
 // Arabic DB value for the Azami collection.
 const AZAMI_DB = 'الأعظمي';
 
-// Physical tables behind the search. If these names are wrong, the direct
-// lookup below fails safely and the old RPC path takes over (see console warn).
-const HADITH_TABLES = {
-  azami: 'azami_hadiths',
-  sevenbooks: 'sevenbooks_hadiths',
-};
+// Single table holding every collection.
+const HADITH_TABLE = 'hadiths';
 
 // Exact lookup for "compiler + hadith number".
 //
@@ -243,29 +239,20 @@ const HADITH_TABLES = {
 // Returns null (not []) when it cannot answer, so the caller can fall back.
 async function fetchByCompilerAndNumber(supabase, compilerToDb, hit) {
   const dbCompiler = compilerToDb(hit.compiler);
-  const table = dbCompiler === AZAMI_DB ? HADITH_TABLES.azami : HADITH_TABLES.sevenbooks;
 
   try {
-    let { data, error } = await supabase
-      .from(table)
+    // PostgREST coerces the string to the column's type, so this works whether
+    // hadith_number is integer or text.
+    const { data, error } = await supabase
+      .from(HADITH_TABLE)
       .select('*')
       .eq('compiler', dbCompiler)
       .eq('hadith_number', hit.number)
       .limit(50);
 
-    // Some tables (e.g. a single-compiler table) may have no `compiler` column.
-    // Retry once without that predicate before giving up.
     if (error) {
-      const retry = await supabase
-        .from(table)
-        .select('*')
-        .eq('hadith_number', hit.number)
-        .limit(50);
-      if (retry.error) {
-        console.warn('[useSearchHadiths] direct lookup failed on', table, '-', error.message);
-        return null;
-      }
-      data = retry.data;
+      console.warn('[useSearchHadiths] direct lookup failed -', error.message);
+      return null;
     }
 
     if (!data || data.length === 0) return null;
@@ -361,7 +348,7 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
             f_grades:    gradesArr.length    ? gradesArr.map(gradeToDb)        : null,
             f_book: null,
             f_chapter: null,
-            max_rows: compilerNumberHit ? 5000 : 100,
+            max_rows: 100,
           });
 
           if (rpcError) throw rpcError;

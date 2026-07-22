@@ -148,7 +148,7 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
           >
             {/* Fixed-width label column keeps the pills aligned down the panel.
                 min-w rather than w so longer Arabic names aren't clipped. */}
-            <span className="min-w-[76px] flex-shrink-0 text-xs text-[#9A8A85] text-start">
+            <span className="min-w-[76px] flex-shrink-0 text-xs font-medium text-[#523230] text-start">
               {name}
             </span>
 

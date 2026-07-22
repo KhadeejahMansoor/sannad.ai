@@ -222,6 +222,60 @@ export function useChapters() {
 // CHANGED: now accepts arrays for compilers + grades (was scalar single values).
 // Backwards-compatible: a string still works because the API client coerces to arrays.
 // Triggers a fetch when ANY of (searchText, compilers, grades) is non-empty.
+// Arabic DB value for the Azami collection.
+const AZAMI_DB = 'الأعظمي';
+
+// Physical tables behind the search. If these names are wrong, the direct
+// lookup below fails safely and the old RPC path takes over (see console warn).
+const HADITH_TABLES = {
+  azami: 'azami_hadiths',
+  sevenbooks: 'sevenbooks_hadiths',
+};
+
+// Exact lookup for "compiler + hadith number".
+//
+// Why this exists: search_hadiths caps results at max_rows, so filtering its
+// output for a hadith number only ever worked for numbers that happened to
+// land inside that first page (roughly 1-100). "bukhari 110" and above always
+// came back empty. This asks the database for the exact row instead, so the
+// cap is irrelevant.
+//
+// Returns null (not []) when it cannot answer, so the caller can fall back.
+async function fetchByCompilerAndNumber(supabase, compilerToDb, hit) {
+  const dbCompiler = compilerToDb(hit.compiler);
+  const table = dbCompiler === AZAMI_DB ? HADITH_TABLES.azami : HADITH_TABLES.sevenbooks;
+
+  try {
+    let { data, error } = await supabase
+      .from(table)
+      .select('*')
+      .eq('compiler', dbCompiler)
+      .eq('hadith_number', hit.number)
+      .limit(50);
+
+    // Some tables (e.g. a single-compiler table) may have no `compiler` column.
+    // Retry once without that predicate before giving up.
+    if (error) {
+      const retry = await supabase
+        .from(table)
+        .select('*')
+        .eq('hadith_number', hit.number)
+        .limit(50);
+      if (retry.error) {
+        console.warn('[useSearchHadiths] direct lookup failed on', table, '-', error.message);
+        return null;
+      }
+      data = retry.data;
+    }
+
+    if (!data || data.length === 0) return null;
+    return data.map((r) => ({ ...r, score: 1 }));
+  } catch (err) {
+    console.warn('[useSearchHadiths] direct lookup threw:', err.message);
+    return null;
+  }
+}
+
 export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
   // Normalize to arrays for stable dependency comparison
   const compilersArr = Array.isArray(compilers) ? compilers : (compilers ? [compilers] : []);
@@ -288,30 +342,41 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
           }
         }
 
-        const { data: rows, error: rpcError } = await supabase.rpc('search_hadiths', {
-          q: compilerNumberHit ? null : (searchText ? searchText.trim() : null),
-          f_compilers: compilerNumberHit
-            ? [compilerToDb(compilerNumberHit.compiler)]
-            : (compilersArr.length ? compilersArr.map(compilerToDb) : null),
-          f_grades:    gradesArr.length    ? gradesArr.map(gradeToDb)        : null,
-          f_book: null,
-          f_chapter: null,
-          max_rows: 100,
-        });
+        let filteredRows = null;
 
-        if (rpcError) throw rpcError;
+        // Exact compiler+number lookup goes straight to the table. This is not
+        // subject to max_rows, so it works for hadith 7563 as well as hadith 2.
+        if (compilerNumberHit) {
+          filteredRows = await fetchByCompilerAndNumber(supabase, compilerToDb, compilerNumberHit);
+        }
 
-        const filteredRows = compilerNumberHit
-          ? (rows || []).filter(
-              (r) => String(r.hadith_number).trim().toLowerCase() === compilerNumberHit.number.toLowerCase()
-            )
-          : rows;
+        // Everything else — and any lookup the direct query could not answer —
+        // goes through the normal relevance search.
+        if (filteredRows === null) {
+          const { data: rows, error: rpcError } = await supabase.rpc('search_hadiths', {
+            q: compilerNumberHit ? null : (searchText ? searchText.trim() : null),
+            f_compilers: compilerNumberHit
+              ? [compilerToDb(compilerNumberHit.compiler)]
+              : (compilersArr.length ? compilersArr.map(compilerToDb) : null),
+            f_grades:    gradesArr.length    ? gradesArr.map(gradeToDb)        : null,
+            f_book: null,
+            f_chapter: null,
+            max_rows: compilerNumberHit ? 5000 : 100,
+          });
+
+          if (rpcError) throw rpcError;
+
+          filteredRows = compilerNumberHit
+            ? (rows || []).filter(
+                (r) => String(r.hadith_number).trim().toLowerCase() === compilerNumberHit.number.toLowerCase()
+              )
+            : rows;
+        }
 
         // Shape rows to the fields the cards read — same names /api/search used,
         // so ResultsScreen needs no changes.
-        const AZAMI = 'الأعظمي';
         const data = (filteredRows || []).map((r) => ({
-          hadith_id: `${r.compiler === AZAMI ? 'azami' : 'sevenbooks'}-${r.id}`,
+          hadith_id: `${r.compiler === AZAMI_DB ? 'azami' : 'sevenbooks'}-${r.id}`,
           hadith_number: r.hadith_number,
           compiler: r.compiler,
           grade: r.final_grade,

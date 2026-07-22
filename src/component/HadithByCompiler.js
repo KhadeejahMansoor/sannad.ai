@@ -674,10 +674,19 @@ export default function HadithByCompiler() {
                       {/* Desktop gets the two-column panel the old slider used;
                           mobile keeps the stacked tabs, which fit a narrow screen. */}
                       {expanded && (
+                        // The panel and the NEXT hadith's card are both white on the
+                        // same background, so an expanded row ran straight into the
+                        // card below it — Nasai 2's commentary looked like part of
+                        // Nasai 3. The rule closes the row explicitly.
+                        //
                         // paddingBottom, not margin: measureElement reads
                         // offsetHeight, which includes padding but not margin. A
                         // margin here would leave the next row overlapping.
-                        <div style={{ paddingBottom: 24 }}>
+                        <div style={{
+                          paddingBottom: 24,
+                          borderBottom: '1px solid #DDD8D0',
+                          marginBottom: 0,
+                        }}>
                           {isDesktop
                             ? <HadithDetailStatic isOpen hadith={hadith} onClose={() => handleToggleExpand(hadith.hadith_id)} />
                             : <InlinePanels hadith={hadith} />}

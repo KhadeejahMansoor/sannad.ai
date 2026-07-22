@@ -1,14 +1,16 @@
 // Builds the text for the "Hadith" row in the Details panel.
 //
-// Every compiler shows a single number. Malik is the exception: the Muwatta
-// comes down through several recensions, each numbered differently, so the row
+// Most compilers show a single number. Some collections come down through
+// several recensions or editions, each numbered differently, so their row
 // lists all of them side by side —
 //
-//   Laithi 1, Qasim 5, Shaybani 3, Zuhri 7
+//   Malik  -> Laithi 686, Qasim 344, Shaybani 367, Zuhri 851
+//   Ahmad  -> Darussalam 12, Shakir 34
 //
-// Laithi is the primary numbering and lives in `hadith_number`; the other three
-// have their own columns. Any recension missing a number is dropped rather than
-// printed with a blank.
+// The first entry in each list is the primary numbering and lives in
+// `hadith_number`; the rest have their own columns. Any entry with no number is
+// dropped rather than printed blank, so a hadith numbered only in the primary
+// edition just shows that one.
 //
 // Shared by DetailView, ResultsScreen, HadithByCompiler and
 // HadithDetailBottomSheet so mobile and desktop stay identical.
@@ -23,34 +25,51 @@ export const isBlank = (v) => {
 
 export const firstPresent = (...vals) => vals.find((v) => !isBlank(v));
 
-// The compiler value as stored in the DB.
+// Compiler values as stored in the DB.
 const MALIK_DB = '\u0645\u0627\u0644\u0643';
+const AHMAD_DB = '\u0623\u062d\u0645\u062f';
 
-const RECENSIONS = [
-  { column: 'hadith_number',   en: 'Laithi',   ar: '\u0627\u0644\u0644\u064a\u062b\u064a' },
-  { column: 'qasim_number',    en: 'Qasim',    ar: '\u0627\u0644\u0642\u0627\u0633\u0645' },
-  { column: 'shaybani_number', en: 'Shaybani', ar: '\u0627\u0644\u0634\u064a\u0628\u0627\u0646\u064a' },
-  { column: 'zuhri_number',    en: 'Zuhri',    ar: '\u0627\u0644\u0632\u0647\u0631\u064a' },
-];
+// `columns` is a list of candidates, tried in order — column naming has not
+// been consistent across imports, and a name that does not exist simply reads
+// as undefined rather than throwing.
+const RECENSIONS = {
+  [MALIK_DB]: [
+    { columns: ['hadith_number'],                      en: 'Laithi',     ar: '\u0627\u0644\u0644\u064a\u062b\u064a' },
+    { columns: ['qasim_number'],                       en: 'Qasim',      ar: '\u0627\u0644\u0642\u0627\u0633\u0645' },
+    { columns: ['shaybani_number'],                    en: 'Shaybani',   ar: '\u0627\u0644\u0634\u064a\u0628\u0627\u0646\u064a' },
+    { columns: ['zuhri_number'],                       en: 'Zuhri',      ar: '\u0627\u0644\u0632\u0647\u0631\u064a' },
+  ],
+  [AHMAD_DB]: [
+    { columns: ['hadith_number'],                      en: 'Darussalam', ar: '\u062f\u0627\u0631 \u0627\u0644\u0633\u0644\u0627\u0645' },
+    { columns: ['shakir_number', 'shakir_hadith_number', 'shakir'],
+                                                       en: 'Shakir',     ar: '\u0634\u0627\u0643\u0631' },
+  ],
+};
 
-export const isMalik = (compiler) =>
-  String(compiler ?? '').trim() === MALIK_DB;
+const compilerKey = (compiler) => String(compiler ?? '').trim();
+
+export const hasRecensions = (compiler) =>
+  Object.prototype.hasOwnProperty.call(RECENSIONS, compilerKey(compiler));
 
 /**
  * @param {object} hadith    the row, straight from the API
  * @param {object} opts
- * @param {boolean} opts.isArabic  render recension names in Arabic
- * @param {string}  opts.fallback  label to use for every non-Malik compiler
+ * @param {boolean} opts.isArabic  render edition names in Arabic
+ * @param {string}  opts.fallback  label to use when the compiler has no
+ *                                 recension list, or has no numbers at all
  * @returns {string}
  */
 export function buildHadithLabel(hadith, { isArabic = false, fallback = '' } = {}) {
-  if (!isMalik(hadith?.compiler)) return fallback;
+  const list = RECENSIONS[compilerKey(hadith?.compiler)];
+  if (!list) return fallback;
 
-  const parts = RECENSIONS
-    .map((r) => ({ name: isArabic ? r.ar : r.en, num: hadith?.[r.column] }))
+  const parts = list
+    .map((r) => ({
+      name: isArabic ? r.ar : r.en,
+      num: firstPresent(...r.columns.map((c) => hadith?.[c])),
+    }))
     .filter((p) => !isBlank(p.num))
     .map((p) => `${p.name} ${String(p.num).trim()}`);
 
-  // No recension numbers at all — better the ordinary label than an empty row.
   return parts.length ? parts.join(', ') : fallback;
 }

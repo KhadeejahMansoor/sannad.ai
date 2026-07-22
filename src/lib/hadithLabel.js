@@ -8,6 +8,7 @@
 //   Malik      -> Laithi 686, Qasim 344, Shaybani 367, Zuhri 851
 //   Ahmad      -> Darussalam 10630, Shakir 10578
 //   Muslim     -> Darussalam 12, Sunnah.com 34, Daraqutni 56
+//   Bukhari    -> Darussalam 2000, Daraqutni 91
 //   Nasai etc. -> Darussalam 1
 //
 // The first entry in each list is the primary numbering and lives in
@@ -15,7 +16,7 @@
 // dropped rather than printed blank, so a hadith numbered only in the primary
 // edition just shows that one.
 //
-// Compilers absent from RECENSIONS (Bukhari, Azami) keep whatever label the
+// Compilers absent from RECENSIONS (Azami) keep whatever label the
 // calling component already built.
 //
 // Shared by DetailView, ResultsScreen, HadithByCompiler and
@@ -39,6 +40,7 @@ const NASAI_DB      = 'النسائي';
 const TIRMIDHI_DB   = 'الترمذي';
 const IBN_MAJAH_DB  = 'ابن ماجه';
 const ABU_DAWUD_DB  = 'أبو داود';
+const BUKHARI_DB    = 'البخاري';
 
 // Reused by the four single-numbering collections.
 const DARUSSALAM_ONLY = [
@@ -66,6 +68,12 @@ const RECENSIONS = {
     { columns: ['hadith_number'], en: 'Darussalam', ar: 'دار السلام' },
     { columns: ['sunnah_com_number', 'sunnah_number', 'sunnahcom_number'],
                                   en: 'Sunnah.com', ar: 'Sunnah.com' },
+    { columns: ['daraqutni_hadith_number', 'daraqutni_number', 'daraqutni'],
+                                  en: 'Daraqutni',  ar: 'الدارقطني' },
+  ],
+
+  [BUKHARI_DB]: [
+    { columns: ['hadith_number'], en: 'Darussalam', ar: 'دار السلام' },
     { columns: ['daraqutni_hadith_number', 'daraqutni_number', 'daraqutni'],
                                   en: 'Daraqutni',  ar: 'الدارقطني' },
   ],

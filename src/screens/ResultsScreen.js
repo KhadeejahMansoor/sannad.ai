@@ -18,6 +18,22 @@ import MatchedReferenceChips from '@/component/MatchedReferenceChips';
 import AyatChips from '@/component/AyatChips';
 import { useOpenReference } from '@/hooks/useOpenReference';
 
+// A value counts as "not there" if it is null/undefined, blank once trimmed,
+// or one of the placeholder strings the source data uses to mean "nothing".
+// Zero-width and bidi marks are stripped first — an invisible character would
+// otherwise make an empty field look populated.
+const BLANK_TOKENS = new Set(['', '-', '--', '---', '\u2014', '\u2013', 'n/a', 'na', 'none', 'nil', 'null', 'undefined']);
+
+export const isBlank = (v) => {
+  if (v === null || v === undefined) return true;
+  const t = String(v).replace(/[\u200b-\u200f\u202a-\u202e\ufeff]/g, '').trim();
+  return t === '' || BLANK_TOKENS.has(t.toLowerCase());
+};
+
+// First candidate that is actually present. Prevents a whitespace-only English
+// name from shadowing a perfectly good Arabic one.
+const firstPresent = (...vals) => vals.find((v) => !isBlank(v));
+
 export default function ResultsScreen() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -217,7 +233,7 @@ function InlinePanels({ hadith }) {
   // to stripped Arabic, then the raw column — better a name in the wrong
   // language than a blank row.
   const pick = (stripped, english, raw) =>
-    (isArabic ? (stripped || raw) : (english || stripped || raw)) || '—';
+    (isArabic ? firstPresent(stripped, raw) : firstPresent(english, stripped, raw)) || '—';
 
   const book    = pick(hadith?.book_stripped,    hadith?.book_stripped_english,    hadith?.book);
   const chapter = pick(hadith?.chapter_stripped, hadith?.chapter_stripped_english, hadith?.chapter);
@@ -236,7 +252,7 @@ function InlinePanels({ hadith }) {
     { type: 'Section', label: isArabic ? 'الفصل'  : 'Section', value: section },
     { type: 'Hadith',  label: isArabic ? 'الحديث' : 'Hadith',
       value: isArabic ? `الجامع الكامل ${hadithNumber}` : `al-Jami al-Kamil ${hadithNumber}` },
-  ].filter((row) => (row.type !== 'Section' && row.type !== 'Chapter') || row.value !== '—');
+  ].filter((row) => (row.type !== 'Section' && row.type !== 'Chapter') || !isBlank(row.value));
 
   return (
     <div className="mt-4 mb-6 flex flex-col md:flex-row gap-6">

@@ -24,6 +24,22 @@ import {
 import { compilerFor, gradeFor, compilerToDb } from '../lib/i18n';
 import { useLanguage, pickLabel } from '../lib/LanguageContext';
 
+// A value counts as "not there" if it is null/undefined, blank once trimmed,
+// or one of the placeholder strings the source data uses to mean "nothing".
+// Zero-width and bidi marks are stripped first — an invisible character would
+// otherwise make an empty field look populated.
+const BLANK_TOKENS = new Set(['', '-', '--', '---', '\u2014', '\u2013', 'n/a', 'na', 'none', 'nil', 'null', 'undefined']);
+
+export const isBlank = (v) => {
+  if (v === null || v === undefined) return true;
+  const t = String(v).replace(/[\u200b-\u200f\u202a-\u202e\ufeff]/g, '').trim();
+  return t === '' || BLANK_TOKENS.has(t.toLowerCase());
+};
+
+// First candidate that is actually present. Prevents a whitespace-only English
+// name from shadowing a perfectly good Arabic one.
+const firstPresent = (...vals) => vals.find((v) => !isBlank(v));
+
 const PAGE_SIZE = 50;
 
 export default function HadithByCompiler() {
@@ -686,7 +702,7 @@ function InlinePanels({ hadith }) {
   // Falls back to the stripped Arabic, then the raw value — better a book name
   // in the wrong language than an empty row.
   const pick = (stripped, english, raw) =>
-    (isArabic ? (stripped || raw) : (english || stripped || raw)) || '';
+    (isArabic ? firstPresent(stripped, raw) : firstPresent(english, stripped, raw)) || '';
 
   const book    = pick(hadith?.book_stripped,    hadith?.book_stripped_english,    hadith?.book);
   const chapter = pick(hadith?.chapter_stripped, hadith?.chapter_stripped_english, hadith?.chapter);
@@ -725,7 +741,7 @@ function InlinePanels({ hadith }) {
             { type: 'Chapter', value: chapter },
             { type: 'Section', value: section },
             { type: 'Hadith', value: `al-Jami al-Kamil ${hadithNumber}` },
-          ].filter((item) => (item.type !== 'Section' && item.type !== 'Chapter') || item.value).map((item, i) => (
+          ].filter((item) => (item.type !== 'Section' && item.type !== 'Chapter') || !isBlank(item.value)).map((item, i) => (
             <div key={i} className="flex items-start py-2 gap-3">
               <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
                 <RowIcon type={item.type} />

@@ -26,58 +26,99 @@ const HONORIFICS = {
   r9: 'صلى الله عليه وسلم',
 };
 
-export default function HadithText({ text, className = '' }) {
-  if (!text) return null;
-
+// One paragraph's worth of text, with honorific tokens swapped for glyphs or
+// images. Split out so the paragraph wrapper below can reuse it.
+function renderInline(text, keyPrefix) {
   // Split on [[rN]], keeping the tokens so we can swap them for images.
   const parts = String(text).split(/(\[\[r\d+\]\])/g);
 
+  return parts.map((part, i) => {
+    const m = part.match(/^\[\[(r\d+)\]\]$/);
+    if (m) {
+      const code = m[1];
+      const alt = HONORIFICS[code] || code;
+
+      // r9 is the ﷺ glyph (U+FDFA) — a real character, not an image.
+      if (code === 'r9') {
+        return (
+          <span
+            key={`${keyPrefix}-${i}`}
+            title={alt}
+            aria-label={alt}
+            style={{
+              display: 'inline-block',
+              fontSize: '0.75em',
+              lineHeight: 1,
+              verticalAlign: '-0.05em',
+            }}
+          >
+            {'\uFDFA'}
+          </span>
+        );
+      }
+
+      return (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={`${keyPrefix}-${i}`}
+          src={`/honorifics/${code}.${EXT}`}
+          alt={alt}
+          title={alt}
+          style={{
+            display: 'inline-block',
+            height: '1.4em',
+            width: 'auto',
+            verticalAlign: '-0.35em',
+            margin: '0 2px',
+          }}
+        />
+      );
+    }
+    return <React.Fragment key={`${keyPrefix}-${i}`}>{part}</React.Fragment>;
+  });
+}
+
+/**
+ * The source text separates paragraphs with a blank line. Containers render it
+ * with `whitespace-pre-line`, which turns that blank line into a full empty
+ * line — around 1.6em of dead space between every paragraph. That reads as a
+ * gap between sections rather than between paragraphs.
+ *
+ * The blank lines are consumed here instead, and each paragraph becomes a block
+ * with a measured `paragraphGap` above it. Single newlines inside a paragraph
+ * still break, via white-space: pre-line on the block.
+ *
+ * Text with no blank line — chip labels, detail rows, the machine clause —
+ * renders inline exactly as before, so only multi-paragraph bodies change.
+ *
+ * paragraphGap — space between paragraphs. Override per call site if needed.
+ */
+export default function HadithText({ text, className = '', paragraphGap = '0.55em' }) {
+  if (!text) return null;
+
+  const blocks = String(text)
+    .split(/\n[ \t]*\n+/)
+    .map((b) => b.replace(/^\n+|\n+$/g, ''))
+    .filter((b) => b.trim() !== '');
+
+  if (blocks.length <= 1) {
+    return <span className={className}>{renderInline(text, 'p0')}</span>;
+  }
+
   return (
     <span className={className}>
-      {parts.map((part, i) => {
-        const m = part.match(/^\[\[(r\d+)\]\]$/);
-        if (m) {
-          const code = m[1];
-          const alt = HONORIFICS[code] || code;
-
-          // r9 is the ﷺ glyph (U+FDFA) — a real character, not an image.
-          if (code === 'r9') {
-            return (
-              <span
-                key={i}
-                title={alt}
-                aria-label={alt}
-                style={{
-                  display: 'inline-block',
-                  fontSize: '0.75em',
-                  lineHeight: 1,
-                  verticalAlign: '-0.05em',
-                }}
-              >
-                {'\uFDFA'}
-              </span>
-            );
-          }
-
-          return (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={i}
-              src={`/honorifics/${code}.${EXT}`}
-              alt={alt}
-              title={alt}
-              style={{
-                display: 'inline-block',
-                height: '1.4em',
-                width: 'auto',
-                verticalAlign: '-0.35em',
-                margin: '0 2px',
-              }}
-            />
-          );
-        }
-        return <React.Fragment key={i}>{part}</React.Fragment>;
-      })}
+      {blocks.map((block, bi) => (
+        <span
+          key={`b${bi}`}
+          style={{
+            display: 'block',
+            whiteSpace: 'pre-line',
+            marginTop: bi === 0 ? 0 : paragraphGap,
+          }}
+        >
+          {renderInline(block, `p${bi}`)}
+        </span>
+      ))}
     </span>
   );
 }

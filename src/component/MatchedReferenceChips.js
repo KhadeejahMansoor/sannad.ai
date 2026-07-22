@@ -8,27 +8,30 @@ function toArabicDigits(str) {
   return String(str).replace(/[0-9]/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
 }
 
-// Build the Arabic label for a chip: translate the compiler name to Arabic
-// (compilerToDb maps 'Bukhari' -> 'البخاري'), and convert the number's digits.
-// Falls back to the raw English text if a name has no mapping, so nothing ever
-// renders blank.
-function arabicLabel(compiler, number) {
-  let ar = compiler;
+// Translate a compiler name to Arabic ('Bukhari' -> 'البخاري'), falling back to
+// the English name if there's no mapping, so a row never renders blank.
+function arabicCompiler(compiler) {
   try {
     const mapped = compilerToDb(compiler);
-    if (mapped) ar = mapped;
+    if (mapped) return mapped;
   } catch {
     /* keep English name */
   }
-  return number ? `${ar} ${toArabicDigits(number)}` : ar;
+  return compiler;
 }
 
 /* ------------------------------------------------------------------ *
  * MatchedReferenceChips
  * ------------------------------------------------------------------
  * Renders the `matched_hadith` string ("Bukhari 1, Abu Dawud 2201, ...")
- * as one pill per reference, colored by compiler. Matches the app's
- * existing chip style: h-[28px] px-3 rounded-[10px] text-xs font-medium.
+ * as one ROW PER COMPILER: the name once on the left, its numbers as
+ * pills on the right.
+ *
+ * The previous layout repeated the compiler name on every pill, so a
+ * hadith with five Azami cross-references read "Azami 6132, Azami 226,
+ * Azami 13940…" — the same word four times more than it needed to be.
+ * Grouping drops the repetition and makes the spread of sources legible
+ * at a glance.
  *
  * value    — the raw matched_hadith string from the API
  * onSelect — optional. When given, each pill is a <button> and calls
@@ -38,11 +41,12 @@ function arabicLabel(compiler, number) {
  * ------------------------------------------------------------------ */
 
 // "Abu Dawud 2201" -> { compiler: "Abu Dawud", number: "2201" }
-// Trailing number may carry a letter suffix (e.g. "1234a").
+// Trailing number may carry a letter suffix (e.g. "1234a") or be a range
+// ("7350-7351"), both of which stay attached to the number.
 function parseRef(raw) {
   const t = String(raw).trim();
-  const m = t.match(/^(.*?)\s*(\d+[a-zA-Z]?)$/);
-  if (m) return { compiler: m[1].trim(), number: m[2] };
+  const m = t.match(/^(.*?)\s*(\d+[a-zA-Z]?(?:\s*[-–]\s*\d+[a-zA-Z]?)*)$/);
+  if (m) return { compiler: m[1].trim(), number: m[2].replace(/\s*[-–]\s*/g, "-") };
   return { compiler: t, number: "" };
 }
 
@@ -72,6 +76,37 @@ function styleFor(compiler) {
   return key ? COMPILER_STYLES[key] : DEFAULT_STYLE;
 }
 
+// Leading integer, for ordering. "13940" -> 13940, "7350-7351" -> 7350.
+function numericValue(number) {
+  const n = parseInt(String(number).replace(/[^0-9]/g, ""), 10);
+  return Number.isNaN(n) ? Infinity : n;
+}
+
+// Collapse the flat list into [{ compiler, refs: [...] }], keeping the order in
+// which each compiler first appears — that ordering comes from the source data
+// and is more meaningful than alphabetical. Numbers within a compiler are
+// sorted ascending, which the raw string rarely is.
+function groupByCompiler(chips) {
+  const groups = [];
+  const byName = new Map();
+
+  for (const raw of chips) {
+    const { compiler, number } = parseRef(raw);
+    let group = byName.get(compiler);
+    if (!group) {
+      group = { compiler, refs: [] };
+      byName.set(compiler, group);
+      groups.push(group);
+    }
+    group.refs.push({ raw, number });
+  }
+
+  for (const g of groups) {
+    g.refs.sort((a, b) => numericValue(a.number) - numericValue(b.number));
+  }
+  return groups;
+}
+
 export default function MatchedReferenceChips({ value, onSelect, emptyText, isArabic: isArabicProp }) {
   const ctx = useLanguage();
   // Prefer an explicit prop; fall back to the global context when it isn't given.
@@ -93,35 +128,58 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
     );
   }
 
+  const groups = groupByCompiler(chips);
   const clickable = typeof onSelect === "function";
-  const base =
-    "h-[28px] px-3 inline-flex items-center justify-center text-xs font-medium rounded-[10px]";
+  const pillBase =
+    "h-[26px] px-2.5 inline-flex items-center justify-center text-xs font-medium rounded-[8px]";
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {chips.map((raw, i) => {
-        const { compiler, number } = parseRef(raw);
-        const cls = `${base} ${styleFor(compiler)}`;
-        const label = isArabic ? arabicLabel(compiler, number) : raw;
-
-        if (!clickable) {
-          return (
-            <span key={`${raw}-${i}`} className={cls}>
-              {label}
-            </span>
-          );
-        }
+    <div className="flex flex-col">
+      {groups.map((group, gi) => {
+        const cls = `${pillBase} ${styleFor(group.compiler)}`;
+        const name = isArabic ? arabicCompiler(group.compiler) : group.compiler;
 
         return (
-          <button
-            key={`${raw}-${i}`}
-            type="button"
-            onClick={() => onSelect({ compiler, number, raw })}
-            className={`${cls} cursor-pointer transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1`}
-            aria-label={`Open ${raw}`}
+          <div
+            key={`${group.compiler}-${gi}`}
+            className={`flex items-baseline gap-3 py-2 ${
+              gi < groups.length - 1 ? "border-b border-[#EDE4E1]" : ""
+            }`}
           >
-            {label}
-          </button>
+            {/* Fixed-width label column keeps the pills aligned down the panel.
+                min-w rather than w so longer Arabic names aren't clipped. */}
+            <span className="min-w-[76px] flex-shrink-0 text-xs text-[#9A8A85] text-start">
+              {name}
+            </span>
+
+            <span className="flex flex-wrap gap-1.5">
+              {group.refs.map((ref, i) => {
+                const label = isArabic ? toArabicDigits(ref.number) : ref.number;
+
+                if (!clickable) {
+                  return (
+                    <span key={`${ref.raw}-${i}`} className={cls}>
+                      {label}
+                    </span>
+                  );
+                }
+
+                return (
+                  <button
+                    key={`${ref.raw}-${i}`}
+                    type="button"
+                    onClick={() =>
+                      onSelect({ compiler: group.compiler, number: ref.number, raw: ref.raw })
+                    }
+                    className={`${cls} cursor-pointer transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1`}
+                    aria-label={`Open ${ref.raw}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </span>
+          </div>
         );
       })}
     </div>

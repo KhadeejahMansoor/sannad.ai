@@ -26,6 +26,7 @@ import { useLanguage, pickLabel } from '../lib/LanguageContext';
 
 import { buildHadithLabel } from '../lib/hadithLabel';
 import MatchedReferenceChips from './MatchedReferenceChips';
+import HadithDetailStatic from './HadithDetailBottomSheet';
 
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
 // or one of the placeholder strings the source data uses to mean "nothing".
@@ -670,7 +671,12 @@ export default function HadithByCompiler() {
                         isExpanded={expanded}
                         onToggleExpand={() => handleToggleExpand(hadith.hadith_id)}
                       />
-                      {expanded && <InlinePanels hadith={hadith} />}
+                      {/* Desktop gets the two-column panel the old slider used;
+                          mobile keeps the stacked tabs, which fit a narrow screen. */}
+                      {expanded && (isDesktop
+                        ? <HadithDetailStatic isOpen hadith={hadith} onClose={() => handleToggleExpand(hadith.hadith_id)} />
+                        : <InlinePanels hadith={hadith} />
+                      )}
                     </div>
                   );
                 })}

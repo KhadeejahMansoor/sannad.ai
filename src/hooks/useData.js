@@ -375,7 +375,11 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
             f_grades:    gradesArr.length    ? gradesArr.map(gradeToDb)        : null,
             f_book: null,
             f_chapter: null,
-            max_rows: 100,
+            // No cap. Every match comes back and the page scrolls through all
+            // of them. This value is a sentinel, not a real limit — the RPC
+            // requires the argument, so it gets a number no result set will
+            // reach rather than being left unset.
+            max_rows: 1000000,
           });
 
           if (rpcError) throw rpcError;

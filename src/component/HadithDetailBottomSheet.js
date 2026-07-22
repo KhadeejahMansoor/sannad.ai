@@ -8,6 +8,17 @@ import AyatChips from "./AyatChips";
 import HadithText from "./HadithText";
 import { useOpenReference } from "../hooks/useOpenReference";
 
+
+// Same blank test as DetailView / ResultsScreen / HadithByCompiler.
+const BLANK_TOKENS = new Set(['', '-', '--', '---', '\u2014', '\u2013', 'n/a', 'na', 'none', 'nil', 'null', 'undefined']);
+const isBlank = (v) => {
+  if (v === null || v === undefined) return true;
+  const t = String(v).replace(/[\u200b-\u200f\u202a-\u202e\ufeff]/g, '').trim();
+  return t === '' || BLANK_TOKENS.has(t.toLowerCase());
+};
+const firstPresent = (...vals) => vals.find((v) => !isBlank(v));
+
+
 export default function HadithDetailStatic({ isOpen, onClose, hadith, className = '' }) {
   // The toggle switches THIS PANEL to Arabic, independently of the site
   // language. It used to flip `toggleState` and nothing read it — the switch
@@ -48,7 +59,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
   // Falls back to the raw value if a stripped one is missing, rather than
   // showing an em-dash for a book that plainly exists.
   const pick = (stripped, english, raw) =>
-    (isArabic ? (stripped || raw) : (english || stripped || raw)) || '—';
+    (isArabic ? firstPresent(stripped, raw) : firstPresent(english, stripped, raw)) || '—';
 
   const book    = pick(hadith?.book_stripped,    hadith?.book_stripped_english,    hadith?.book);
   const chapter = pick(hadith?.chapter_stripped, hadith?.chapter_stripped_english, hadith?.chapter);
@@ -92,8 +103,13 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
             { type: 'Chapter', label: t.chapter, title: chapter },
             { type: 'Section', label: t.section, title: section },
             { type: 'Hadith',  label: t.hadith,  title: hadithLabel },
-          ].map((item, index) => (
-            <div key={index} className={`flex items-start py-0.5 ${index < 3 ? 'mb-1' : ''}`}>
+          ]
+          // Drop Chapter/Section when the hadith has no value for them.
+          .filter((item) => (item.type !== 'Section' && item.type !== 'Chapter') || !isBlank(item.title))
+          // Spacing keyed off the filtered length, not a hardcoded 3, so the
+          // last surviving row still loses its bottom margin.
+          .map((item, index, arr) => (
+            <div key={index} className={`flex items-start py-0.5 ${index < arr.length - 1 ? 'mb-1' : ''}`}>
               <div className="w-4 h-4 flex items-start justify-center me-2 flex-shrink-0 text-gray-400 mt-0.5">
                 {item.type === 'Book' && (
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

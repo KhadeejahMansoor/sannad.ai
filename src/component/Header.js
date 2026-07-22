@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
@@ -107,23 +106,15 @@ export default function Header({ onEdit, onMenu }) {
 
          {/* Logo - Positioned to leftmost */}
           <div className="w-10 h-10 md:w-11 md:h-11 bg-[#F6F4F1] rounded-full flex items-center justify-center overflow-hidden">
-            {/* Mobile - Original Image */}
-            <Image
-              src="/logo.svg"
-              alt="Logo"
-              width={28}
-              height={28}
-              className="object-cover md:hidden"
-            />
-
-            {/* Desktop - SVG Logo */}
+            {/* One logo for every width. Mobile used to render /logo.svg via
+                next/image while desktop drew this inline SVG, so the mark sat
+                differently in its circle depending on the screen. */}
             <svg
               width="41"
               height="41"
               viewBox="0 0 48 48"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="hidden md:block"
             >
               <circle cx="28" cy="28" r="22" fill="#F6F4F1"/>
                <g transform="translate(10, 6) scale(1.2)">

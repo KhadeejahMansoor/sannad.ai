@@ -20,6 +20,7 @@
 
 import React from 'react';
 import { useLanguage } from '../lib/LanguageContext';
+import { surahName } from '../lib/surahs';
 
 // Latin digits -> Arabic-Indic (٠١٢٣٤٥٦٧٨٩). Only the digits change; the colon,
 // dash and brackets stay as-is. Used for DISPLAY only — the Quran.com href keeps
@@ -43,7 +44,9 @@ function parseAyat(raw) {
       surah,
       start,
       end,
-      label: end ? `${surah}:${start}-${end}` : `${surah}:${start}`,
+      // Numbers only. The surah name is prepended at render time because it
+      // depends on the language, which the parser has no view of.
+      ref: end ? `${surah}:${start}-${end}` : `${surah}:${start}`,
       // Quran.com deep-links to the starting verse of the range.
       href: `https://quran.com/${surah}/${start}`,
     });
@@ -58,6 +61,14 @@ function parseAyat(raw) {
 const CHIP_BG = '#EBE7DE';
 const CHIP_BG_HOVER = '#E2DCD0';
 const CHIP_TEXT = '#5C5347';
+
+// 'Alaq 96:1-5'. Falls back to the bare reference when the surah number is
+// out of range, rather than printing an empty name and a stray space.
+function chipLabel(r, isArabic) {
+  const ref = isArabic ? toArabicDigits(r.ref) : r.ref;
+  const name = surahName(r.surah, isArabic);
+  return name ? `${name} ${ref}` : ref;
+}
 
 export default function AyatChips({ ayat, showEmpty = false, isArabic: isArabicProp }) {
   const ctx = useLanguage();
@@ -78,11 +89,11 @@ export default function AyatChips({ ayat, showEmpty = false, isArabic: isArabicP
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
       {refs.map((r, i) => (
         <a
-          key={`${r.label}-${i}`}
+          key={`${r.ref}-${i}`}
           href={r.href}
           target="_blank"
           rel="noopener noreferrer"
-          title={`Open Qur'an ${r.label} on Quran.com`}
+          title={`Open Qur'an ${r.ref} on Quran.com`}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -102,7 +113,7 @@ export default function AyatChips({ ayat, showEmpty = false, isArabic: isArabicP
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = CHIP_BG_HOVER)}
           onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = CHIP_BG)}
         >
-          {isArabic ? toArabicDigits(r.label) : r.label}
+          {chipLabel(r, isArabic)}
         </a>
       ))}
     </div>

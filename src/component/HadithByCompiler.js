@@ -27,6 +27,7 @@ import { useLanguage, pickLabel } from '../lib/LanguageContext';
 import { buildHadithLabel } from '../lib/hadithLabel';
 import MatchedReferenceChips from './MatchedReferenceChips';
 import HadithDetailStatic from './HadithDetailBottomSheet';
+import InlineTabPanels from './InlineTabPanels';
 
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
 // or one of the placeholder strings the source data uses to mean "nothing".
@@ -689,7 +690,7 @@ export default function HadithByCompiler() {
                         }}>
                           {isDesktop
                             ? <HadithDetailStatic isOpen hadith={hadith} onClose={() => handleToggleExpand(hadith.hadith_id)} />
-                            : <InlinePanels hadith={hadith} />}
+                            : <InlineTabPanels hadith={hadith} />}
                         </div>
                       )}
                     </div>
@@ -764,98 +765,6 @@ export default function HadithByCompiler() {
           <HadithCollectionMenu onClose={() => setShowHadithCollectionMenu(false)} />
         )}
       </AnimatePresence>
-    </div>
-  );
-}
-
-// ─── Inline panels rendered below an expanded card (mobile only) ──────
-// Tabbed layout matching ResultsScreen's mobile expand: Contents / Reference / Commentary / Ayat.
-function InlinePanels({ hadith }) {
-  const [activeTab, setActiveTab] = useState('Contents');
-  const { isArabic } = useLanguage();
-
-  // Was reading hadith.book straight — the RAW column, prefix and all
-  // ("كتاب الإيمان"). /api/hadiths-by-filters also returns the stripped forms
-  // and their English translations, which is what the sidebar shows.
-  //
-  // English is the default language, so the default here is the English name.
-  // Falls back to the stripped Arabic, then the raw value — better a book name
-  // in the wrong language than an empty row.
-  const pick = (stripped, english, raw) =>
-    (isArabic ? firstPresent(stripped, raw) : firstPresent(english, stripped, raw)) || '';
-
-  const book    = pick(hadith?.book_stripped,    hadith?.book_stripped_english,    hadith?.book);
-  const chapter = pick(hadith?.chapter_stripped, hadith?.chapter_stripped_english, hadith?.chapter);
-  const section = pick(hadith?.section_stripped, hadith?.section_stripped_english, hadith?.section);
-  const reference = hadith?.matched_hadith || '';
-  const ayat      = hadith?.ayat || '';
-  const commentary= hadith?.commentary || 'None';
-  const hadithNumber = hadith?.hadith_number || '';
-
-  return (
-    <div className="mt-4 mb-6">
-      <div className="flex justify-start gap-[22px] mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
-        {['Contents', 'Reference', 'Commentary', 'Ayat'].map(tab => (
-          <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
-            <div className="inline-flex flex-col items-start">
-              <div className={`text-[13px] font-medium ${activeTab === tab ? 'text-[#523230]' : 'text-[#9A8A85]'}`}>
-                {tab}
-              </div>
-              {activeTab === tab && <div className="h-[2px] bg-[#523230] mt-[7px] w-full rounded-[2px]" />}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {activeTab === 'Contents' && (
-        <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-          {/* Book > Chapter > Section. That's the actual hierarchy — it's the
-              parameter order /api/sections-by-chapter takes. Section was listed
-              above Chapter, which reads as though sections contain chapters. */}
-          {[
-            { type: 'Book', value: book },
-            { type: 'Chapter', value: chapter },
-            { type: 'Section', value: section },
-            { type: 'Hadith', label: isArabic ? 'الترقيم' : 'Numbering', value: buildHadithLabel(hadith, {
-              isArabic,
-              fallback: `al-Jami al-Kamil ${hadithNumber}`,
-            }) },
-          ].filter((item) => (item.type !== 'Section' && item.type !== 'Chapter') || !isBlank(item.value)).map((item, i) => (
-            <div key={i} className="flex items-start py-2 gap-3">
-              <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
-                <RowIcon type={item.type} />
-              </span>
-              <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.label || item.type}</span>
-              <div className="flex-1 text-sm text-black">{item.value ? <HadithText text={item.value} /> : '—'}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {activeTab === 'Reference' && (
-        <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-          {/* Was a hand-rolled chip list, so the grouped redesign never reached
-              this page. Uses the shared component now, like every other panel. */}
-          <MatchedReferenceChips
-            value={hadith?.matched_hadith}
-            isArabic={isArabic}
-            emptyText={isArabic ? 'لا توجد مراجع لهذا الحديث.' : 'No reference available'}
-          />
-        </div>
-      )}
-      {activeTab === 'Commentary' && (
-        <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-          <div className="text-sm text-black leading-[20px] whitespace-pre-line">
-            {commentary || 'None'}
-          </div>
-        </div>
-      )}
-      {activeTab === 'Ayat' && (
-        <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-          {ayat
-            ? <AyatChips ayat={ayat} />
-            : <div className="text-sm text-gray-400 italic">No ayat annotations available</div>}
-        </div>
-      )}
     </div>
   );
 }

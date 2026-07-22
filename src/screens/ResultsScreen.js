@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/component/Header';
 import HadithCard from '@/component/HadithCard';
@@ -19,6 +19,7 @@ import AyatChips from '@/component/AyatChips';
 import { useOpenReference } from '@/hooks/useOpenReference';
 
 import { buildHadithLabel } from '@/lib/hadithLabel';
+import InlineTabPanels from '@/component/InlineTabPanels';
 
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
 // or one of the placeholder strings the source data uses to mean "nothing".
@@ -229,6 +230,18 @@ export default function ResultsScreen() {
 // looked different from everywhere else.
 function InlinePanels({ hadith }) {
   const { isArabic } = useLanguage();
+
+  // Mobile shares the tabbed panel with the compiler page — the stacked
+  // version below is a two-column desktop layout that collapses badly on a
+  // phone, and left the same hadith looking different on each screen.
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const sync = () => setIsDesktop(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
   const openRef = useOpenReference();
 
   // English is the default, so the default label is the English name. Falls back
@@ -258,6 +271,8 @@ function InlinePanels({ hadith }) {
         fallback: isArabic ? `الجامع الكامل ${hadithNumber}` : `al-Jami al-Kamil ${hadithNumber}`,
       }) },
   ].filter((row) => (row.type !== 'Section' && row.type !== 'Chapter') || !isBlank(row.value));
+
+  if (!isDesktop) return <InlineTabPanels hadith={hadith} />;
 
   return (
     <div className="mt-4 mb-6 flex flex-col md:flex-row gap-6">

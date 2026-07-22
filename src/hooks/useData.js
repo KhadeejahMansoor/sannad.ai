@@ -392,6 +392,10 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
         const data = (filteredRows || []).map((r) => ({
           hadith_id: `${r.compiler === AZAMI_DB ? 'azami' : 'sevenbooks'}-${r.id}`,
           hadith_number: r.hadith_number,
+          // Malik's other recension numberings — the Details panel lists all four.
+          qasim_number: r.qasim_number,
+          shaybani_number: r.shaybani_number,
+          zuhri_number: r.zuhri_number,
           compiler: r.compiler,
           grade: r.final_grade,
           hadith_text: lang === 'ar' ? r.post_clause : r.post_clause_english,

@@ -8,6 +8,8 @@ import AyatChips from "./AyatChips";
 import HadithText from "./HadithText";
 import { useOpenReference } from "../hooks/useOpenReference";
 
+import { buildHadithLabel } from '../lib/hadithLabel';
+
 
 // Same blank test as DetailView / ResultsScreen / HadithByCompiler.
 const BLANK_TOKENS = new Set(['', '-', '--', '---', '\u2014', '\u2013', 'n/a', 'na', 'none', 'nil', 'null', 'undefined']);
@@ -74,9 +76,12 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
   const ayat        = hadith?.ayat        || '';
   const source      = hadith?.source      || '';
 
-  const hadithLabel = source === 'azami'
-    ? `al-Jami al-Kamil ${hadithNum}`
-    : `${compiler} ${hadithNum}`;
+  const hadithLabel = buildHadithLabel(hadith, {
+    isArabic,
+    fallback: source === 'azami'
+      ? `al-Jami al-Kamil ${hadithNum}`
+      : `${compiler} ${hadithNum}`,
+  });
 
 
 

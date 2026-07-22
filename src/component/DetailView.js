@@ -16,6 +16,8 @@ import HadithText from "./HadithText";
 import { useOpenReference } from "../hooks/useOpenReference";
 import { useScrollLock } from '../lib/useScrollLock';
 
+import { buildHadithLabel } from '../lib/hadithLabel';
+
 // Shared "is this field actually populated?" test. Matches ResultsScreen and
 // HadithByCompiler so all three surfaces hide the same rows. Covers null,
 // whitespace, zero-width/bidi marks, and placeholder strings — a value like
@@ -88,6 +90,13 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  const hadithIdLabel = `${compiler} ${hadith?.hadith_number || ''}`;
  const arabicIdLabel = `${compilerArabic} ${hadith?.hadith_number || ''}`;
  const hadith_number = hadith?.hadith_number || '';
+
+ // Malik lists all four recension numbers; every other compiler keeps one.
+ const arabicNum = isArabic || selectedLanguage === 'ar';
+ const hadithRowLabel = buildHadithLabel(hadith, {
+   isArabic: arabicNum,
+   fallback: arabicNum ? `الجامع الكامل ${hadith_number}` : `al-Jami al-Kamil ${hadith_number}`,
+ });
  // `duplicates` was read here to gate a hardcoded sentence claiming every
  // duplicated hadith shared one specific isnad. Both are gone. The column
  // doesn't exist in AllBooks_July13.xlsx anyway — the API returns NULL for it.
@@ -301,7 +310,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  { type: "Book", title: getField(book, arabicFields.book) },
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
- { type: "Hadith", title: isArabic || selectedLanguage === 'ar' ? `الجامع الكامل ${hadith_number}` : `al-Jami al-Kamil ${hadith_number}` },
+ { type: "Hadith", title: hadithRowLabel },
  ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || !isBlank(item.title)).map((item, i) => (
  <div key={i} className="flex items-start py-2 gap-3">
  <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
@@ -366,7 +375,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <DetailRow
  label="Hadith"
  display={isArabic ? 'الحديث' : 'Hadith'}
- value={isArabic || selectedLanguage === 'ar' ? `الجامع الكامل ${hadith_number}` : `al-Jami al-Kamil ${hadith_number}`}
+ value={hadithRowLabel}
  font={getFont()}
  last
  />
@@ -531,7 +540,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  { type: "Book", title: getField(book, arabicFields.book) },
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
- { type: "Hadith", title: isArabic || selectedLanguage === 'ar' ? `الجامع الكامل ${hadith_number}` : `al-Jami al-Kamil ${hadith_number}` },
+ { type: "Hadith", title: hadithRowLabel },
  ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || !isBlank(item.title)).map((item, i) => (
  <div key={i} className="flex items-start py-1">
  <span className="text-xs text-gray-400 w-[60px]">{item.type}</span>

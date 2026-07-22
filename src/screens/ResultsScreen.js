@@ -18,6 +18,8 @@ import MatchedReferenceChips from '@/component/MatchedReferenceChips';
 import AyatChips from '@/component/AyatChips';
 import { useOpenReference } from '@/hooks/useOpenReference';
 
+import { buildHadithLabel } from '@/lib/hadithLabel';
+
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
 // or one of the placeholder strings the source data uses to mean "nothing".
 // Zero-width and bidi marks are stripped first — an invisible character would
@@ -251,7 +253,10 @@ function InlinePanels({ hadith }) {
     { type: 'Chapter', label: isArabic ? 'الباب'  : 'Chapter', value: chapter },
     { type: 'Section', label: isArabic ? 'الفصل'  : 'Section', value: section },
     { type: 'Hadith',  label: isArabic ? 'الحديث' : 'Hadith',
-      value: isArabic ? `الجامع الكامل ${hadithNumber}` : `al-Jami al-Kamil ${hadithNumber}` },
+      value: buildHadithLabel(hadith, {
+        isArabic,
+        fallback: isArabic ? `الجامع الكامل ${hadithNumber}` : `al-Jami al-Kamil ${hadithNumber}`,
+      }) },
   ].filter((row) => (row.type !== 'Section' && row.type !== 'Chapter') || !isBlank(row.value));
 
   return (

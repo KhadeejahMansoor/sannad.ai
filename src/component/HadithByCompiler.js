@@ -24,6 +24,8 @@ import {
 import { compilerFor, gradeFor, compilerToDb } from '../lib/i18n';
 import { useLanguage, pickLabel } from '../lib/LanguageContext';
 
+import { buildHadithLabel } from '../lib/hadithLabel';
+
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
 // or one of the placeholder strings the source data uses to mean "nothing".
 // Zero-width and bidi marks are stripped first — an invisible character would
@@ -740,7 +742,10 @@ function InlinePanels({ hadith }) {
             { type: 'Book', value: book },
             { type: 'Chapter', value: chapter },
             { type: 'Section', value: section },
-            { type: 'Hadith', value: `al-Jami al-Kamil ${hadithNumber}` },
+            { type: 'Hadith', value: buildHadithLabel(hadith, {
+              isArabic,
+              fallback: `al-Jami al-Kamil ${hadithNumber}`,
+            }) },
           ].filter((item) => (item.type !== 'Section' && item.type !== 'Chapter') || !isBlank(item.value)).map((item, i) => (
             <div key={i} className="flex items-start py-2 gap-3">
               <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">

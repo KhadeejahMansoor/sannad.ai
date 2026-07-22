@@ -50,31 +50,11 @@ function parseRef(raw) {
   return { compiler: t, number: "" };
 }
 
-// Per-compiler colors — all in one warm brown family, tuned to the
-// #F6F4F1 background + umber logo. No greens or blues: compilers are told
-// apart by undertone (reddish clay / golden ochre / neutral taupe) and
-// lightness. Each text color is a deeper shade of its own pill.
-// Tailwind arbitrary values, so no config/safelist changes needed.
-const COMPILER_STYLES = {
-  Bukhari:     "bg-[#EBDCCB] text-[#7A4B2B]", // terracotta / umber — the hero
-  Muslim:      "bg-[#E9D6C2] text-[#8A5A34]", // caramel brown
-  Ahmad:       "bg-[#E2D6C6] text-[#5D4B35]", // greyed chestnut
-  Malik:       "bg-[#EBE0D3] text-[#7A5C3E]", // sand / walnut
-  "Abu Dawud": "bg-[#E6DBCF] text-[#6F5B42]", // mushroom brown
-  Nasai:       "bg-[#E9E0D6] text-[#6E5A44]", // neutral tan
-  Tirmidhi:    "bg-[#E0D2C4] text-[#5F4636]", // deep coffee
-  "Ibn Majah": "bg-[#EDE6DC] text-[#6B5B4A]", // light cream-taupe
-  Azami:       "bg-[#E4DBCE] text-[#6B5B55]", // cream — internal numbering, kept quiet
-};
-const DEFAULT_STYLE = "bg-[#ECE7E1] text-[#6B5B55]";
-
-function styleFor(compiler) {
-  if (COMPILER_STYLES[compiler]) return COMPILER_STYLES[compiler];
-  const key = Object.keys(COMPILER_STYLES).find((k) =>
-    compiler.toLowerCase().includes(k.toLowerCase())
-  );
-  return key ? COMPILER_STYLES[key] : DEFAULT_STYLE;
-}
+// One uniform chip colour for every compiler. Per-compiler tinting existed to
+// tell references apart in a flat list — now that each compiler owns its own
+// row, the colour carried no information and only added noise. A single warm
+// sand keeps the panel calm against the #F6F4F1 page.
+const CHIP_STYLE = "bg-[#EBE7DE] text-[#5C5347]";
 
 // Leading integer, for ordering. "13940" -> 13940, "7350-7351" -> 7350.
 function numericValue(number) {
@@ -136,7 +116,7 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
   return (
     <div className="flex flex-col">
       {groups.map((group, gi) => {
-        const cls = `${pillBase} ${styleFor(group.compiler)}`;
+        const cls = `${pillBase} ${CHIP_STYLE}`;
         const name = isArabic ? arabicCompiler(group.compiler) : group.compiler;
 
         return (

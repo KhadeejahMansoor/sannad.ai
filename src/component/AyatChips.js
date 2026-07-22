@@ -51,6 +51,14 @@ function parseAyat(raw) {
   return out;
 }
 
+// Matches the reference chips in MatchedReferenceChips exactly — same warm
+// sand, same height, same radius — so the two panels read as one system.
+// Those chips are Tailwind classes; these are inline styles, so the values
+// are duplicated here rather than shared. Keep them in step.
+const CHIP_BG = '#EBE7DE';
+const CHIP_BG_HOVER = '#E2DCD0';
+const CHIP_TEXT = '#5C5347';
+
 export default function AyatChips({ ayat, showEmpty = false, isArabic: isArabicProp }) {
   const ctx = useLanguage();
   // Prefer an explicit prop; fall back to the global context when it isn't given.
@@ -78,19 +86,21 @@ export default function AyatChips({ ayat, showEmpty = false, isArabic: isArabicP
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            padding: '4px 12px',
-            borderRadius: '9999px',
-            fontSize: '0.85rem',
-            fontWeight: 600,
+            justifyContent: 'center',
+            height: '26px',
+            padding: '0 10px',
+            borderRadius: '8px',
+            fontSize: '12px',
+            fontWeight: 500,
             textDecoration: 'none',
-            color: '#523230',
-            backgroundColor: '#EFE7E1',
-            border: '1px solid #D9CDC5',
+            color: CHIP_TEXT,
+            backgroundColor: CHIP_BG,
+            border: 'none',
             cursor: 'pointer',
             transition: 'background-color 0.15s ease',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#E5D8CF')}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#EFE7E1')}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = CHIP_BG_HOVER)}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = CHIP_BG)}
         >
           {isArabic ? toArabicDigits(r.label) : r.label}
         </a>

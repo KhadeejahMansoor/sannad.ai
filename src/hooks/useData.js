@@ -396,8 +396,10 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
           qasim_number: r.qasim_number,
           shaybani_number: r.shaybani_number,
           zuhri_number: r.zuhri_number,
+          shakir_hadith_number: r.shakir_hadith_number,
+          sunnah_com_number: r.sunnah_com_number,
+          daraqutni_hadith_number: r.daraqutni_hadith_number,
           // Ahmad's Shakir numbering (column name varies by import).
-          shakir_number: r.shakir_number ?? r.shakir_hadith_number ?? r.shakir,
           compiler: r.compiler,
           grade: r.final_grade,
           hadith_text: lang === 'ar' ? r.post_clause : r.post_clause_english,

@@ -1,21 +1,27 @@
+// src/lib/hadithLabel.js
+//
 // Builds the text for the "Hadith" row in the Details panel.
 //
-// Most compilers show a single number. Some collections come down through
-// several recensions or editions, each numbered differently, so their row
-// lists all of them side by side —
+// Every collection is numbered by at least one edition, and some by several.
+// The row lists each numbering the compiler has —
 //
-//   Malik  -> Laisi 686, Qasim 344, Shaybani 367, Zuhri 851
-//   Ahmad  -> Darussalam 12, Shakir 34
+//   Malik      -> Laithi 686, Qasim 344, Shaybani 367, Zuhri 851
+//   Ahmad      -> Darussalam 10630, Shakir 10578
+//   Muslim     -> Darussalam 12, Sunnah.com 34, Daraqutni 56
+//   Nasai etc. -> Darussalam 1
 //
 // The first entry in each list is the primary numbering and lives in
 // `hadith_number`; the rest have their own columns. Any entry with no number is
 // dropped rather than printed blank, so a hadith numbered only in the primary
 // edition just shows that one.
 //
+// Compilers absent from RECENSIONS (Bukhari, Azami) keep whatever label the
+// calling component already built.
+//
 // Shared by DetailView, ResultsScreen, HadithByCompiler and
 // HadithDetailBottomSheet so mobile and desktop stay identical.
 
-const BLANK_TOKENS = new Set(['', '-', '--', '---', '\u2014', '\u2013', 'n/a', 'na', 'none', 'nil', 'null', 'undefined']);
+const BLANK_TOKENS = new Set(['', '-', '--', '---', '—', '–', 'n/a', 'na', 'none', 'nil', 'null', 'undefined']);
 
 export const isBlank = (v) => {
   if (v === null || v === undefined) return true;
@@ -25,25 +31,49 @@ export const isBlank = (v) => {
 
 export const firstPresent = (...vals) => vals.find((v) => !isBlank(v));
 
-// Compiler values as stored in the DB.
-const MALIK_DB = '\u0645\u0627\u0644\u0643';
-const AHMAD_DB = '\u0623\u062d\u0645\u062f';
+// Compiler values exactly as stored in the DB.
+const MALIK_DB      = 'مالك';
+const AHMAD_DB      = 'أحمد';
+const MUSLIM_DB     = 'مسلم';
+const NASAI_DB      = 'النسائي';
+const TIRMIDHI_DB   = 'الترمذي';
+const IBN_MAJAH_DB  = 'ابن ماجه';
+const ABU_DAWUD_DB  = 'أبو داود';
+
+// Reused by the four single-numbering collections.
+const DARUSSALAM_ONLY = [
+  { columns: ['hadith_number'], en: 'Darussalam', ar: 'دار السلام' },
+];
 
 // `columns` is a list of candidates, tried in order — column naming has not
 // been consistent across imports, and a name that does not exist simply reads
 // as undefined rather than throwing.
 const RECENSIONS = {
   [MALIK_DB]: [
-    { columns: ['hadith_number'],                      en: 'Laisi',     ar: '\u0627\u0644\u0644\u064a\u062b\u064a' },
-    { columns: ['qasim_number'],                       en: 'Qasim',      ar: '\u0627\u0644\u0642\u0627\u0633\u0645' },
-    { columns: ['shaybani_number'],                    en: 'Shaybani',   ar: '\u0627\u0644\u0634\u064a\u0628\u0627\u0646\u064a' },
-    { columns: ['zuhri_number'],                       en: 'Zuhri',      ar: '\u0627\u0644\u0632\u0647\u0631\u064a' },
+    { columns: ['hadith_number'],   en: 'Laithi',   ar: 'الليثي' },
+    { columns: ['qasim_number'],    en: 'Qasim',    ar: 'القاسم' },
+    { columns: ['shaybani_number'], en: 'Shaybani', ar: 'الشيباني' },
+    { columns: ['zuhri_number'],    en: 'Zuhri',    ar: 'الزهري' },
   ],
+
   [AHMAD_DB]: [
-    { columns: ['hadith_number'],                      en: 'Darussalam', ar: '\u062f\u0627\u0631 \u0627\u0644\u0633\u0644\u0627\u0645' },
-    { columns: ['shakir_number', 'shakir_hadith_number', 'shakir'],
-                                                       en: 'Shakir',     ar: '\u0634\u0627\u0643\u0631' },
+    { columns: ['hadith_number'], en: 'Darussalam', ar: 'دار السلام' },
+    { columns: ['shakir_hadith_number', 'shakir_number', 'shakir'],
+                                  en: 'Shakir',     ar: 'شاكر' },
   ],
+
+  [MUSLIM_DB]: [
+    { columns: ['hadith_number'], en: 'Darussalam', ar: 'دار السلام' },
+    { columns: ['sunnah_com_number', 'sunnah_number', 'sunnahcom_number'],
+                                  en: 'Sunnah.com', ar: 'Sunnah.com' },
+    { columns: ['daraqutni_hadith_number', 'daraqutni_number', 'daraqutni'],
+                                  en: 'Daraqutni',  ar: 'الدارقطني' },
+  ],
+
+  [NASAI_DB]:     DARUSSALAM_ONLY,
+  [TIRMIDHI_DB]:  DARUSSALAM_ONLY,
+  [IBN_MAJAH_DB]: DARUSSALAM_ONLY,
+  [ABU_DAWUD_DB]: DARUSSALAM_ONLY,
 };
 
 const compilerKey = (compiler) => String(compiler ?? '').trim();

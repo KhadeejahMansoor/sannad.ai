@@ -241,18 +241,42 @@ async function fetchByCompilerAndNumber(supabase, compilerToDb, hit) {
   const dbCompiler = compilerToDb(hit.compiler);
 
   try {
-    // PostgREST coerces the string to the column's type, so this works whether
-    // hadith_number is integer or text.
-    const { data, error } = await supabase
+    // Numbers are not always single values. Some rows store a range as text,
+    // e.g. "7350-7351". Typing either endpoint should find that row, and so
+    // should typing the whole range. Collapse spaces around the dash first so
+    // "7350 - 7351" and "7350-7351" are treated identically.
+    const num = hit.number.trim().replace(/\s*[-\u2013]\s*/g, '-');
+
+    // eq covers an exact hit; the three like patterns cover the typed number
+    // sitting at the start, end, or middle of a stored range.
+    const orFilter = [
+      `hadith_number.eq.${num}`,
+      `hadith_number.like.${num}-*`,
+      `hadith_number.like.*-${num}`,
+      `hadith_number.like.*-${num}-*`,
+    ].join(',');
+
+    let { data, error } = await supabase
       .from(HADITH_TABLE)
       .select('*')
       .eq('compiler', dbCompiler)
-      .eq('hadith_number', hit.number)
+      .or(orFilter)
       .limit(50);
 
+    // If hadith_number turns out to be a numeric column, `like` is invalid.
+    // Fall back to a plain exact match rather than giving up.
     if (error) {
-      console.warn('[useSearchHadiths] direct lookup failed -', error.message);
-      return null;
+      const retry = await supabase
+        .from(HADITH_TABLE)
+        .select('*')
+        .eq('compiler', dbCompiler)
+        .eq('hadith_number', num)
+        .limit(50);
+      if (retry.error) {
+        console.warn('[useSearchHadiths] direct lookup failed -', error.message);
+        return null;
+      }
+      data = retry.data;
     }
 
     if (!data || data.length === 0) return null;
@@ -313,9 +337,12 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
         let compilerNumberHit = null;
         const trimmedText = searchText ? searchText.trim() : '';
         if (trimmedText) {
+          // A "number" may be a single value (7350), a value with a letter
+          // suffix (2926m), or a range (7350-7351 / 7350 - 7351).
+          const NUM = String.raw`\d+[A-Za-z]?(?:\s*[-\u2013]\s*\d+[A-Za-z]?)*`;
           const m =
-            trimmedText.match(/^(\D+?)\s*#?\s*(\d+[A-Za-z]?)$/) ||
-            trimmedText.match(/^(\d+[A-Za-z]?)\s*#?\s*(\D+)$/);
+            trimmedText.match(new RegExp(`^(\\D+?)\\s*#?\\s*(${NUM})$`)) ||
+            trimmedText.match(new RegExp(`^(${NUM})\\s*#?\\s*([^\\d-]+)$`));
           if (m) {
             const [, part1, part2] = m;
             const namePart = /^\d/.test(part1) ? part2 : part1;

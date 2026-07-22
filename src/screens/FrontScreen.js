@@ -171,9 +171,13 @@ export default function FrontScreen() {
 
      {/* logo */}
 <div className="mt-20 mb-8 md:mt-55 md:mb-3">
-         <div className="w-16 h-16 md:w-auto md:h-auto bg-[#FFE6CA] md:bg-transparent rounded-full flex items-center justify-center">
+         {/* The peach disc was a wrapper background (bg-[#FFE6CA]) applied on
+             mobile only and switched off at md, so the same logo sat on a pink
+             circle on phones and on nothing on desktop. Dropped, and the mobile
+             mark scaled up from 40px to sit closer to the desktop presence. */}
+         <div className="flex items-center justify-center">
             {/* Mobile logo */}
-            <Image src="/logo.svg" alt="Hadith Logo" width={40} height={40} className="md:hidden" />
+            <Image src="/logo.svg" alt="Hadith Logo" width={96} height={96} className="md:hidden" />
             {/* Desktop logo */}
             <Image src="/logo.svg" alt="Hadith Logo" width={180} height={230} className="hidden md:block" />
           </div>

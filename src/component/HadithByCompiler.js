@@ -25,6 +25,7 @@ import { compilerFor, gradeFor, compilerToDb } from '../lib/i18n';
 import { useLanguage, pickLabel } from '../lib/LanguageContext';
 
 import { buildHadithLabel } from '../lib/hadithLabel';
+import MatchedReferenceChips from './MatchedReferenceChips';
 
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
 // or one of the placeholder strings the source data uses to mean "nothing".
@@ -770,10 +771,6 @@ function InlinePanels({ hadith }) {
   const commentary= hadith?.commentary || 'None';
   const hadithNumber = hadith?.hadith_number || '';
 
-  const referenceChips = reference
-    ? reference.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean)
-    : [];
-
   return (
     <div className="mt-4 mb-6">
       <div className="flex justify-start gap-[22px] mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
@@ -815,17 +812,13 @@ function InlinePanels({ hadith }) {
       )}
       {activeTab === 'Reference' && (
         <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-          {referenceChips.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {referenceChips.map((chip, i) => (
-                <span key={i} className="h-[28px] px-3 inline-flex items-center justify-center bg-[#EDE4E1] text-[#523230] text-xs font-medium rounded-[10px]">
-                  {chip}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <div className="text-sm text-gray-400 italic">No reference available</div>
-          )}
+          {/* Was a hand-rolled chip list, so the grouped redesign never reached
+              this page. Uses the shared component now, like every other panel. */}
+          <MatchedReferenceChips
+            value={hadith?.matched_hadith}
+            isArabic={isArabic}
+            emptyText={isArabic ? 'لا توجد مراجع لهذا الحديث.' : 'No reference available'}
+          />
         </div>
       )}
       {activeTab === 'Commentary' && (

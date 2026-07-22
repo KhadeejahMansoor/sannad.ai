@@ -14,6 +14,7 @@ import HadithText from './HadithText';
 import AyatChips from './AyatChips';
 import MatchedReferenceChips from './MatchedReferenceChips';
 import { useLanguage } from '../lib/LanguageContext';
+import { useOpenReference } from '../hooks/useOpenReference';
 import { buildHadithLabel } from '../lib/hadithLabel';
 
 const BLANK_TOKENS = new Set(['', '-', '--', '---', '\u2014', '\u2013', 'n/a', 'na', 'none', 'nil', 'null', 'undefined']);
@@ -28,6 +29,9 @@ const firstPresent = (...vals) => vals.find((v) => !isBlank(v));
 export default function InlineTabPanels({ hadith }) {
   const [activeTab, setActiveTab] = useState('Contents');
   const { isArabic } = useLanguage();
+  // Without onSelect the chips render as plain spans, so tapping a reference
+  // did nothing on mobile. Same handler the desktop panels use.
+  const openRef = useOpenReference();
 
   // Was reading hadith.book straight — the RAW column, prefix and all
   // ("كتاب الإيمان"). /api/hadiths-by-filters also returns the stripped forms
@@ -92,6 +96,7 @@ export default function InlineTabPanels({ hadith }) {
               this page. Uses the shared component now, like every other panel. */}
           <MatchedReferenceChips
             value={hadith?.matched_hadith}
+            onSelect={openRef}
             isArabic={isArabic}
             emptyText={isArabic ? 'لا توجد مراجع لهذا الحديث.' : 'No reference available'}
           />

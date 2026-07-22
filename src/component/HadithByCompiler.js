@@ -189,6 +189,50 @@ export default function HadithByCompiler() {
   );
   const hadiths = useMemo(() => (hadithsRes?.success ? hadithsRes.data : []), [hadithsRes]);
 
+  // ── Infinite scroll ────────────────────────────────────────────────
+  //
+  // `hadiths` is one page of PAGE_SIZE rows. The list reads `allHadiths`
+  // instead: every page fetched so far, in order. Scrolling near the end bumps
+  // `page`, the next slice arrives, and it is appended rather than replacing
+  // what is already on screen.
+  //
+  // offset 0 means a fresh query — a filter changed, and `page` was reset to
+  // 0 — so the accumulator starts over instead of appending unrelated rows.
+  const [allHadiths, setAllHadiths] = useState([]);
+
+  useEffect(() => {
+    if (!hadithsRes?.success) return;
+    const offset = hadithsRes?.pagination?.offset ?? page * PAGE_SIZE;
+
+    if (offset === 0) {
+      setAllHadiths(hadiths);
+      return;
+    }
+
+    // Dedupe by id: a page can be re-fetched (React strict mode double-invokes
+    // effects in dev) and duplicate keys would break the virtualizer.
+    setAllHadiths((prev) => {
+      const seen = new Set(prev.map((h) => h.hadith_id));
+      const added = hadiths.filter((h) => !seen.has(h.hadith_id));
+      return added.length ? [...prev, ...added] : prev;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hadithsRes]);
+
+  // One list serves both layouts, but the row height differs enough that the
+  // virtualizer needs to know which it is estimating. Rendering both lists and
+  // hiding one with CSS would mount two window virtualizers competing over the
+  // same scroll position, so only the matching one is mounted.
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const sync = () => setIsDesktop(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+
   // Whenever a new set of rows lands — a filter changed, or an arrow pushed us
   // onto another page — decide where the reader should be.
   //
@@ -356,11 +400,29 @@ export default function HadithByCompiler() {
   // .measure() call here would race that observer and produce stale offsets.
   const mobileListRef = useRef(null);
   const mobileVirtualizer = useWindowVirtualizer({
-    count: hadiths.length,
-    estimateSize: () => 320,                         // typical mobile card height
+    count: allHadiths.length,
+    estimateSize: () => (isDesktop ? 420 : 320),      // typical card height
     overscan: 5,
     scrollMargin: mobileListRef.current?.offsetTop ?? 0,
   });
+
+  // Desktop has room for both columns; mobile shows Arabic only in Arabic mode.
+  const showArabicSide = isArabic || isDesktop;
+
+  const virtualItems = mobileVirtualizer.getVirtualItems();
+
+  // Fetch the next page once the reader is within 10 rows of the end.
+  // requestedPageRef stops the same page being asked for repeatedly while
+  // the request is still in flight.
+  const requestedPageRef = useRef(0);
+  useEffect(() => {
+    const last = virtualItems[virtualItems.length - 1];
+    if (!last || !hasMore || hadithsLoading) return;
+    if (last.index < allHadiths.length - 10) return;
+    if (requestedPageRef.current === page + 1) return;
+    requestedPageRef.current = page + 1;
+    setPage(page + 1);
+  }, [virtualItems, allHadiths.length, hasMore, hadithsLoading, page]);
 
   return (
     <div className="min-h-screen w-full bg-[#F6F4F1]">
@@ -543,14 +605,14 @@ export default function HadithByCompiler() {
               <div className="text-center text-gray-500 py-8">Loading hadiths...</div>
             )}
 
-            {!hadithsLoading && hadiths.length === 0 && (
+            {!hadithsLoading && allHadiths.length === 0 && (
               <div className="text-center text-gray-500 py-8">
                 {isArabic ? 'لا توجد أحاديث لهذا الاختيار.' : 'No hadiths found for this selection.'}
               </div>
             )}
 
             {/* Mobile cards — window-virtualized list with inline expand */}
-            <div ref={mobileListRef} className="md:hidden">
+            <div ref={mobileListRef}>
               <div
                 style={{
                   height: `${mobileVirtualizer.getTotalSize()}px`,
@@ -558,8 +620,8 @@ export default function HadithByCompiler() {
                   position: 'relative',
                 }}
               >
-                {mobileVirtualizer.getVirtualItems().map((virtualRow) => {
-                  const hadith = hadiths[virtualRow.index];
+                {virtualItems.map((virtualRow) => {
+                  const hadith = allHadiths[virtualRow.index];
                   const expanded = expandedId === hadith.hadith_id;
                   return (
                     <div
@@ -598,10 +660,10 @@ export default function HadithByCompiler() {
                         finalGrader={hadith.final_grader}
                         /* Arabic side — mobile shows English only by default;
                            Arabic only when the Arabic language is selected. */
-                        narratorAr={isArabic ? hadith.arabic_intro_clause : undefined}
-                        contentAr={isArabic ? hadith.hadith_text_arabic : undefined}
-                        hadithIdAr={isArabic ? `${hadith.compiler} ${hadith.hadith_number}` : undefined}
-                        gradeAr={isArabic ? hadith.grade : undefined}
+                        narratorAr={showArabicSide ? hadith.arabic_intro_clause : undefined}
+                        contentAr={showArabicSide ? hadith.hadith_text_arabic : undefined}
+                        hadithIdAr={showArabicSide ? `${hadith.compiler} ${hadith.hadith_number}` : undefined}
+                        gradeAr={showArabicSide ? hadith.grade : undefined}
                         /* Behavior */
                         hadithLinkId={hadith.hadith_id}
                         isExpanded={expanded}
@@ -614,19 +676,13 @@ export default function HadithByCompiler() {
               </div>
             </div>
 
-            {/* Desktop slider — reuse the one we already built */}
-            <div className="hidden md:block">
-              {hadiths.length > 0 && (
-                <HadithSlider
-                  hadiths={hadiths}
-                  language={language}
-                  index={index}
-                  onIndexChange={setIndex}
-                  onPrev={goPrev}
-                  onNext={goNext}
-                />
-              )}
-            </div>
+            {/* The one-at-a-time slider is gone; both layouts now scroll the
+                same virtualized list, which loads further pages as it goes. */}
+            {hadithsLoading && allHadiths.length > 0 && (
+              <div className="text-center text-gray-400 text-sm py-6">
+                {isArabic ? 'جارٍ التحميل…' : 'Loading more…'}
+              </div>
+            )}
 
             
           </div>

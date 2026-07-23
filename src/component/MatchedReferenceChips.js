@@ -20,6 +20,16 @@ function arabicCompiler(compiler) {
   return compiler;
 }
 
+// Same lookup, but null when there's no real mapping — the display fallback
+// above is fine showing an English name, a URL is not.
+function arabicCompilerOrNull(compiler) {
+  try {
+    return compilerToDb(compiler) || null;
+  } catch {
+    return null;
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * MatchedReferenceChips
  * ------------------------------------------------------------------
@@ -55,6 +65,17 @@ function parseRef(raw) {
 // row, the colour carried no information and only added noise. A single warm
 // sand keeps the panel calm against the #F6F4F1 page.
 const CHIP_STYLE = "bg-[#EBE7DE] text-[#5C5347]";
+
+// The resolver route that turns compiler+number into the hadith's real URL.
+// Giving the chips an href is what makes right-click "open in new tab",
+// middle-click, and copy-link-address work — a <button> offers none of those.
+// Returns null when the compiler has no Arabic mapping, in which case the chip
+// renders as a plain span, matching the old no-op behaviour.
+function hrefFor(compiler, number) {
+  const ar = arabicCompilerOrNull(compiler);
+  if (!ar || !number) return null;
+  return `/api/hadith/lookup?compiler=${encodeURIComponent(ar)}&number=${encodeURIComponent(number)}`;
+}
 
 // Leading integer, for ordering. "13940" -> 13940, "7350-7351" -> 7350.
 function numericValue(number) {
@@ -144,18 +165,35 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
                   );
                 }
 
+                const href = hrefFor(group.compiler, ref.number);
+
+                // No mapping, no URL — render it unclickable rather than a dead link.
+                if (!href) {
+                  return (
+                    <span key={`${ref.raw}-${i}`} className={cls}>
+                      {label}
+                    </span>
+                  );
+                }
+
                 return (
-                  <button
+                  <a
                     key={`${ref.raw}-${i}`}
-                    type="button"
-                    onClick={() =>
-                      onSelect({ compiler: group.compiler, number: ref.number, raw: ref.raw })
-                    }
-                    className={`${cls} cursor-pointer transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1`}
+                    href={href}
+                    onClick={(e) => {
+                      // Let the browser handle anything that means "somewhere
+                      // else": ctrl/cmd/shift/alt-click, or a middle click. Only
+                      // a plain left click is intercepted for in-app navigation,
+                      // which is faster than a round trip through the redirect.
+                      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                      e.preventDefault();
+                      onSelect({ compiler: group.compiler, number: ref.number, raw: ref.raw });
+                    }}
+                    className={`${cls} cursor-pointer transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 no-underline`}
                     aria-label={`Open ${ref.raw}`}
                   >
                     {label}
-                  </button>
+                  </a>
                 );
               })}
             </span>

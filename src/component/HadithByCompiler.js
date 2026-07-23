@@ -26,7 +26,6 @@ import { useLanguage, pickLabel } from '../lib/LanguageContext';
 
 import { buildHadithLabel } from '../lib/hadithLabel';
 import MatchedReferenceChips from './MatchedReferenceChips';
-import HadithDetailStatic from './HadithDetailBottomSheet';
 import InlineTabPanels from './InlineTabPanels';
 
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
@@ -672,8 +671,6 @@ export default function HadithByCompiler() {
                         isExpanded={expanded}
                         onToggleExpand={() => handleToggleExpand(hadith.hadith_id)}
                       />
-                      {/* Desktop gets the two-column panel the old slider used;
-                          mobile keeps the stacked tabs, which fit a narrow screen. */}
                       {expanded && (
                         // The panel and the NEXT hadith's card are both white on the
                         // same background, so an expanded row ran straight into the
@@ -688,9 +685,9 @@ export default function HadithByCompiler() {
                           borderBottom: '1px solid #DDD8D0',
                           marginBottom: 0,
                         }}>
-                          {isDesktop
-                            ? <HadithDetailStatic isOpen hadith={hadith} onClose={() => handleToggleExpand(hadith.hadith_id)} />
-                            : <InlineTabPanels hadith={hadith} />}
+                          {/* Same tabbed panel at every width — Contents /
+                              Reference / Commentary / Ayat. */}
+                          <InlineTabPanels hadith={hadith} />
                         </div>
                       )}
                     </div>

@@ -27,6 +27,7 @@ import { useLanguage, pickLabel } from '../lib/LanguageContext';
 import { buildHadithLabel } from '../lib/hadithLabel';
 import MatchedReferenceChips from './MatchedReferenceChips';
 import InlineTabPanels from './InlineTabPanels';
+import HadithDetailStatic from './HadithDetailBottomSheet';
 
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
 // or one of the placeholder strings the source data uses to mean "nothing".
@@ -685,9 +686,13 @@ export default function HadithByCompiler() {
                           borderBottom: '1px solid #DDD8D0',
                           marginBottom: 0,
                         }}>
-                          {/* Same tabbed panel at every width — Contents /
-                              Reference / Commentary / Ayat. */}
-                          <InlineTabPanels hadith={hadith} />
+                          {/* Desktop has room for the two-column panel: Details +
+                              Ayat on the left, Reference + Commentary on the right.
+                              Mobile gets the tabbed version, which fits a narrow
+                              screen without the columns collapsing into a stack. */}
+                          {isDesktop
+                            ? <HadithDetailStatic isOpen hadith={hadith} onClose={() => handleToggleExpand(hadith.hadith_id)} />
+                            : <InlineTabPanels hadith={hadith} />}
                         </div>
                       )}
                     </div>

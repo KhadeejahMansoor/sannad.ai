@@ -14,7 +14,7 @@ import { hadithSlug } from "@/lib/hadithUrl";
  * On click it:
  *   1. translates the English compiler on the pill -> Arabic DB value
  *   2. GET /api/hadith/<number>?compiler=<arabic>
- *   3. router.push(`/hadith/<Compiler><number>`) — e.g. /hadith/Tirmidhi1
+ *   3. router.push(`/<Compiler><number>`) — e.g. /Tirmidhi1
  *
  * A reference with no matching row (or an unmapped compiler) is a no-op
  * — the pill just doesn't navigate; nothing errors.
@@ -42,7 +42,7 @@ export function useOpenReference() {
       // composite id, so clicking a chip and opening it in a new tab (which
       // goes through /api/hadith/lookup) both land on the same address.
       const slug = hadithSlug(compiler, number) || id;
-      router.push(`/hadith/${encodeURIComponent(slug)}`);
+      router.push(`/${encodeURIComponent(slug)}`);
     } catch {
       /* swallow — a broken pill shouldn't take down the panel */
     }

@@ -3,7 +3,7 @@
 // Resolves "compiler + hadith number" to that hadith's page and redirects.
 //
 // The reference chips only know a compiler and a number; the page they point at
-// is /hadith/<composite id>, which is only known after a lookup. That meant the
+// is /<compiler><number>, which is only known after a lookup. That meant the
 // chips had to be <button>s running an async fetch — and a button has no URL, so
 // right-click offered no "open in new tab", middle-click did nothing, and the
 // reference couldn't be copied or bookmarked.
@@ -44,7 +44,7 @@ export async function GET(request) {
     // Land on the readable URL, not the composite id — a chip opened in a new
     // tab should leave a legible address bar.
     const slug = hadithSlug(translateCompiler(compiler), number) || id;
-    return NextResponse.redirect(new URL(`/hadith/${encodeURIComponent(slug)}`, origin));
+    return NextResponse.redirect(new URL(`/${encodeURIComponent(slug)}`, origin));
   } catch {
     return home;
   }

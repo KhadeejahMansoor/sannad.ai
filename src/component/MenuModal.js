@@ -44,7 +44,7 @@ const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, set
     // the number, so the two can't be confused.
     const slug = hadithSlug(compilerLabel, selectedHadithNumber);
     if (!slug) return;
-    router.push(`/hadith/${encodeURIComponent(slug)}`);
+    router.push(`/${encodeURIComponent(slug)}`);
     onClose();
     if (onCompleteClose) onCompleteClose();
   };

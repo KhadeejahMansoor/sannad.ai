@@ -102,7 +102,7 @@ export default function HadithCard({
     "h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] flex items-center justify-center whitespace-nowrap text-[#6B5B55] text-sm font-medium hover:bg-[#DDD2CD] transition-colors";
 
   const EnglishIdTag = hadithLinkId ? (
-    <Link href={`/hadith/${encodeURIComponent(linkTarget)}`} className={idTagClassName}>
+    <Link href={`/${encodeURIComponent(linkTarget)}`} className={idTagClassName}>
       {hadithId}
     </Link>
   ) : (
@@ -110,7 +110,7 @@ export default function HadithCard({
   );
 
   const ArabicIdTag = hadithLinkId ? (
-    <Link href={`/hadith/${encodeURIComponent(linkTarget)}`} className={idTagClassName}>
+    <Link href={`/${encodeURIComponent(linkTarget)}`} className={idTagClassName}>
       {hadithIdAr}
     </Link>
   ) : (

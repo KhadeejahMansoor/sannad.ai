@@ -32,10 +32,23 @@ export default function HadithDetailClient({ hadithId }) {
               compilerToDb(parsed.compiler)
             )}`
           );
-          if (lookup.ok) {
-            const lookupJson = await lookup.json();
-            if (lookupJson?.data?.id) id = lookupJson.data.id;
+          const lookupJson = lookup.ok ? await lookup.json() : null;
+          const resolved = lookupJson?.data?.id;
+
+          if (cancelled) return;
+
+          // A slug that doesn't resolve means there is no such hadith. Stop
+          // here: passing the slug on to /api/hadith-by-id would surface that
+          // endpoint's format complaint ("Expected '<source>-<id>'"), which
+          // describes an internal id shape the reader never typed.
+          if (!resolved) {
+            setError(`No hadith found for ${parsed.compiler} ${parsed.number}.`);
+            setHadith(null);
+            setLoading(false);
+            return;
           }
+
+          id = resolved;
         }
 
         if (cancelled) return;
@@ -84,7 +97,7 @@ export default function HadithDetailClient({ hadithId }) {
   const goTo = (neighbor) => {
     if (!neighbor?.hadith_id) return;
     const slug = hadithSlug(neighbor.compiler, neighbor.hadith_number) || neighbor.hadith_id;
-    router.push(`/hadith/${encodeURIComponent(slug)}`);
+    router.push(`/${encodeURIComponent(slug)}`);
   };
 
   const handlePrev = () => goTo(neighbors.prev);

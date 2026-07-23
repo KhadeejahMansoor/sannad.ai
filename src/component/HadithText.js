@@ -26,9 +26,8 @@ const HONORIFICS = {
   r9: 'صلى الله عليه وسلم',
 };
 
-// One paragraph's worth of text, with honorific tokens swapped for glyphs or
-// images. Split out so the paragraph wrapper below can reuse it.
-function renderInline(text, keyPrefix) {
+// Honorific tokens swapped for glyphs or images.
+function renderHonorifics(text, keyPrefix) {
   // Split on [[rN]], keeping the tokens so we can swap them for images.
   const parts = String(text).split(/(\[\[r\d+\]\])/g);
 
@@ -75,6 +74,33 @@ function renderInline(text, keyPrefix) {
       );
     }
     return <React.Fragment key={`${keyPrefix}-${i}`}>{part}</React.Fragment>;
+  });
+}
+
+// Emphasis. The source marks a phrase by wrapping it in asterisks —
+// *like this* — and those asterisks were being printed literally.
+//
+// Split on the pairs FIRST, then render honorifics inside each piece, so a
+// token sitting inside an emphasised phrase (*The Prophet [[r9]] said*) still
+// becomes its glyph and the emphasis still spans the whole phrase.
+//
+// A lone asterisk with no partner stays literal — it isn't markup.
+function renderInline(text, keyPrefix) {
+  const parts = String(text).split(/(\*[^*\n]+\*)/g);
+
+  return parts.map((part, i) => {
+    if (/^\*[^*\n]+\*$/.test(part)) {
+      return (
+        <em key={`${keyPrefix}-em${i}`}>
+          {renderHonorifics(part.slice(1, -1), `${keyPrefix}-em${i}`)}
+        </em>
+      );
+    }
+    return (
+      <React.Fragment key={`${keyPrefix}-t${i}`}>
+        {renderHonorifics(part, `${keyPrefix}-t${i}`)}
+      </React.Fragment>
+    );
   });
 }
 

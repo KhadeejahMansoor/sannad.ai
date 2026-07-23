@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import HadithText from "./HadithText";
+import { slugFromLabel } from "../lib/hadithUrl";
 
 // Pretty-print the grader name from the API's final_grader column.
 // Azami rows get the longer Madinah descriptor; everyone else gets just the name.
@@ -92,11 +93,16 @@ export default function HadithCard({
 
   // The hadith-id tag becomes a Link if a hadithLinkId is provided;
   // otherwise it stays as a plain styled div (backward-compatible).
+  // Link to the readable URL (Tirmidhi1) rather than the composite id.
+  // hadithId is already "Tirmidhi 1", so the slug comes straight off it; if it
+  // isn't that shape, fall back to the id, which still resolves.
+  const linkTarget = slugFromLabel(hadithId) || hadithLinkId;
+
   const idTagClassName =
     "h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] flex items-center justify-center whitespace-nowrap text-[#6B5B55] text-sm font-medium hover:bg-[#DDD2CD] transition-colors";
 
   const EnglishIdTag = hadithLinkId ? (
-    <Link href={`/hadith/${encodeURIComponent(hadithLinkId)}`} className={idTagClassName}>
+    <Link href={`/hadith/${encodeURIComponent(linkTarget)}`} className={idTagClassName}>
       {hadithId}
     </Link>
   ) : (
@@ -104,7 +110,7 @@ export default function HadithCard({
   );
 
   const ArabicIdTag = hadithLinkId ? (
-    <Link href={`/hadith/${encodeURIComponent(hadithLinkId)}`} className={idTagClassName}>
+    <Link href={`/hadith/${encodeURIComponent(linkTarget)}`} className={idTagClassName}>
       {hadithIdAr}
     </Link>
   ) : (

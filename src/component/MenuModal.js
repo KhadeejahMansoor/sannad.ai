@@ -12,6 +12,8 @@ import { useScrollLock } from '../lib/useScrollLock';
 import { useLanguage, pickLabel } from '../lib/LanguageContext';
 import HadithText from './HadithText';
 
+import { hadithSlug } from '../lib/hadithUrl';
+
 const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, setSelectedHadithNumber, compilerLabel = 'Azami' }) => {
   const hashModalRef = useRef(null);
   const router = useRouter();
@@ -34,11 +36,15 @@ const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, set
   }, [onClose]);
 
   const handleGoClick = () => {
-    // Navigate to the single-hadith page: /hadith/{compiler}-{number}
-    // e.g. Azami 3230 -> /hadith/azami-3230. Matches the URL the search uses.
-    // Spaces in multi-word compilers (e.g. "Ibn Majah") become hyphens.
-    const slug = `${String(compilerLabel).toLowerCase().trim().replace(/\s+/g, '-')}-${selectedHadithNumber}`;
-    router.push(`/hadith/${slug}`);
+    // Navigate to the single-hadith page: /hadith/Azami3230.
+    //
+    // The old form was lowercase with a hyphen (azami-3230), which collided
+    // with the composite id shape (azami-<row id>) — so an Azami link could
+    // land on an unrelated hadith. The readable form has no separator before
+    // the number, so the two can't be confused.
+    const slug = hadithSlug(compilerLabel, selectedHadithNumber);
+    if (!slug) return;
+    router.push(`/hadith/${encodeURIComponent(slug)}`);
     onClose();
     if (onCompleteClose) onCompleteClose();
   };

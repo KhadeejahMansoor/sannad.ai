@@ -4,6 +4,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DetailView from '@/component/DetailView';
+import { parseHadithSlug, hadithSlug } from '@/lib/hadithUrl';
+import { compilerToDb } from '@/lib/i18n';
 
 export default function HadithDetailClient({ hadithId }) {
   const router = useRouter();
@@ -19,11 +21,30 @@ export default function HadithDetailClient({ hadithId }) {
         setLoading(true);
         setError(null);
 
+        // The URL may be the readable form (Abu-Dawud2350) or a composite id
+        // from an older link (sevenbooks-59726). Everything downstream works in
+        // composite ids, so a readable slug is resolved to one first.
+        let id = hadithId;
+        const parsed = parseHadithSlug(hadithId);
+        if (parsed) {
+          const lookup = await fetch(
+            `/api/hadith/${encodeURIComponent(parsed.number)}?compiler=${encodeURIComponent(
+              compilerToDb(parsed.compiler)
+            )}`
+          );
+          if (lookup.ok) {
+            const lookupJson = await lookup.json();
+            if (lookupJson?.data?.id) id = lookupJson.data.id;
+          }
+        }
+
+        if (cancelled) return;
+
         // Fetch the hadith and its neighbors in parallel — neighbors is
         // independent of the body, so no reason to wait sequentially.
         const [hadithRes, neighborsRes] = await Promise.all([
-          fetch(`/api/hadith-by-id/${encodeURIComponent(hadithId)}`),
-          fetch(`/api/hadith-by-id/${encodeURIComponent(hadithId)}/neighbors`),
+          fetch(`/api/hadith-by-id/${encodeURIComponent(id)}`),
+          fetch(`/api/hadith-by-id/${encodeURIComponent(id)}/neighbors`),
         ]);
 
         const hadithJson = await hadithRes.json();
@@ -57,16 +78,17 @@ export default function HadithDetailClient({ hadithId }) {
 
   const handleClose = () => router.back();
 
-  const handlePrev = () => {
-    if (neighbors.prev?.hadith_id) {
-      router.push(`/hadith/${encodeURIComponent(neighbors.prev.hadith_id)}`);
-    }
+  // Prefer the readable URL, so stepping through with the arrows leaves a
+  // legible address bar. Falls back to the composite id when the neighbour
+  // payload doesn't carry a compiler and number.
+  const goTo = (neighbor) => {
+    if (!neighbor?.hadith_id) return;
+    const slug = hadithSlug(neighbor.compiler, neighbor.hadith_number) || neighbor.hadith_id;
+    router.push(`/hadith/${encodeURIComponent(slug)}`);
   };
-  const handleNext = () => {
-    if (neighbors.next?.hadith_id) {
-      router.push(`/hadith/${encodeURIComponent(neighbors.next.hadith_id)}`);
-    }
-  };
+
+  const handlePrev = () => goTo(neighbors.prev);
+  const handleNext = () => goTo(neighbors.next);
 
   if (loading) {
     return (

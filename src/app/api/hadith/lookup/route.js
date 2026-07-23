@@ -15,6 +15,8 @@
 // the link is built — this route deliberately does no i18n of its own.
 
 import { NextResponse } from 'next/server';
+import { hadithSlug } from '@/lib/hadithUrl';
+import { translateCompiler } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +41,10 @@ export async function GET(request) {
     const id = json?.data?.id;
     if (!id) return home;
 
-    return NextResponse.redirect(new URL(`/hadith/${id}`, origin));
+    // Land on the readable URL, not the composite id — a chip opened in a new
+    // tab should leave a legible address bar.
+    const slug = hadithSlug(translateCompiler(compiler), number) || id;
+    return NextResponse.redirect(new URL(`/hadith/${encodeURIComponent(slug)}`, origin));
   } catch {
     return home;
   }

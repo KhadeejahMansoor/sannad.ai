@@ -147,7 +147,7 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
               columnGap: '18px',
             }}
           >
-            <span className="text-xs text-[#9A8A85] text-start leading-6">{name}</span>
+            <span className="text-xs font-medium text-[#523230] text-start leading-6">{name}</span>
 
             {/* Numbers read as a run of text, separated by dots. Each one still
                 takes a background on hover, so the target is obvious without

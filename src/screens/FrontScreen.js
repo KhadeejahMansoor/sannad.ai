@@ -301,7 +301,14 @@ export default function FrontScreen() {
                           ? 'bg-[#523230] text-white'
                           : 'text-black hover:bg-gray-200'
                     }`}
-                    style={{ fontFamily: "'Noto Naskh Arabic', serif" }}
+                    // The Arabic serif was applied to every entry, so "English" and
+                    // "Français" rendered in a Naskh face while the rest of the app
+                    // uses Inter. Only Arabic-script names need it.
+                    style={
+                    /[\u0600-\u06FF]/.test(lang.native_name || '')
+                    ? { fontFamily: "'Noto Naskh Arabic', serif" }
+                    : undefined
+                    }
                   >
                     {stripArabicDiacritics(lang.native_name)}
                   </button>

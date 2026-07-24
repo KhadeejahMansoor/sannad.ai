@@ -155,31 +155,34 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
 
                 The separators live outside the links: a dot inside the anchor
                 would highlight with it and look like part of the number. */}
-            <span className="text-[13px] leading-6">
+            {/* flex, not inline text: the numbers carry no whitespace between
+                them, so an inline run has no soft-wrap opportunity and a
+                compiler with a dozen references overflows the card. Flex items
+                wrap on their own. */}
+            <span className="flex flex-wrap items-baseline text-[13px] leading-6">
               {group.refs.map((ref, i) => {
                 const label = isArabic ? toArabicDigits(ref.number) : ref.number;
                 const href = clickable ? hrefFor(group.compiler, ref.number) : null;
                 const numberCls =
                   'px-1.5 py-0.5 -mx-0.5 rounded-[6px] text-[#7A4B2B] transition-colors';
 
-                const dot = i > 0 ? (
-                  <span key={`d${i}`} className="text-[#CFC7BE] mx-0.5" aria-hidden="true">
-                    ·
-                  </span>
+                // Separator trails each number except the last, so a wrapped
+                // line never begins with a stray dot.
+                const dot = i < group.refs.length - 1 ? (
+                  <span className="text-[#CFC7BE] mx-1" aria-hidden="true">·</span>
                 ) : null;
 
                 if (!href) {
                   return (
-                    <span key={`${ref.raw}-${i}`}>
-                      {dot}
+                    <span key={`${ref.raw}-${i}`} className="whitespace-nowrap">
                       <span className={numberCls}>{label}</span>
+                      {dot}
                     </span>
                   );
                 }
 
                 return (
-                  <span key={`${ref.raw}-${i}`}>
-                    {dot}
+                  <span key={`${ref.raw}-${i}`} className="whitespace-nowrap">
                     <a
                       href={href}
                       onClick={(e) => {
@@ -195,6 +198,7 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
                     >
                       {label}
                     </a>
+                    {dot}
                   </span>
                 );
               })}

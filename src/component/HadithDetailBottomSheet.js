@@ -114,7 +114,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
           // Spacing keyed off the filtered length, not a hardcoded 3, so the
           // last surviving row still loses its bottom margin.
           .map((item, index, arr) => (
-            <div key={index} className="flex items-start py-1.5 gap-3">
+            <div key={index} className="py-1.5" style={{ display: 'grid', gridTemplateColumns: '16px 76px minmax(0, 1fr)', alignItems: 'start', columnGap: '12px' }}>
               <div className="w-4 h-5 flex items-center justify-center flex-shrink-0 text-gray-400">
                 {item.type === 'Book' && (
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -146,12 +146,12 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
                 )}
               </div>
 
-              <span className="w-[76px] flex-shrink-0 text-xs text-gray-400 leading-5">
+              <span className="text-xs text-gray-400 leading-5">
                 {item.label}
               </span>
 
               <span
-                className="flex-1 text-black text-xs leading-5 font-normal font-['Inter'] break-words"
+                className="text-black text-xs leading-5 font-normal font-['Inter'] break-words"
                 dir={isArabic ? 'rtl' : 'ltr'}
                 lang={isArabic ? 'ar' : 'en'}
               >

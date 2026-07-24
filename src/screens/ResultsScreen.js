@@ -282,12 +282,12 @@ function InlinePanels({ hadith }) {
         <PanelHeading isArabic={isArabic}>{isArabic ? 'التفاصيل' : 'Details'}</PanelHeading>
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
           {rows.map((item, i) => (
-            <div key={i} className="flex items-start py-1.5 gap-3">
+            <div key={i} className="py-1.5" style={{ display: 'grid', gridTemplateColumns: '16px 76px minmax(0, 1fr)', alignItems: 'start', columnGap: '12px' }}>
               <span className="w-4 h-5 flex items-center justify-center flex-shrink-0 text-gray-400">
                 <RowIcon type={item.type} />
               </span>
-              <span className="w-[76px] flex-shrink-0 text-xs text-gray-400 leading-5">{item.label}</span>
-              <div className="flex-1 text-xs text-black leading-5 break-words">{item.value || '—'}</div>
+              <span className="text-xs text-gray-400 leading-5">{item.label}</span>
+              <div className="text-xs text-black leading-5 break-words">{item.value || '—'}</div>
             </div>
           ))}
         </div>

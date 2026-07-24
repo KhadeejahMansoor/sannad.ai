@@ -64,10 +64,6 @@ function parseRef(raw) {
 // tell references apart in a flat list — now that each compiler owns its own
 // row, the colour carried no information and only added noise. A single warm
 // sand keeps the panel calm against the #F6F4F1 page.
-// Numbers sit as plain text and only take a background on hover. A panel with
-// twenty references was twenty filled boxes competing for attention; the
-// highlight is more useful as a pointer cue than as permanent decoration.
-const CHIP_STYLE = "text-[#5C5347] bg-transparent hover:bg-[#EBE7DE]";
 
 // The resolver route that turns compiler+number into the hadith's real URL.
 // Giving the chips an href is what makes right-click "open in new tab",
@@ -134,69 +130,72 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
 
   const groups = groupByCompiler(chips);
   const clickable = typeof onSelect === "function";
-  const pillBase =
-    "h-[26px] px-2.5 inline-flex items-center justify-center text-xs font-medium rounded-[8px]";
 
   return (
     <div className="flex flex-col">
       {groups.map((group, gi) => {
-        const cls = `${pillBase} ${CHIP_STYLE}`;
         const name = isArabic ? arabicCompiler(group.compiler) : group.compiler;
 
         return (
           <div
             key={`${group.compiler}-${gi}`}
-            className={`flex items-baseline gap-3 py-2 ${
-              gi < groups.length - 1 ? "border-b border-[#EDE4E1]" : ""
-            }`}
+            className={`py-2 ${gi < groups.length - 1 ? 'border-b border-[#EDE4E1]' : ''}`}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '80px minmax(0, 1fr)',
+              alignItems: 'baseline',
+              columnGap: '18px',
+            }}
           >
-            {/* Fixed-width label column keeps the pills aligned down the panel.
-                min-w rather than w so longer Arabic names aren't clipped. */}
-            <span className="min-w-[76px] flex-shrink-0 text-xs font-medium text-[#523230] text-start">
-              {name}
-            </span>
+            <span className="text-xs text-[#9A8A85] text-start leading-6">{name}</span>
 
-            <span className="flex flex-wrap gap-1.5">
+            {/* Numbers read as a run of text, separated by dots. Each one still
+                takes a background on hover, so the target is obvious without
+                twenty filled boxes sitting there permanently.
+
+                The separators live outside the links: a dot inside the anchor
+                would highlight with it and look like part of the number. */}
+            <span className="text-[13px] leading-6">
               {group.refs.map((ref, i) => {
                 const label = isArabic ? toArabicDigits(ref.number) : ref.number;
+                const href = clickable ? hrefFor(group.compiler, ref.number) : null;
+                const numberCls =
+                  'px-1.5 py-0.5 -mx-0.5 rounded-[6px] text-[#7A4B2B] transition-colors';
 
-                if (!clickable) {
-                  return (
-                    <span key={`${ref.raw}-${i}`} className={cls}>
-                      {label}
-                    </span>
-                  );
-                }
+                const dot = i > 0 ? (
+                  <span key={`d${i}`} className="text-[#CFC7BE] mx-0.5" aria-hidden="true">
+                    ·
+                  </span>
+                ) : null;
 
-                const href = hrefFor(group.compiler, ref.number);
-
-                // No mapping, no URL — render it unclickable rather than a dead link.
                 if (!href) {
                   return (
-                    <span key={`${ref.raw}-${i}`} className={cls}>
-                      {label}
+                    <span key={`${ref.raw}-${i}`}>
+                      {dot}
+                      <span className={numberCls}>{label}</span>
                     </span>
                   );
                 }
 
                 return (
-                  <a
-                    key={`${ref.raw}-${i}`}
-                    href={href}
-                    onClick={(e) => {
-                      // Let the browser handle anything that means "somewhere
-                      // else": ctrl/cmd/shift/alt-click, or a middle click. Only
-                      // a plain left click is intercepted for in-app navigation,
-                      // which is faster than a round trip through the redirect.
-                      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-                      e.preventDefault();
-                      onSelect({ compiler: group.compiler, number: ref.number, raw: ref.raw });
-                    }}
-                    className={`${cls} cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 no-underline`}
-                    aria-label={`Open ${ref.raw}`}
-                  >
-                    {label}
-                  </a>
+                  <span key={`${ref.raw}-${i}`}>
+                    {dot}
+                    <a
+                      href={href}
+                      onClick={(e) => {
+                        // Let the browser handle anything that means "somewhere
+                        // else": ctrl/cmd/shift/alt-click, or a middle click. Only
+                        // a plain left click is intercepted for in-app navigation.
+                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+                        e.preventDefault();
+                        onSelect({ compiler: group.compiler, number: ref.number, raw: ref.raw });
+                      }}
+                      className={`${numberCls} cursor-pointer no-underline hover:bg-[#EBE7DE] focus:outline-none focus-visible:ring-2`}
+                      aria-label={`Open ${ref.raw}`}
+                    >
+                      {label}
+                    </a>
+                  </span>
                 );
               })}
             </span>

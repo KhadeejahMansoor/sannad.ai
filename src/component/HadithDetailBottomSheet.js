@@ -114,8 +114,8 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
           // Spacing keyed off the filtered length, not a hardcoded 3, so the
           // last surviving row still loses its bottom margin.
           .map((item, index, arr) => (
-            <div key={index} className={`flex items-start py-0.5 ${index < arr.length - 1 ? 'mb-1' : ''}`}>
-              <div className="w-4 h-4 flex items-start justify-center me-2 flex-shrink-0 text-gray-400 mt-0.5">
+            <div key={index} className="flex items-start py-1.5 gap-3">
+              <div className="w-4 h-5 flex items-center justify-center flex-shrink-0 text-gray-400">
                 {item.type === 'Book' && (
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M4 14.6663H14V13.333H4.008C3.7 13.325 3.33333 13.203 3.33333 12.6663C3.33333 12.1297 3.7 12.0077 4.008 11.9997H14V2.66634C14 1.93101 13.402 1.33301 12.6667 1.33301H4C3.196 1.33301 2 1.86567 2 3.33301V12.6663C2 14.1337 3.196 14.6663 4 14.6663ZM3.33333 5.33301V3.33301C3.33333 2.79634 3.7 2.67434 4 2.66634H12.6667V10.6663H3.33333V5.33301Z" fill="#939393" />
@@ -146,12 +146,12 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
                 )}
               </div>
 
-              <span className="text-xs text-gray-400 me-4 w-[60px] mt-0.5">
+              <span className="w-[76px] flex-shrink-0 text-xs text-gray-400 leading-5">
                 {item.label}
               </span>
 
               <span
-                className="flex-1 text-black text-xs font-normal font-['Inter'] break-words"
+                className="flex-1 text-black text-xs leading-5 font-normal font-['Inter'] break-words"
                 dir={isArabic ? 'rtl' : 'ltr'}
                 lang={isArabic ? 'ar' : 'en'}
               >

@@ -312,12 +312,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  { type: "Section", title: getField(section, arabicFields.section) },
  { type: "Hadith", label: isArabic || selectedLanguage === 'ar' ? 'الترقيم' : 'Numbering', title: hadithRowLabel },
  ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || !isBlank(item.title)).map((item, i) => (
- <div key={i} className="flex items-start py-2 gap-3">
- <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
+ <div key={i} className="flex items-start py-1.5 gap-3">
+ <span className="w-4 h-5 flex items-center justify-center flex-shrink-0 text-gray-400">
  <RowIcon type={item.type} />
  </span>
- <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.label || item.type}</span>
- <div className={`flex-1 text-sm text-black ${getFont()}`} dir={getDir()}>
+ <span className="w-[76px] flex-shrink-0 text-xs text-gray-400 leading-5">{item.label || item.type}</span>
+ <div className={`flex-1 text-xs text-black leading-5 break-words ${getFont()}`} dir={getDir()}>
  {item.title ? <HadithText text={item.title} /> : '—'}
  </div>
  </div>
@@ -542,9 +542,9 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  { type: "Section", title: getField(section, arabicFields.section) },
  { type: "Hadith", label: isArabic || selectedLanguage === 'ar' ? 'الترقيم' : 'Numbering', title: hadithRowLabel },
  ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || !isBlank(item.title)).map((item, i) => (
- <div key={i} className="flex items-start py-1">
- <span className="text-xs text-gray-400 w-[60px]">{item.label || item.type}</span>
- <div className={`flex-1 text-black text-xs ${getFont()}`} dir={getDir()}>
+ <div key={i} className="flex items-start py-1.5 gap-3">
+ <span className="w-[76px] flex-shrink-0 text-xs text-gray-400 leading-5">{item.label || item.type}</span>
+ <div className={`flex-1 text-xs text-black leading-5 break-words ${getFont()}`} dir={getDir()}>
  {item.title ? <HadithText text={item.title} /> : '—'}
  </div>
  </div>
@@ -672,7 +672,7 @@ function RowIcon({ type }) {
 
 // `label` stays English — RowIcon keys off it. `display` is what the user sees.
 //
-// Metrics match HadithDetailBottomSheet: py-0.5, w-[60px] label, text-xs value.
+// Metrics match the other detail panels: py-1.5, w-[76px] label, leading-5 on
 // This row was py-2 / w-[80px] / text-sm, which is most of why the two pages
 // felt unrelated.
 //
@@ -680,14 +680,14 @@ function RowIcon({ type }) {
 // they'd leave the icon on the wrong side of its label.
 function DetailRow({ label, display, value, font, last }) {
  return (
- <div className={`flex items-start py-0.5 ${last ? '' : 'mb-1'}`}>
- <span className="w-4 h-4 flex items-start justify-center me-2 flex-shrink-0 mt-0.5">
+ <div className={`flex items-start py-1.5 gap-3 ${last ? '' : ''}`}>
+ <span className="w-4 h-5 flex items-center justify-center flex-shrink-0 text-gray-400">
  <RowIcon type={label} />
  </span>
- <span className="text-xs text-gray-400 me-4 w-[60px] mt-0.5">
+ <span className="w-[76px] flex-shrink-0 text-xs text-gray-400 leading-5">
  {display || label}
  </span>
- <div className={`flex-1 text-xs break-words ${font} text-black`}>
+ <div className={`flex-1 text-xs text-black leading-5 break-words ${font}`}>
  {value ? <HadithText text={value} /> : '—'}
  </div>
  </div>

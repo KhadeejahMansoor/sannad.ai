@@ -80,12 +80,12 @@ export default function InlineTabPanels({ hadith }) {
               fallback: `al-Jami al-Kamil ${hadithNumber}`,
             }) },
           ].filter((item) => (item.type !== 'Section' && item.type !== 'Chapter') || !isBlank(item.value)).map((item, i) => (
-            <div key={i} className="flex items-start py-2 gap-3">
-              <span className="w-4 h-4 flex items-center justify-center flex-shrink-0 mt-1">
+            <div key={i} className="flex items-start py-1.5 gap-3">
+              <span className="w-4 h-5 flex items-center justify-center flex-shrink-0 text-gray-400">
                 <RowIcon type={item.type} />
               </span>
-              <span className="text-sm w-[70px] flex-shrink-0 text-gray-400">{item.label || item.type}</span>
-              <div className="flex-1 text-sm text-black">{item.value ? <HadithText text={item.value} /> : '—'}</div>
+              <span className="w-[76px] flex-shrink-0 text-xs text-gray-400 leading-5">{item.label || item.type}</span>
+              <div className="flex-1 text-xs text-black leading-5 break-words">{item.value ? <HadithText text={item.value} /> : '—'}</div>
             </div>
           ))}
         </div>

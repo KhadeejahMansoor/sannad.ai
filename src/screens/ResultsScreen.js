@@ -313,7 +313,7 @@ function InlinePanels({ hadith }) {
           />
         </div>
 
-        <PanelHeading isArabic={isArabic}>{isArabic ? 'الشرح' : 'Commentary'}</PanelHeading>
+        <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3 min-h-[80px]">
           {/* Commentary is Arabic in the DATA (commentary_1, no English form), so
               it carries its own dir regardless of UI language. */}

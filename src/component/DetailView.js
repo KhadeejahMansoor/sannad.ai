@@ -426,7 +426,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  />
  </div>
 
- <PanelHeading isArabic={isArabic}>{isArabic ? 'الشرح' : 'Commentary'}</PanelHeading>
+ <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] p-3 min-h-[100px]">
  {/* The commentary is Arabic in the DATA — commentary_1 has no English
      counterpart — so it carries its own dir regardless of UI language. */}

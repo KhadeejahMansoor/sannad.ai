@@ -42,7 +42,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
   const t = {
     details:      isArabic ? 'التفاصيل'  : 'Details',
     reference:    isArabic ? 'المرجع'    : 'Reference',
-    commentary:   isArabic ? 'الشرح'     : 'Commentary',
+    commentary:   isArabic ? 'تخريج'     : 'Commentary',
     ayat:         isArabic ? 'الآيات'    : 'Ayat annotation',
     book:         isArabic ? 'الكتاب'    : 'Book',
     chapter:      isArabic ? 'الباب'     : 'Chapter',

@@ -215,8 +215,8 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
         </div>
         <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="bg-white rounded-[5px] p-3 min-h-[100px]">
           <p
-            className={`text-sm leading-[22px] whitespace-pre-line ${
-              commentary ? 'text-black' : 'text-[#6B5B55] text-xs'
+            className={`text-sm leading-[26px] whitespace-pre-line ${
+              commentary ? 'text-black' : 'text-[#6B5B55]'
             }`}
             dir={commentary ? 'rtl' : (isArabic ? 'rtl' : 'ltr')}
             lang={commentary ? 'ar' : lang}

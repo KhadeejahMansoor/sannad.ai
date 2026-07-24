@@ -104,7 +104,7 @@ export default function InlineTabPanels({ hadith }) {
       )}
       {activeTab === 'Commentary' && (
         <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-          <div className="text-sm text-black leading-[20px] whitespace-pre-line">
+          <div className="text-sm leading-[26px] text-black whitespace-pre-line">
             {commentary || 'None'}
           </div>
         </div>

@@ -318,7 +318,7 @@ function InlinePanels({ hadith }) {
           {/* Commentary is Arabic in the DATA (commentary_1, no English form), so
               it carries its own dir regardless of UI language. */}
           <p
-            className={`text-xs leading-[18px] whitespace-pre-line text-start ${commentary ? 'text-black' : 'text-[#6B5B55]'}`}
+            className={`text-sm leading-[26px] whitespace-pre-line text-start ${commentary ? 'text-black' : 'text-[#6B5B55]'}`}
             dir={commentary ? 'rtl' : undefined}
             lang={commentary ? 'ar' : undefined}
           >

@@ -64,7 +64,10 @@ function parseRef(raw) {
 // tell references apart in a flat list — now that each compiler owns its own
 // row, the colour carried no information and only added noise. A single warm
 // sand keeps the panel calm against the #F6F4F1 page.
-const CHIP_STYLE = "bg-[#EBE7DE] text-[#5C5347]";
+// Numbers sit as plain text and only take a background on hover. A panel with
+// twenty references was twenty filled boxes competing for attention; the
+// highlight is more useful as a pointer cue than as permanent decoration.
+const CHIP_STYLE = "text-[#5C5347] bg-transparent hover:bg-[#EBE7DE]";
 
 // The resolver route that turns compiler+number into the hadith's real URL.
 // Giving the chips an href is what makes right-click "open in new tab",
@@ -189,7 +192,7 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
                       e.preventDefault();
                       onSelect({ compiler: group.compiler, number: ref.number, raw: ref.raw });
                     }}
-                    className={`${cls} cursor-pointer transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 no-underline`}
+                    className={`${cls} cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 no-underline`}
                     aria-label={`Open ${ref.raw}`}
                   >
                     {label}

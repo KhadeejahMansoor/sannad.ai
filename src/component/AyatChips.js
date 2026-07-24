@@ -58,8 +58,8 @@ function parseAyat(raw) {
 // sand, same height, same radius — so the two panels read as one system.
 // Those chips are Tailwind classes; these are inline styles, so the values
 // are duplicated here rather than shared. Keep them in step.
-const CHIP_BG = '#EBE7DE';
-const CHIP_BG_HOVER = '#E2DCD0';
+const CHIP_BG = 'transparent';
+const CHIP_BG_HOVER = '#EBE7DE';
 const CHIP_TEXT = '#5C5347';
 
 // 'Alaq 96:1-5'. Falls back to the bare reference when the surah number is

@@ -110,6 +110,10 @@ export async function GET(_request, { params }) {
       return {
         hadith_id: `${row.compiler === AZAMI ? 'azami' : 'sevenbooks'}-${row.id}`,
         hadith_number: row.hadith_number,
+        // The client builds the readable URL (/Nasai2) from compiler + number
+        // and falls back to hadith_id without it. Leaving compiler out is why
+        // the arrows used to land on /sevenbooks-48685.
+        compiler: row.compiler,
       };
     };
 

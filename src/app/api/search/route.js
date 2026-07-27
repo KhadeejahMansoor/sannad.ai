@@ -134,7 +134,19 @@ export async function GET(request) {
         h.chapter,
         h.final_grade               AS grade,
         COALESCE(NULLIF(TRIM(h.final_grader), ''), 'Unknown') AS final_grader,
-        h.commentary_1              AS commentary,
+        -- Up to two attributed commentaries. Slot 1 names its scholar in
+        -- commentary_person_1; slots 2 and 3 were pivoted into named columns on
+        -- import (ibn_hajar / hadi), so their author is implied by the column.
+        -- The _english columns were in the table all along and never selected,
+        -- which is why the panel could only render Arabic.
+        h.commentary_1             AS commentary,
+        h.commentary_person_1      AS commentary_person_1,
+        h.commentary_1             AS commentary_1,
+        h.commentary_1_english     AS commentary_1_english,
+        h.ibn_hajar                AS commentary_2,
+        h.commentary_2_english     AS commentary_2_english,
+        h.hadi                     AS commentary_3,
+        h.commentary_3_english     AS commentary_3_english,
         NULL::text                  AS reference,
         h.matched_hadith            AS matched_hadith,
         h.ayat                      AS ayat,

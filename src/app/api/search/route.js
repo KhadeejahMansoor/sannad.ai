@@ -141,7 +141,16 @@ export async function GET(request) {
         NULL::text                  AS duplicates,
         NULL::boolean               AS is_verified,
         h.${textColumn}             AS hadith_text,
-        h.final_hadith              AS hadith_text_arabic,
+        -- The Arabic body is the POST clause, not final_hadith. final_hadith is
+        -- chain + intro + post already concatenated, so returning it here put
+        -- the isnad inline at the top of the body while the card's separate
+        -- bold chain line sat empty. Falls back to final_hadith for the ~0.5%
+        -- of rows with no post_clause.
+        COALESCE(NULLIF(TRIM(h.post_clause), ''), h.final_hadith)
+                                    AS hadith_text_arabic,
+        -- Was never selected at all, so HadithCard's chainAr was always
+        -- undefined and the bold chain line never rendered.
+        h.chain_clause              AS chain_clause,
         h.post_clause_english       AS hadith_text_english,
         h.machine_clause,
         h.intro_clause              AS arabic_intro_clause,

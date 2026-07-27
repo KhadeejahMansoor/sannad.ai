@@ -163,12 +163,12 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
             className={`py-2 ${gi < groups.length - 1 ? 'border-b border-[#EDE4E1]' : ''}`}
             style={{
               display: 'grid',
-              gridTemplateColumns: '80px minmax(0, 1fr)',
+              gridTemplateColumns: '104px minmax(0, 1fr)',
               alignItems: 'baseline',
               columnGap: '18px',
             }}
           >
-            <span className="text-xs font-medium text-[#523230] text-start leading-6">{name}</span>
+            <span className="text-sm font-medium text-[#523230] text-start leading-6">{name}</span>
 
             {/* Numbers read as a run of text, separated by dots. Each one still
                 takes a background on hover, so the target is obvious without
@@ -180,7 +180,7 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
                 them, so an inline run has no soft-wrap opportunity and a
                 compiler with a dozen references overflows the card. Flex items
                 wrap on their own. */}
-            <span className="flex flex-wrap items-baseline text-[13px] leading-6">
+            <span className="flex flex-wrap items-baseline text-sm leading-6">
               {group.refs.map((ref, i) => {
                 const label = isArabic ? toArabicDigits(ref.number) : ref.number;
                 const href = clickable ? hrefFor(group.compiler, ref.number) : null;

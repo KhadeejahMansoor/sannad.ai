@@ -19,7 +19,7 @@ const EXT = 'svg'; // change to 'png' if your logos are PNGs
 //   GLYPH_SIZE    how much bigger than the body text
 //   GLYPH_BASELINE how far to drop it (more negative = lower)
 const GLYPH_SIZE = '1.7em';
-const GLYPH_BASELINE = '-0.30em';
+const GLYPH_BASELINE = '-0.20em';
 
 // Code -> the phrase it stands for (used as the image alt text / tooltip).
 const HONORIFICS = {

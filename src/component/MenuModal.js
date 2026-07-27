@@ -334,17 +334,17 @@ export default function MenuModal({
                 {compilerLabel || 'Compiler'}
               </div>
               <div className="flex items-center gap-3">
-                <div
+                {/* This one really does open the number sheet, so it carries the
+                    same hash the sheet's own header shows — the control and the
+                    thing it opens now match. */}
+                <button
+                  type="button"
                   onClick={handleHashClick}
                   aria-label="Jump to hadith number"
-                  className="w-8 h-8 rounded-[9px] bg-[#F1E9E6] cursor-pointer flex items-center justify-center text-[#523230] hover:bg-[#E9DBD5] transition-colors"
+                  className="w-8 h-8 rounded-[9px] bg-[#F1E9E6] cursor-pointer flex items-center justify-center text-[#523230] text-[17px] leading-none hover:bg-[#E9DBD5] transition-colors"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 12H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M11 8L15 12L11 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M19 6V18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
+                  #
+                </button>
                 <div
                   onClick={() => setIsSearchVisible(!isSearchVisible)}
                   className="w-6 h-6 cursor-pointer flex items-center justify-center ml-[20px]"

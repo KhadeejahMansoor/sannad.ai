@@ -4,8 +4,11 @@ import { inter } from '../lib/fonts';
 import { LanguageProvider } from '../lib/LanguageContext';
 export const dynamic = 'force-dynamic';
 export const metadata = {
-  title: 'Hadith App',
-  description: 'Hadith Translator App',
+  title: 'Sannad',
+  description: 'Sannad — hadith search and translation',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }) {

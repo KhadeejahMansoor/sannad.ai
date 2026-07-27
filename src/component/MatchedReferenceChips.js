@@ -160,7 +160,10 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
         return (
           <div
             key={`${group.compiler}-${gi}`}
-            className={`py-2 ${gi < groups.length - 1 ? 'border-b border-[#EDE4E1]' : ''}`}
+            // py-1 instead of py-2, and the first/last rows drop their outer
+            // padding entirely — combined with the card's own p-3 it was
+            // stacking into a visible band of empty white top and bottom.
+            className={`py-1 first:pt-0 last:pb-0 ${gi < groups.length - 1 ? 'border-b border-[#EDE4E1]' : ''}`}
             style={{
               display: 'grid',
               gridTemplateColumns: '104px minmax(0, 1fr)',
@@ -168,7 +171,9 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
               columnGap: '18px',
             }}
           >
-            <span className="text-sm font-medium text-[#523230] text-start leading-6">{name}</span>
+            {/* ps-2 (padding-inline-start) rather than pl-2, so the indent
+                follows the text direction and lands on the right in Arabic. */}
+            <span className="text-sm font-medium text-[#523230] text-start leading-6 ps-2">{name}</span>
 
             {/* Numbers read as a run of text, separated by dots. Each one still
                 takes a background on hover, so the target is obvious without

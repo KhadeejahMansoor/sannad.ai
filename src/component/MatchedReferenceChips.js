@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage } from "../lib/LanguageContext";
-import { compilerToDb } from "../lib/i18n";
+import { compilerToDb, COMPILER_KEYS } from "../lib/i18n";
 
 // Latin digits -> Arabic-Indic (٠١٢٣٤٥٦٧٨٩), for display in Arabic mode.
 function toArabicDigits(str) {
@@ -82,10 +82,25 @@ function numericValue(number) {
   return Number.isNaN(n) ? Infinity : n;
 }
 
-// Collapse the flat list into [{ compiler, refs: [...] }], keeping the order in
-// which each compiler first appears — that ordering comes from the source data
-// and is more meaningful than alphabetical. Numbers within a compiler are
-// sorted ascending, which the raw string rarely is.
+// Canonical compiler order — the same sequence COMPILER_KEYS defines and the
+// menus display (Malik, Ahmad, Bukhari, ...). Rows used to appear in whatever
+// order the source string happened to list them, so the same compiler sat in a
+// different place on every hadith and the panel couldn't be scanned by memory.
+const ORDER_BY_NAME = new Map(
+  COMPILER_KEYS.map((k, i) => [k.toLowerCase().replace(/[\s-]+/g, ""), i])
+);
+
+function orderIndex(compiler) {
+  const key = String(compiler || "").toLowerCase().replace(/[\s-]+/g, "");
+  const i = ORDER_BY_NAME.get(key);
+  // A name we don't recognise sorts after every known one, keeping its
+  // first-appearance order among the other unknowns rather than vanishing.
+  return i === undefined ? Number.MAX_SAFE_INTEGER : i;
+}
+
+// Collapse the flat list into [{ compiler, refs: [...] }], then sort the rows
+// into the canonical order above. Numbers within a compiler are sorted
+// ascending, which the raw string rarely is.
 function groupByCompiler(chips) {
   const groups = [];
   const byName = new Map();
@@ -104,7 +119,13 @@ function groupByCompiler(chips) {
   for (const g of groups) {
     g.refs.sort((a, b) => numericValue(a.number) - numericValue(b.number));
   }
-  return groups;
+
+  // Stable: equal indexes (i.e. two unrecognised names) keep their original
+  // relative order, so the fallback stays predictable.
+  return groups
+    .map((g, i) => ({ g, i }))
+    .sort((a, b) => orderIndex(a.g.compiler) - orderIndex(b.g.compiler) || a.i - b.i)
+    .map(({ g }) => g);
 }
 
 export default function MatchedReferenceChips({ value, onSelect, emptyText, isArabic: isArabicProp }) {

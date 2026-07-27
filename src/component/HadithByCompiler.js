@@ -886,7 +886,6 @@ function Row({ innerRef, label, selected, open, here, isArabic, onClick }) {
       dir={isArabic ? 'rtl' : 'ltr'}
       lang={isArabic ? 'ar' : 'en'}
     >
-      {here && <span className="w-1.5 h-1.5 rounded-full bg-[#523230] flex-shrink-0" aria-hidden="true" />}
       <span className="flex-1 break-words"><HadithText text={label} /></span>
     </div>
   );

@@ -412,9 +412,6 @@ export default function MenuModal({
                           : 'text-[#4A3B37] hover:bg-[#F5F0EE]'
                       }`}
                     >
-                      {(isSelectedBook || isOpen) && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#523230] flex-shrink-0" />
-                      )}
                       <span className="flex-1"><HadithText text={pickLabel(book, language)} /></span>
                     </div>
 
@@ -446,9 +443,6 @@ export default function MenuModal({
                                     : 'text-[#4A3B37] hover:bg-[#F5F0EE]'
                                 }`}
                               >
-                                {(isSelectedChapter || chapOpen) && (
-                                  <span className="w-1.5 h-1.5 rounded-full bg-[#523230] flex-shrink-0" />
-                                )}
                                 <span className="flex-1"><HadithText text={pickLabel(chapter, language)} /></span>
                               </div>
 
@@ -481,9 +475,6 @@ export default function MenuModal({
                                             : 'text-[#4A3B37] hover:bg-[#F5F0EE]'
                                         }`}
                                       >
-                                        {isSelectedSection && (
-                                          <span className="w-1.5 h-1.5 rounded-full bg-[#523230] flex-shrink-0" />
-                                        )}
                                         <span className="flex-1"><HadithText text={pickLabel(section, language)} /></span>
                                       </div>
                                     );

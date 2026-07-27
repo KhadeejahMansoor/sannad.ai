@@ -1,6 +1,6 @@
 // app/layout.js
 import './globals.css';
-import { inter } from '../lib/fonts';
+import { inter, notoArabic } from '../lib/fonts';
 import { LanguageProvider } from '../lib/LanguageContext';
 export const dynamic = 'force-dynamic';
 export const metadata = {
@@ -13,8 +13,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-[#F6F4F1] min-h-screen`}>
+    <html lang="en" className={`${inter.variable} ${notoArabic.variable}`}>
+      <body className="bg-[#F6F4F1] min-h-screen">
         {/* Holds the current language ('en' | 'ar') for the whole app.
             Defaults to 'en'; the choice persists in localStorage. */}
         <LanguageProvider>

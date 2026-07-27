@@ -30,7 +30,11 @@
   --white: #ffffff;
 
   /* Typography */
-  --body-text-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Noto Sans Arabic trails Inter in every stack: Inter has no Arabic glyphs,
+     so anything Arabic — including the ligature — falls through to Noto rather
+     than to an arbitrary system font. */
+  --font-stack: var(--font-inter), 'Noto Sans Arabic', var(--font-noto-arabic), -apple-system, BlinkMacSystemFont, sans-serif;
+  --body-text-font-family: var(--font-stack);
   --font-geist-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-geist-mono: 'Monaco', 'Menlo', monospace;
 
@@ -44,7 +48,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   min-height: 100vh;
-  font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+  font-family: var(--font-stack);
+}
+
+/* Components that hardcode font-['Inter'] resolved to the literal name, which
+   next/font never registers — they were rendering in a system font with no
+   Arabic coverage. Route them through the same stack. */
+.font-\[\'Inter\'\] {
+  font-family: var(--font-stack);
 }
 
 /* Custom utility classes */

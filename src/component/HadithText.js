@@ -9,21 +9,18 @@
 'use client';
 
 import React from 'react';
-import { Noto_Sans_Arabic } from 'next/font/google';
-
-// The glyph is pinned to Noto Sans Arabic. Inter has no U+FDFA, so on the
-// English side the browser was falling back to whatever system font happened to
-// carry it — a different design, different metrics, different baseline from the
-// Arabic side, which asks for Noto explicitly and looked correct. Naming the
-// font here makes both sides render the identical glyph.
-const arabicGlyphFont = Noto_Sans_Arabic({ subsets: ['arabic'], weight: ['400'] });
 
 const EXT = 'svg'; // change to 'png' if your logos are PNGs
 
 // ﷺ (U+FDFA) is a ligature drawn compressed inside a single em box, so at
 // font-size:1em it looks markedly smaller than the letters beside it — the whole
 // phrase is squeezed into the space of one character. It has to be scaled up to
-// LOOK the same size. Tune these two if it sits high, low, or small:
+// LOOK the same size.
+//
+// The lang="ar" below is what picks the font: globals.css has a *:lang(ar) rule
+// pointing at Noto Sans Arabic, so the glyph renders identically on the English
+// and Arabic sides instead of falling back to a different system font in each.
+// Tune these two if it sits high, low, or small:
 //   GLYPH_SIZE    how much bigger than the body text
 //   GLYPH_BASELINE how far to drop it (more negative = lower)
 const GLYPH_SIZE = '1.45em';
@@ -59,7 +56,6 @@ function renderHonorifics(text, keyPrefix) {
         return (
           <span
             key={`${keyPrefix}-${i}`}
-            className={arabicGlyphFont.className}
             lang="ar"
             title={alt}
             aria-label={alt}

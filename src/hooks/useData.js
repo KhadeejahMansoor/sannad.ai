@@ -420,7 +420,22 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
           ayat: r.ayat,
           matched_hadith: r.matched_hadith,
           final_grader: r.final_grader,
+          // Every commentary field, not just slot 1. This object literal is a
+          // whitelist — anything not copied here is dropped before the cards
+          // ever see it, which is why /results showed no commentary while the
+          // API and the RPC were both returning them correctly.
+          //
+          // Slots 2 and 3 arrive under two different names depending on the
+          // path: the RPC aliases them to commentary_2 / commentary_3, while
+          // the direct select('*') returns the raw columns ibn_hajar / hadi.
           commentary: r.commentary_1,
+          commentary_1: r.commentary_1,
+          commentary_person_1: r.commentary_person_1,
+          commentary_1_english: r.commentary_1_english,
+          commentary_2: r.commentary_2 ?? r.ibn_hajar,
+          commentary_2_english: r.commentary_2_english,
+          commentary_3: r.commentary_3 ?? r.hadi,
+          commentary_3_english: r.commentary_3_english,
           score: r.score,
         }));
 

@@ -45,10 +45,12 @@ function renderHonorifics(text, keyPrefix) {
             title={alt}
             aria-label={alt}
             style={{
-              display: 'inline-block',
-              fontSize: '0.75em',
-              lineHeight: 1,
-              verticalAlign: '-0.05em',
+              // Was 0.75em, which rendered the glyph noticeably smaller than the
+              // words on either side of it. It now inherits the surrounding
+              // size. Nudge SIZE below if your font draws U+FDFA compressed.
+              fontSize: '1em',
+              lineHeight: 'inherit',
+              verticalAlign: 'baseline',
             }}
           >
             {'\uFDFA'}

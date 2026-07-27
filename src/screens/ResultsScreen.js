@@ -77,6 +77,16 @@ export default function ResultsScreen() {
 
   const hadiths = data && data.success && Array.isArray(data.data) ? data.data : [];
 
+  // A search that lands on exactly one hadith ("azami1", "Bukhari 1") is really
+  // a lookup, not a browse — so open its Details/Reference/Commentary panels
+  // straight away instead of making the reader click the book icon. More than
+  // one result stays collapsed, otherwise the list becomes unscannable.
+  useEffect(() => {
+    if (hadiths.length === 1) {
+      setExpandedId(hadiths[0].hadith_id);
+    }
+  }, [hadiths.length, hadiths[0]?.hadith_id]);
+
   const handleEditClick = () => {
     router.push(`/`);
   };
@@ -198,7 +208,7 @@ export default function ResultsScreen() {
 
       {isDetailView && selectedHadith && (
         <div className='lg:hidden md:hiddem'>
-          <DetailView hadith={selectedHadith} onClose={() => setIsDetailView(false)} />
+          <DetailView hadith={selectedHadith} onClose={() => setIsDetailView(false)} defaultExpanded={hadiths.length === 1} />
         </div>
       )}
 

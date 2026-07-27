@@ -307,7 +307,7 @@ function InlinePanels({ hadith }) {
           <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
             {ayat
               ? <AyatChips ayat={ayat} />
-              : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No ayat annotations available for this hadith.')}
+              : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No Ayat available for this hadith.')}
           </div>
         </div>
       </div>

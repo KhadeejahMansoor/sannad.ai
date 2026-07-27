@@ -14,7 +14,7 @@
 // flips.
 //
 // Renders nothing when there are no references, so the parent can decide whether
-// to show its "No ayat annotations available" empty state (or pass showEmpty).
+// to show its "No Ayat available" empty state (or pass showEmpty).
 
 'use client';
 
@@ -80,7 +80,7 @@ export default function AyatChips({ ayat, showEmpty = false, isArabic: isArabicP
     if (!showEmpty) return null;
     return (
       <p style={{ color: '#8a6d3b', fontStyle: 'italic', margin: 0 }}>
-        {isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No ayat annotations available for this hadith.'}
+        {isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No Ayat available for this hadith.'}
       </p>
     );
   }

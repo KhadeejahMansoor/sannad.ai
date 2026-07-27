@@ -348,7 +348,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className={`text-sm text-black leading-[20px] whitespace-pre-line ${getFont()}`} dir={getDir()}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
-   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No ayat annotations available for this hadith.')}
+   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No Ayat available for this hadith.')}
  </div>
  </div>
  )}
@@ -389,7 +389,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${getFont()} ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
-   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No ayat annotations available for this hadith.')}
+   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No Ayat available for this hadith.')}
  </div>
  </div>
  </div>
@@ -573,7 +573,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className={`text-black text-xs leading-[18px] ${getFont()}`} dir={getDir()}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
-   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No ayat annotations available for this hadith.')}
+   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No Ayat available for this hadith.')}
  </div>
  </div>
  )}

@@ -409,21 +409,13 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {/* Reference + Commentary */}
  <div className="w-[50%] relative">
 
- {/* The language switch shares a row with the Reference heading rather than
-     floating over the column. It was absolutely positioned at top-2 while
-     PanelHeading carries mt-10, so it sat ~32px above the heading it belongs
-     to, and end-4 inset it from a card edge that has no matching inset.
+ {/* The language switch sits in its own row above the Reference heading, hard
+     against the right edge in BOTH languages.
 
-     A flex row pins both to the same baseline and the same edges, and it
-     mirrors correctly under RTL without any directional overrides. */}
- <div
- dir={isArabic ? 'rtl' : 'ltr'}
- className="mt-10 mb-2 flex items-center justify-between gap-3"
- >
- <span className="text-black text-xs font-medium font-['Inter'] ms-2 text-start">
- {isArabic ? 'المرجع' : 'Reference'}
- </span>
-
+     dir="ltr" on this row is deliberate: it's a control, not content, so it
+     shouldn't mirror when the panel flips to Arabic. Logical `end-*` or a
+     dir-aware justify would have swung it to the left in RTL. */}
+ <div dir="ltr" className="mt-8 mb-1 flex justify-end pe-1">
  <button
  onClick={() => setIsArabic(p => !p)}
  aria-label={isArabic ? 'Switch to English' : 'Switch to Arabic'}
@@ -434,6 +426,13 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${isArabic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
  />
  </button>
+ </div>
+
+ <div
+ dir={isArabic ? 'rtl' : 'ltr'}
+ className="text-black text-xs font-medium font-['Inter'] ms-2 mb-2 text-start"
+ >
+ {isArabic ? 'المرجع' : 'Reference'}
  </div>
 
  {/* px-3 py-2: the reference rows carry their own vertical padding, so a

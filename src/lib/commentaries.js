@@ -14,10 +14,34 @@
 // were in the table from the start and were never selected by the API, which is
 // why the panels could only ever render Arabic.
 
-const COMMENTATORS = {
-  2: { ar: 'ابن حجر', en: 'Ibn Hajar' },
-  3: { ar: 'مقبل بن هادي الوادعي', en: "Muqbil bin Hadi al-Wadi'i" },
+// Every commentator in the corpus, in both scripts.
+//
+// Slot 1 stores its author in the row, but only in Arabic — so an English
+// reader saw 'أحمد شاكر'. Looked up here instead, keyed on the Arabic value the
+// database holds. Slots 2 and 3 have no person column at all (the import
+// pivoted them into ibn_hajar / hadi), so their author is fixed by position.
+const COMMENTATOR_NAMES = {
+  'أحمد شاكر':            { ar: 'أحمد شاكر',            en: 'Ahmad Shakir' },
+  'دار السلام':           { ar: 'دار السلام',           en: 'Darussalam' },
+  'ضياء الرحمن الأعظمي':  { ar: 'ضياء الرحمن الأعظمي',  en: 'Zia-ur-Rahman Azami' },
+  'ابن حجر':              { ar: 'ابن حجر',              en: 'Ibn Hajar' },
+  'مقبل بن هادي الوادعي': { ar: 'مقبل بن هادي الوادعي', en: 'Muqbil bin Hadi Wadii' },
 };
+
+const COMMENTATORS = {
+  2: COMMENTATOR_NAMES['ابن حجر'],
+  3: COMMENTATOR_NAMES['مقبل بن هادي الوادعي'],
+};
+
+// Falls back to whatever the row holds when a name isn't in the table above —
+// a new commentator should show up untranslated rather than vanish.
+function commentatorName(raw, wantArabic) {
+  const key = String(raw || '').trim();
+  if (!key) return '';
+  const found = COMMENTATOR_NAMES[key];
+  if (!found) return key;
+  return wantArabic ? found.ar : found.en;
+}
 
 const clean = (v) => (v === null || v === undefined ? '' : String(v).trim());
 
@@ -34,7 +58,7 @@ export function buildCommentaries(hadith, wantArabic) {
 
   const slots = [
     {
-      author: clean(hadith.commentary_person_1),
+      author: commentatorName(hadith.commentary_person_1, wantArabic),
       ar: clean(hadith.commentary_1) || clean(hadith.commentary),
       en: clean(hadith.commentary_1_english),
     },

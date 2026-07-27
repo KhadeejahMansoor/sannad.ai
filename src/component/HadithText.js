@@ -12,6 +12,15 @@ import React from 'react';
 
 const EXT = 'svg'; // change to 'png' if your logos are PNGs
 
+// ﷺ (U+FDFA) is a ligature drawn compressed inside a single em box, so at
+// font-size:1em it looks markedly smaller than the letters beside it — the whole
+// phrase is squeezed into the space of one character. It has to be scaled up to
+// LOOK the same size. Tune these two if it sits high, low, or small:
+//   GLYPH_SIZE    how much bigger than the body text
+//   GLYPH_BASELINE how far to drop it (more negative = lower)
+const GLYPH_SIZE = '1.9em';
+const GLYPH_BASELINE = '-0.32em';
+
 // Code -> the phrase it stands for (used as the image alt text / tooltip).
 const HONORIFICS = {
   r0: 'عليه السلام',
@@ -45,12 +54,12 @@ function renderHonorifics(text, keyPrefix) {
             title={alt}
             aria-label={alt}
             style={{
-              // Was 0.75em, which rendered the glyph noticeably smaller than the
-              // words on either side of it. It now inherits the surrounding
-              // size. Nudge SIZE below if your font draws U+FDFA compressed.
-              fontSize: '1em',
-              lineHeight: 'inherit',
-              verticalAlign: 'baseline',
+              display: 'inline-block',
+              fontSize: GLYPH_SIZE,
+              // Zero line-height keeps the enlarged glyph from stretching the
+              // line box and spacing the paragraph's lines apart.
+              lineHeight: 0,
+              verticalAlign: GLYPH_BASELINE,
             }}
           >
             {'\uFDFA'}

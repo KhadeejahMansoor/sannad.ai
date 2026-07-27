@@ -5,12 +5,12 @@
 // Pages used to be addressed by the database's composite id —
 // /hadith/sevenbooks-59726 — which tells a reader nothing and can't be typed
 // from memory. The readable form is the compiler followed immediately by the
-// number, with spaces in the name hyphenated:
+// number, with spaces in the name closed up:
 //
-//   /hadith/Tirmidhi1
-//   /hadith/Abu-Dawud2350
-//   /hadith/Ibn-Majah2523
-//   /hadith/Bukhari7350-7351     (ranges keep their internal hyphen)
+//   /Tirmidhi1
+//   /AbuDawud2350
+//   /IbnMajah2523
+//   /Bukhari7350-7351     (ranges keep their internal hyphen)
 //
 // Name and number run together with no separator, which is unambiguous because
 // no compiler name contains a digit: the number starts at the first digit, and
@@ -18,8 +18,9 @@
 // a hyphen after the first digit is part of the number, not a separator.
 //
 // OLD LINKS STILL WORK. Anything already shared or bookmarked in the composite
-// form is passed straight through, and the older /hadith/ibn-majah-2523 shape
-// that MenuModal produced parses correctly too.
+// form is passed straight through; the hyphenated /Abu-Dawud2350 form this used
+// to emit, and the older /hadith/ibn-majah-2523 shape MenuModal produced, both
+// still parse.
 
 import { COMPILER_KEYS, translateCompiler } from './i18n';
 
@@ -32,9 +33,21 @@ const KEY_BY_NORMALIZED = new Map(
   COMPILER_KEYS.map((k) => [k.toLowerCase().replace(/[\s-]+/g, ' '), k])
 );
 
+// Second lookup with every separator removed, so the closed-up URL form
+// ("abudawud", "ibnmajah") resolves too. No two compiler names collide once
+// squashed, so this can't map to the wrong one.
+const KEY_BY_SQUASHED = new Map(
+  COMPILER_KEYS.map((k) => [k.toLowerCase().replace(/[\s-]+/g, ''), k])
+);
+
 function canonicalCompiler(raw) {
-  const normalized = String(raw || '').toLowerCase().replace(/[\s-]+/g, ' ').trim();
-  return KEY_BY_NORMALIZED.get(normalized) || null;
+  const cleaned = String(raw || '').toLowerCase().trim();
+  const normalized = cleaned.replace(/[\s-]+/g, ' ').trim();
+  return (
+    KEY_BY_NORMALIZED.get(normalized) ||
+    KEY_BY_SQUASHED.get(cleaned.replace(/[\s-]+/g, '')) ||
+    null
+  );
 }
 
 export function isCompositeId(slug) {
@@ -54,7 +67,9 @@ export function hadithSlug(compiler, number) {
   const key = canonicalCompiler(translateCompiler(compiler)) || canonicalCompiler(compiler);
   if (!key) return null;
 
-  return `${key.replace(/\s+/g, '-')}${String(number).trim()}`;
+  // Spaces are closed up rather than hyphenated: /AbuDawud2350, not
+  // /Abu-Dawud2350. The parser accepts both, so old links keep working.
+  return `${key.replace(/[\s-]+/g, '')}${String(number).trim()}`;
 }
 
 /**

@@ -9,6 +9,14 @@
 'use client';
 
 import React from 'react';
+import { Noto_Sans_Arabic } from 'next/font/google';
+
+// The glyph is pinned to Noto Sans Arabic. Inter has no U+FDFA, so on the
+// English side the browser was falling back to whatever system font happened to
+// carry it — a different design, different metrics, different baseline from the
+// Arabic side, which asks for Noto explicitly and looked correct. Naming the
+// font here makes both sides render the identical glyph.
+const arabicGlyphFont = Noto_Sans_Arabic({ subsets: ['arabic'], weight: ['400'] });
 
 const EXT = 'svg'; // change to 'png' if your logos are PNGs
 
@@ -18,8 +26,8 @@ const EXT = 'svg'; // change to 'png' if your logos are PNGs
 // LOOK the same size. Tune these two if it sits high, low, or small:
 //   GLYPH_SIZE    how much bigger than the body text
 //   GLYPH_BASELINE how far to drop it (more negative = lower)
-const GLYPH_SIZE = '1.5em';
-const GLYPH_BASELINE = '-0.25em';
+const GLYPH_SIZE = '1.45em';
+const GLYPH_BASELINE = '-0.32em';
 
 // Code -> the phrase it stands for (used as the image alt text / tooltip).
 const HONORIFICS = {
@@ -51,6 +59,8 @@ function renderHonorifics(text, keyPrefix) {
         return (
           <span
             key={`${keyPrefix}-${i}`}
+            className={arabicGlyphFont.className}
+            lang="ar"
             title={alt}
             aria-label={alt}
             style={{

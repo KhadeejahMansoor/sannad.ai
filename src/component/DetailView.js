@@ -37,14 +37,17 @@ const notoSansArabic = Noto_Sans_Arabic({
  weight: ["400", "700"],
 });
 
-export default function DetailView({ hadith, onClose, selectedLanguage, resultsQueryString, asPage = false, onPrev, onNext, hasPrev = false, hasNext = false }) {
+export default function DetailView({ hadith, onClose, selectedLanguage, resultsQueryString, asPage = false, defaultExpanded, onPrev, onNext, hasPrev = false, hasNext = false }) {
  const [showBottomMenu, setShowBottomMenu] = useState(false);
  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
  const [showHadithCollectionMenu, setShowHadithCollectionMenu] = useState(false);
  const [activeTab, setActiveTab] = useState("Contents");
  const [showGradingDetail, setShowGradingDetail] = useState(false);
  const [isArabic, setIsArabic] = useState(false);
- const [isExpanded, setIsExpanded] = useState(false);
+ // On a dedicated hadith page (/Bukhari1) the details ARE the page, so they
+ // open expanded. In a modal over a list of results the default stays
+ // collapsed unless the caller passes defaultExpanded.
+ const [isExpanded, setIsExpanded] = useState(defaultExpanded ?? asPage);
  const router = useRouter();
  const openRef = useOpenReference();
 

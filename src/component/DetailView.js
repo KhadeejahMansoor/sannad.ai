@@ -62,6 +62,16 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  // text is now the post clause alone and no longer carries the chain inline.
  const arabicChain = hadith?.chain_clause || '';
 
+ // Tab labels. The KEY stays English because activeTab is compared against it
+ // and the panel bodies below switch on it; only the visible text changes.
+ // Wording matches the desktop panel headings.
+ const TAB_LABELS = {
+ Contents:   isArabic ? 'التفاصيل' : 'Contents',
+ Reference:  isArabic ? 'المرجع'   : 'Reference',
+ Commentary: isArabic ? 'تخريج'    : 'Commentary',
+ Ayat:       isArabic ? 'الآيات'   : 'Ayat',
+ };
+
  const compilerArabic = hadith?.compiler || '';
  const compiler = translateCompiler(compilerArabic);
  const gradeArabic = hadith?.grade || '';
@@ -316,7 +326,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {["Contents", "Reference", "Commentary", "Ayat"].map(tab => (
  <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
  <div className="inline-flex flex-col items-start">
- <div className={`text-[13px] font-medium ${activeTab === tab ? "text-[#523230]" : "text-[#9A8A85]"}`}>{tab}</div>
+ <div
+ className={`text-[13px] font-medium ${activeTab === tab ? "text-[#523230]" : "text-[#9A8A85]"}`}
+ lang={isArabic ? 'ar' : 'en'}
+ >
+ {TAB_LABELS[tab]}
+ </div>
  {activeTab === tab && <div className="h-[2px] bg-[#523230] mt-[7px] w-full rounded-[2px]" />}
  </div>
  </div>
@@ -570,7 +585,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {["Contents", "Reference", "Commentary", "Ayat"].map(tab => (
  <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
  <div className="inline-flex flex-col items-start">
- <div className={`text-[13px] font-medium ${activeTab === tab ? "text-[#523230]" : "text-[#9A8A85]"}`}>{tab}</div>
+ <div
+ className={`text-[13px] font-medium ${activeTab === tab ? "text-[#523230]" : "text-[#9A8A85]"}`}
+ lang={isArabic ? 'ar' : 'en'}
+ >
+ {TAB_LABELS[tab]}
+ </div>
  {activeTab === tab && <div className="h-[2px] bg-[#523230] mt-[7px] w-full rounded-[2px]" />}
  </div>
  </div>

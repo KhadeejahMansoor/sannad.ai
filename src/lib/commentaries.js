@@ -39,13 +39,17 @@ export function buildCommentaries(hadith, wantArabic) {
       en: clean(hadith.commentary_1_english),
     },
     {
+      // Two shapes reach this function. The API routes alias the columns to
+      // commentary_2 / commentary_3; the results page queries the table
+      // directly with select('*') and gets the RAW names, ibn_hajar and hadi.
+      // Reading both is why the same panel works on every screen.
       author: wantArabic ? COMMENTATORS[2].ar : COMMENTATORS[2].en,
-      ar: clean(hadith.commentary_2),
+      ar: clean(hadith.commentary_2) || clean(hadith.ibn_hajar),
       en: clean(hadith.commentary_2_english),
     },
     {
       author: wantArabic ? COMMENTATORS[3].ar : COMMENTATORS[3].en,
-      ar: clean(hadith.commentary_3),
+      ar: clean(hadith.commentary_3) || clean(hadith.hadi),
       en: clean(hadith.commentary_3_english),
     },
   ];

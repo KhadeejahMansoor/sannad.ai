@@ -383,11 +383,33 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </div>
  )}
  {activeTab === "Commentary" && (
+ commentaries.length === 0 ? (
  <div className="bg-white rounded-[5px] p-4 mb-6">
- <div className={`text-sm text-black leading-[20px] whitespace-pre-line ${getFont()}`} dir={getDir()}>
- {getField(commentary, arabicFields.commentary) || (isArabic ? 'لا يوجد شرح لهذا الحديث.' : 'No commentary available for this hadith.')}
+ <div className="text-sm leading-[20px] text-[#6B5B55]" dir={getDir()}>
+ {noCommentaryText(isArabic)}
  </div>
  </div>
+ ) : (
+ <div className="flex flex-col gap-2 mb-6">
+ {commentaries.map((c, ci) => (
+ <div
+ key={ci}
+ dir={c.isArabic ? 'rtl' : 'ltr'}
+ lang={c.isArabic ? 'ar' : 'en'}
+ className="bg-white rounded-[5px] p-4"
+ >
+ {c.author && (
+ <div className="text-[13px] text-[#523230] font-medium mb-2 pb-2 border-b border-[#EFE9E6] text-start">
+ {c.author}
+ </div>
+ )}
+ <div className="text-sm text-black leading-[22px] whitespace-pre-line text-start">
+ <HadithText text={c.text} />
+ </div>
+ </div>
+ ))}
+ </div>
+ )
  )}
  {activeTab === "Ayat" && (
  <div className="bg-white rounded-[5px] p-4 mb-6">

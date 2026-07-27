@@ -409,29 +409,32 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {/* Reference + Commentary */}
  <div className="w-[50%] relative">
 
- {/* The language switch, moved here from a row of its own above the panels.
-     It was a w-14 h-7 slab, permanently black — no "off" state, so it never
-     showed you which way it was set.
+ {/* The language switch shares a row with the Reference heading rather than
+     floating over the column. It was absolutely positioned at top-2 while
+     PanelHeading carries mt-10, so it sat ~32px above the heading it belongs
+     to, and end-4 inset it from a card edge that has no matching inset.
 
-     Now it matches HadithDetailBottomSheet: small, level with the Reference
-     heading, grey when off and black when on.
+     A flex row pins both to the same baseline and the same edges, and it
+     mirrors correctly under RTL without any directional overrides. */}
+ <div
+ dir={isArabic ? 'rtl' : 'ltr'}
+ className="mt-10 mb-2 flex items-center justify-between gap-3"
+ >
+ <span className="text-black text-xs font-medium font-['Inter'] ms-2 text-start">
+ {isArabic ? 'المرجع' : 'Reference'}
+ </span>
 
-     `end-4` not `right-4`: physical positioning ignores direction, so under RTL
-     the switch would stay pinned right while everything else moved left. */}
- <div className="absolute end-4 top-2 z-10">
  <button
  onClick={() => setIsArabic(p => !p)}
  aria-label={isArabic ? 'Switch to English' : 'Switch to Arabic'}
  aria-pressed={isArabic}
- className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
+ className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
  >
  <span
  className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${isArabic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
  />
  </button>
  </div>
-
- <PanelHeading isArabic={isArabic}>{isArabic ? 'المرجع' : 'Reference'}</PanelHeading>
 
  {/* px-3 py-2: the reference rows carry their own vertical padding, so a
      full p-3 here stacked into a band of empty white above the first

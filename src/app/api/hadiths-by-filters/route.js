@@ -84,7 +84,13 @@ export async function GET(request) {
         h.matched_hadith           AS matched_hadith,
         h.ayat                     AS ayat,
         NULL::text                 AS duplicates,
-        h.final_hadith             AS hadith_text_arabic,
+        -- final_hadith is chain + intro + post concatenated, so returning it
+        -- here put the isnad inline at the top of the Arabic body while the
+        -- card's separate chain line sat empty. Falls back to final_hadith
+        -- where post_clause is empty (~0.5% of rows).
+        COALESCE(NULLIF(TRIM(h.post_clause), ''), h.final_hadith)
+                                   AS hadith_text_arabic,
+        h.chain_clause             AS chain_clause,
         NULLIF(TRIM(h.post_clause_english), '') AS hadith_text_english,
         NULLIF(TRIM(h.post_clause_english), '') AS hadith_text,
         h.machine_clause,

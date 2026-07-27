@@ -663,6 +663,7 @@ export default function HadithByCompiler() {
                         finalGrader={hadith.final_grader}
                         /* Arabic side — mobile shows English only by default;
                            Arabic only when the Arabic language is selected. */
+                        chainAr={showArabicSide ? hadith.chain_clause : undefined}
                         narratorAr={showArabicSide ? hadith.arabic_intro_clause : undefined}
                         contentAr={showArabicSide ? hadith.hadith_text_arabic : undefined}
                         hadithIdAr={showArabicSide ? `${hadith.compiler} ${hadith.hadith_number}` : undefined}

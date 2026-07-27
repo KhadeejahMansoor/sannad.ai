@@ -202,8 +202,10 @@ export default function HadithCard({
         {/* ─── Arabic side ─── */}
         {hasArabic && (
           <div className={`bg-white rounded-[5px] px-6 py-6 flex flex-col ${bilingual ? 'md:flex-1' : ''}`} dir="rtl" lang="ar">
+            {/* Muted and set off by a rule: the isnad is the header to the
+                hadith, not a second headline competing with the narrator. */}
             {chainAr && (
-              <p className="text-[15px] font-semibold text-black mb-2 leading-[30px]">
+              <p className="text-[13px] font-normal text-[#8A7A72] leading-[26px] mb-2 pb-2 border-b border-[#EFE9E6]">
                 <HadithText text={chainAr} />
               </p>
             )}

@@ -208,10 +208,14 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  {/* Arabic card */}
  <div className={`bg-white rounded-[5px] p-6`} dir="rtl" lang="ar">
+ {/* The isnad is supporting material, not the hadith. Bold black made it
+     compete with the narrator line directly beneath it — two heavy blocks
+     stacked, and the reader's eye had nowhere to land. Smaller, lighter and
+     muted, with a rule beneath, it reads as the header it is. */}
  {arabicChain && (
- <h3 className={`text-right text-[15px] font-bold mb-2 ${notoSansArabic.className} text-[#1D1D1D]`}>
+ <p className={`text-right text-[13px] font-normal leading-[26px] text-[#8A7A72] mb-2 pb-2 border-b border-[#EFE9E6] ${notoSansArabic.className}`}>
  <HadithText text={arabicChain} />
- </h3>
+ </p>
  )}
  <h3 className={`text-right text-[15px] font-bold mb-3 ${notoSansArabic.className} text-[#1D1D1D]`}>
  {arabicNarrator}
@@ -490,10 +494,10 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className="mb-[23px]">
  <div className="bg-white rounded-[5px] pt-4 px-5 pb-4">
  {arabicChain && (
- <div className="flex justify-end mb-2">
- <h3 className={`text-right text-[#1D1D1D] text-[15px] font-bold ${notoSansArabic.className}`} dir="rtl">
+ <div className="mb-2 pb-2 border-b border-[#EFE9E6]" dir="rtl">
+ <p className={`text-right text-[#8A7A72] text-[13px] font-normal leading-[26px] ${notoSansArabic.className}`}>
  <HadithText text={arabicChain} />
- </h3>
+ </p>
  </div>
  )}
  <div className="flex justify-end mb-3">

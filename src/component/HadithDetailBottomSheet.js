@@ -172,10 +172,17 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
       {/* Right Section: Reference + Commentary */}
       <div className="w-[50%] relative">
 
-        <div className="absolute end-4 top-2">
+        {/* Own row above the Reference heading, hard against the right edge in
+            BOTH languages. It was `absolute end-4 top-2` while the heading
+            carries mt-10, so it floated ~32px above the heading it belongs to —
+            and `end-*` is logical, so in Arabic it swung over to the left.
+            dir="ltr" keeps it put: it's a control, not content. */}
+        <div dir="ltr" className="mt-8 mb-1 flex justify-end pe-1">
           <button
             onClick={handleToggle}
-            className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors focus:outline-none ${toggleState ? 'bg-black' : 'bg-gray-300'}`}
+            aria-label={toggleState ? 'Switch to English' : 'Switch to Arabic'}
+            aria-pressed={toggleState}
+            className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none ${toggleState ? 'bg-black' : 'bg-gray-300'}`}
           >
             <span
               className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${toggleState ? 'translate-x-3.5' : 'translate-x-0.5'}`}
@@ -196,7 +203,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
         <div
           dir={isArabic ? 'rtl' : 'ltr'}
           lang={lang}
-          className="flex items-center mt-10 ms-2 mb-2"
+          className="flex items-center ms-2 mb-2"
         >
           <div className="text-black text-xs font-medium font-['Inter']">{t.reference}</div>
         </div>

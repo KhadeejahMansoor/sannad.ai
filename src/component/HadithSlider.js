@@ -102,6 +102,9 @@ export default function HadithSlider({
         ? `${hadith.english_narrator} reported,`
         : "Reported,";
     const arabicNarrator = hadith.arabic_intro_clause || "";
+    // The isnad, shown muted on its own line above the narrator. The body text
+    // is the post clause alone now, so the chain is no longer carried inline.
+    const arabicChain = hadith.chain_clause || "";
 
     // hadith_text_english is NULL when there is no translation (Malik: 0 of 1,952).
     // Say so plainly rather than showing an empty panel.
@@ -166,6 +169,11 @@ export default function HadithSlider({
                     {/* Arabic Section */}
                     <div className="bg-white rounded-[5px] p-6 text-right w-full max-w-[1728px] flex-1 flex flex-col" dir="rtl">
                         <div className="flex-1">
+                            {arabicChain && (
+                                <p className="text-[13px] font-normal text-[#8A7A72] leading-[26px] mb-3 pb-3 border-b border-[#EFE9E6]" lang="ar">
+                                    <HadithText text={arabicChain} />
+                                </p>
+                            )}
                             <p className="text-base font-bold text-black mb-4" lang="ar">
                                 {arabicNarrator}
                             </p>

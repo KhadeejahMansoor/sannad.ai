@@ -16,10 +16,12 @@ import { compilerFor, gradeFor, gradeToDb, compilerToDb } from '@/lib/i18n';
 import { useLanguage } from '@/lib/LanguageContext';
 import MatchedReferenceChips from '@/component/MatchedReferenceChips';
 import AyatChips from '@/component/AyatChips';
+import HadithText from '@/component/HadithText';
 import { useOpenReference } from '@/hooks/useOpenReference';
 
 import { buildHadithLabel } from '@/lib/hadithLabel';
 import InlineTabPanels from '@/component/InlineTabPanels';
+import { buildCommentaries, noCommentaryText } from '@/lib/commentaries';
 
 // A value counts as "not there" if it is null/undefined, blank once trimmed,
 // or one of the placeholder strings the source data uses to mean "nothing".
@@ -267,7 +269,7 @@ function InlinePanels({ hadith }) {
   // Empty is empty. No 'None' literal — it would render the word into the panel
   // and, being truthy, defeat the empty-state check.
   const ayat         = hadith?.ayat || '';
-  const commentary   = hadith?.commentary || '';
+  const commentaries = buildCommentaries(hadith, isArabic);
   const hadithNumber = hadith?.hadith_number || '';
 
 
@@ -302,12 +304,12 @@ function InlinePanels({ hadith }) {
           ))}
         </div>
 
-        <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat'}</PanelHeading>
+        <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat annotation'}</PanelHeading>
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
           <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
             {ayat
               ? <AyatChips ayat={ayat} />
-              : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No Ayat available for this hadith.')}
+              : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No ayat annotations available for this hadith.')}
           </div>
         </div>
       </div>
@@ -324,17 +326,31 @@ function InlinePanels({ hadith }) {
         </div>
 
         <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
-        <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3 min-h-[80px]">
-          {/* Commentary is Arabic in the DATA (commentary_1, no English form), so
-              it carries its own dir regardless of UI language. */}
-          <p
-            className={`text-sm leading-[26px] whitespace-pre-line text-start ${commentary ? 'text-black' : 'text-[#6B5B55]'}`}
-            dir={commentary ? 'rtl' : undefined}
-            lang={commentary ? 'ar' : undefined}
-          >
-            {commentary || (isArabic ? 'لا يوجد شرح لهذا الحديث.' : 'No commentary available for this hadith.')}
-          </p>
-        </div>
+        {commentaries.length === 0 ? (
+          <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3 min-h-[80px]">
+            <p className="text-sm leading-[26px] text-start text-[#6B5B55]">{noCommentaryText(isArabic)}</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {commentaries.map((c, ci) => (
+              <div
+                key={ci}
+                dir={c.isArabic ? 'rtl' : 'ltr'}
+                lang={c.isArabic ? 'ar' : 'en'}
+                className="bg-white rounded-[5px] px-4 py-3"
+              >
+                {c.author && (
+                  <div className="text-[13px] text-[#523230] font-medium mb-2 pb-2 border-b border-[#EFE9E6] text-start">
+                    {c.author}
+                  </div>
+                )}
+                <p className="text-sm leading-[26px] whitespace-pre-line text-start text-black">
+                  <HadithText text={c.text} />
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
     </div>

@@ -1,7 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useLanguage } from '../lib/LanguageContext';
 import { COMPILER_KEYS, compilerLabel } from '../lib/i18n';
 
@@ -10,7 +10,6 @@ import { COMPILER_KEYS, compilerLabel } from '../lib/i18n';
 
 export default function HadithCollectionMenu({ onClose }) {
   const popupRef = useRef();
-  const router = useRouter();
   const { language, isArabic } = useLanguage();
   const [selectedScholar, setSelectedScholar] = useState(null);
 
@@ -34,11 +33,14 @@ export default function HadithCollectionMenu({ onClose }) {
     };
   }, [onClose]);
 
+  // Each item is a real <Link>, so the browser owns the navigation. That is what
+  // makes right-click > "Open link in new tab", middle-click, and ctrl/cmd-click
+  // work — a div with onClick has no href for the context menu to offer.
+  const compilerHref = (scholar) =>
+    `/desktopcompiler?compiler=${encodeURIComponent(scholar)}`;
+
   const handleScholarClick = (scholar) => {
     setSelectedScholar(scholar);
-    // Navigate to the compiler's collection page, passing the English name.
-    // The destination page (HadithByCompiler) handles translation to Arabic.
-    router.push(`/desktopcompiler?compiler=${encodeURIComponent(scholar)}`);
     onClose();
   };
 
@@ -71,6 +73,7 @@ export default function HadithCollectionMenu({ onClose }) {
             <ScholarItem
               key={scholar}
               name={compilerLabel(scholar, language)}
+              href={compilerHref(scholar)}
               isArabic={isArabic}
               onClick={() => handleScholarClick(scholar)}
               isSelected={selectedScholar === scholar}
@@ -82,11 +85,12 @@ export default function HadithCollectionMenu({ onClose }) {
   );
 }
 
-function ScholarItem({ name, onClick, isSelected, isArabic }) {
+function ScholarItem({ name, href, onClick, isSelected, isArabic }) {
   return (
-    <div
+    <Link
+      href={href}
       onClick={onClick}
-      className="mx-auto max-w-[390px] h-8 px-2 text-center font-normal text-black cursor-pointer transition-all duration-200 flex items-center justify-center rounded-[5px]"
+      className="mx-auto max-w-[390px] h-8 px-2 text-center font-normal text-black no-underline cursor-pointer transition-all duration-200 flex items-center justify-center rounded-[5px]"
       dir={isArabic ? 'rtl' : 'ltr'}
       lang={isArabic ? 'ar' : 'en'}
       style={{
@@ -102,6 +106,6 @@ function ScholarItem({ name, onClick, isSelected, isArabic }) {
       }}
     >
       {name}
-    </div>
+    </Link>
   );
 }

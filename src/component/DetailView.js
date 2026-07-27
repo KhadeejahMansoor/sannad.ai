@@ -103,6 +103,40 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  // A placeholder pretending to be data.
  const ayat = hadith?.ayat || '';
  const commentary = hadith?.commentary || '';
+
+ // Up to two attributed commentaries. Slot 1 names its scholar in the data;
+ // slots 2 and 3 were pivoted into named columns on import, so their author is
+ // fixed and lives here rather than in the row.
+ //
+ // Each entry carries both languages and the panel picks one, so the existing
+ // toggle now switches the commentary too — the English translations were in
+ // the table all along and had never been rendered.
+ const COMMENTATORS = {
+ 2: { ar: 'ابن حجر', en: 'Ibn Hajar' },
+ 3: { ar: 'مقبل بن هادي الوادعي', en: "Muqbil bin Hadi al-Wadi'i" },
+ };
+
+ const commentaries = [
+ {
+ author: hadith?.commentary_person_1 || '',
+ ar: hadith?.commentary_1 || hadith?.commentary || '',
+ en: hadith?.commentary_1_english || '',
+ },
+ {
+ author: isArabic ? COMMENTATORS[2].ar : COMMENTATORS[2].en,
+ ar: hadith?.commentary_2 || '',
+ en: hadith?.commentary_2_english || '',
+ },
+ {
+ author: isArabic ? COMMENTATORS[3].ar : COMMENTATORS[3].en,
+ ar: hadith?.commentary_3 || '',
+ en: hadith?.commentary_3_english || '',
+ },
+ ]
+ // An entry with no text in EITHER language isn't a commentary. Falling back to
+ // the other language beats showing an empty card when only one side exists.
+ .map((c) => ({ ...c, text: (isArabic ? (c.ar || c.en) : (c.en || c.ar)) }))
+ .filter((c) => c.text.trim() !== '');
  const hadithIdLabel = `${compiler} ${hadith?.hadith_number || ''}`;
  const arabicIdLabel = `${compilerArabic} ${hadith?.hadith_number || ''}`;
  const hadith_number = hadith?.hadith_number || '';
@@ -478,17 +512,39 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </div>
 
  <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
+
+ {commentaries.length === 0 ? (
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] p-3 min-h-[100px]">
- {/* The commentary is Arabic in the DATA — commentary_1 has no English
-     counterpart — so it carries its own dir regardless of UI language. */}
- <p
- className={`text-sm leading-[26px] whitespace-pre-line text-start ${commentary ? 'text-black' : 'text-[#6B5B55]'}`}
- dir={commentary ? 'rtl' : undefined}
- lang={commentary ? 'ar' : undefined}
- >
- {commentary || (isArabic ? 'لا يوجد شرح لهذا الحديث.' : 'No commentary available for this hadith.')}
+ <p className="text-sm leading-[26px] text-start text-[#6B5B55]">
+ {isArabic ? 'لا يوجد شرح لهذا الحديث.' : 'No commentary available for this hadith.'}
  </p>
  </div>
+ ) : (
+ <div className="flex flex-col gap-2">
+ {commentaries.map((c, ci) => {
+ // Which language actually got rendered decides direction — not the UI
+ // language. An Arabic-only entry shown in English mode still reads RTL.
+ const showingArabic = c.text === c.ar;
+ return (
+ <div
+ key={ci}
+ dir={showingArabic ? 'rtl' : 'ltr'}
+ lang={showingArabic ? 'ar' : 'en'}
+ className="bg-white rounded-[5px] px-4 py-3"
+ >
+ {c.author && (
+ <div className="text-[13px] text-[#523230] font-medium mb-2 pb-2 border-b border-[#EFE9E6] text-start">
+ {c.author}
+ </div>
+ )}
+ <p className="text-sm leading-[26px] whitespace-pre-line text-start text-black">
+ <HadithText text={c.text} />
+ </p>
+ </div>
+ );
+ })}
+ </div>
+ )}
  </div>
 
  </div>

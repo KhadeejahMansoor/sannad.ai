@@ -48,7 +48,21 @@ export async function GET(_request, { params }) {
         h.section_stripped_english,
         h.final_grade              AS grade,
         COALESCE(NULLIF(TRIM(h.final_grader), ''), 'Unknown') AS final_grader,
+        -- Commentary comes as up to two attributed entries. Slot 1 is one of
+        -- three scholars, named in commentary_person_1. Slots 2 and 3 were
+        -- pivoted into named columns on import, so their author is implied by
+        -- the column itself (ibn_hajar / hadi) and needs no person field.
+        --
+        -- The _english columns were already in the table and never selected,
+        -- which is why the panel could only ever render Arabic.
         h.commentary_1             AS commentary,
+        h.commentary_person_1      AS commentary_person_1,
+        h.commentary_1             AS commentary_1,
+        h.commentary_1_english     AS commentary_1_english,
+        h.ibn_hajar                AS commentary_2,
+        h.commentary_2_english     AS commentary_2_english,
+        h.hadi                     AS commentary_3,
+        h.commentary_3_english     AS commentary_3_english,
         NULL::text                 AS reference,
         h.matched_hadith           AS matched_hadith,
         h.ayat                     AS ayat,

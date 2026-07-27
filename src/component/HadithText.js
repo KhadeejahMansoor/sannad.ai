@@ -12,19 +12,13 @@ import React from 'react';
 
 const EXT = 'svg'; // change to 'png' if your logos are PNGs
 
-// ﷺ (U+FDFA) is a ligature drawn compressed inside a single em box, so at
-// font-size:1em it looks markedly smaller than the letters beside it — the whole
-// phrase is squeezed into the space of one character. It has to be scaled up to
-// LOOK the same size.
-//
-// The lang="ar" below is what picks the font: globals.css has a *:lang(ar) rule
-// pointing at Noto Sans Arabic, so the glyph renders identically on the English
-// and Arabic sides instead of falling back to a different system font in each.
-// Tune these two if it sits high, low, or small:
-//   GLYPH_SIZE    how much bigger than the body text
-//   GLYPH_BASELINE how far to drop it (more negative = lower)
-const GLYPH_SIZE = '1.45em';
-const GLYPH_BASELINE = '-0.32em';
+// r9 (ﷺ) is an IMAGE like every other honorific, not the U+FDFA character.
+// As a font glyph it was unfixable: every Arabic font draws that codepoint as
+// a two-tier stacked ligature roughly as tall as it is wide, so at any size
+// matching the surrounding text it overflowed the line. r9.svg is the same
+// mark drawn from Amiri, and it now goes through the identical <img> path as
+// r0-r8 — so it aligns exactly the way the honorifics that already looked
+// right do.
 
 // Code -> the phrase it stands for (used as the image alt text / tooltip).
 const HONORIFICS = {
@@ -50,28 +44,6 @@ function renderHonorifics(text, keyPrefix) {
     if (m) {
       const code = m[1];
       const alt = HONORIFICS[code] || code;
-
-      // r9 is the ﷺ glyph (U+FDFA) — a real character, not an image.
-      if (code === 'r9') {
-        return (
-          <span
-            key={`${keyPrefix}-${i}`}
-            lang="ar"
-            title={alt}
-            aria-label={alt}
-            style={{
-              display: 'inline-block',
-              fontSize: GLYPH_SIZE,
-              // Zero line-height keeps the enlarged glyph from stretching the
-              // line box and spacing the paragraph's lines apart.
-              lineHeight: 0,
-              verticalAlign: GLYPH_BASELINE,
-            }}
-          >
-            {'\uFDFA'}
-          </span>
-        );
-      }
 
       return (
         // eslint-disable-next-line @next/next/no-img-element

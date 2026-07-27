@@ -314,7 +314,7 @@ function InlinePanels({ hadith }) {
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
           <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
             {ayat
-              ? <AyatChips ayat={ayat} />
+              ? <AyatChips ayat={ayat} isArabic={isArabic} />
               : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No ayat annotations available for this hadith.')}
           </div>
         </div>
@@ -344,9 +344,14 @@ function InlinePanels({ hadith }) {
           {isArabic ? 'المرجع' : 'Reference'}
         </div>
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
+          {/* isArabic must be passed explicitly. Without it the chips read the
+              GLOBAL language context, which the local toggle doesn't touch — so
+              the headings flipped to Arabic while the compiler names stayed
+              English. */}
           <MatchedReferenceChips
             value={hadith?.matched_hadith}
             onSelect={openRef}
+            isArabic={isArabic}
             emptyText={isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No external references available for this hadith.'}
           />
         </div>

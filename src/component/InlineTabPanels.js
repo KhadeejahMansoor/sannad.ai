@@ -39,7 +39,12 @@ const TAB_LABELS = (isArabic) => ({
 // Tabbed layout matching ResultsScreen's mobile expand: Contents / Reference / Commentary / Ayat.
 export default function InlineTabPanels({ hadith }) {
   const [activeTab, setActiveTab] = useState('Contents');
-  const { isArabic } = useLanguage();
+  const { isArabic: siteIsArabic } = useLanguage();
+
+  // Same contract as every other panel: the switch is an OVERRIDE, not a
+  // replacement. Arabic if the site is Arabic, or if the reader flips it here.
+  const [arabicOverride, setArabicOverride] = useState(false);
+  const isArabic = siteIsArabic || arabicOverride;
   // Without onSelect the chips render as plain spans, so tapping a reference
   // did nothing on mobile. Same handler the desktop panels use.
   const openRef = useOpenReference();
@@ -64,7 +69,10 @@ export default function InlineTabPanels({ hadith }) {
 
   return (
     <div className="mt-4 mb-6">
-      <div className="flex justify-start gap-[22px] mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
+      {/* The switch rides at the far right of the tab strip, as it does on the
+          detail page. dir="ltr" on the row so it stays right in Arabic. */}
+      <div dir="ltr" className="flex items-center justify-between gap-3 mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
+      <div className="flex justify-start gap-[22px]">
         {['Contents', 'Reference', 'Commentary', 'Ayat'].map(tab => (
           <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
             <div className="inline-flex flex-col items-start">
@@ -78,6 +86,18 @@ export default function InlineTabPanels({ hadith }) {
             </div>
           </div>
         ))}
+      </div>
+
+        <button
+          onClick={() => setArabicOverride(p => !p)}
+          aria-label={isArabic ? 'Switch to English' : 'Switch to Arabic'}
+          aria-pressed={isArabic}
+          className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
+        >
+          <span
+            className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${isArabic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
+          />
+        </button>
       </div>
 
       {activeTab === 'Contents' && (
@@ -148,7 +168,7 @@ export default function InlineTabPanels({ hadith }) {
       {activeTab === 'Ayat' && (
         <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
           {ayat
-            ? <AyatChips ayat={ayat} />
+            ? <AyatChips ayat={ayat} isArabic={isArabic} />
             : <div className="text-sm text-gray-400 italic">No Ayat available</div>}
         </div>
       )}

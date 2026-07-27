@@ -1,25 +1,11 @@
-// src/app/api/hadith-by-id/[hadithId]/neighbors/route.js
+// src/app/api/hadith-by-id/[hadithId]/route.js
 //
-// Previous / next hadith within the same compiler. The list is CIRCULAR:
-// "back" from the first hadith wraps to the last, "next" from the last wraps to
-// the first. Bukhari 1 -> back -> Bukhari 7563.
-//
-// ⚠️ hadith_number is TEXT — it has to be, because "7008A" and "8571C" exist.
-// Comparing text compares alphabetically, so '999' < '9990' and the hadith after
-// 999 would be 9990 rather than 1000. Silently wrong, never an error.
-//
-// So we sort on the pair (digits-as-number, raw-text). Postgres compares tuples
-// left to right, which orders numerically first and keeps 7008A / 7008B / 7008C
-// adjacent and in sequence — the same ordering the listing page uses, so prev
-// and next agree with what the user sees in the list.
+// Single hadith by compound id, e.g. "azami-1103" / "sevenbooks-43180".
 
 import { pool } from '@/lib/db';
 import { NextResponse } from 'next/server';
 
 const AZAMI = 'الأعظمي';
-
-// digits only, cast to a number. "7008A" -> 7008
-const NUM = `NULLIF(regexp_replace(hadith_number, '\\D', '', 'g'), '')::bigint`;
 
 export async function GET(_request, { params }) {
   try {
@@ -32,6 +18,7 @@ export async function GET(_request, { params }) {
       );
     }
 
+    // Accept "azami-42", "sevenbooks-42", or a bare "42".
     const dashIndex = hadithId.indexOf('-');
     const numericIdRaw = dashIndex === -1 ? hadithId : hadithId.slice(dashIndex + 1);
     const numericId = parseInt(numericIdRaw, 10);
@@ -43,91 +30,60 @@ export async function GET(_request, { params }) {
       );
     }
 
-    // Where are we?
-    const currentRes = await pool.query(
-      `SELECT compiler, hadith_number, ${NUM} AS num FROM hadiths WHERE id = $1 LIMIT 1`,
-      [numericId]
-    );
-    if (currentRes.rows.length === 0) {
+    const result = await pool.query(`
+      SELECT
+        CASE WHEN h.compiler = $2 THEN 'azami-' ELSE 'sevenbooks-' END
+          || h.id::text            AS hadith_id,
+        h.hadith_number,
+        h.compiler,
+        h.volume,
+        h.book,
+        h.section,
+        h.chapter,
+        h.book_stripped,
+        h.chapter_stripped,
+        h.section_stripped,
+        h.book_stripped_english,
+        h.chapter_stripped_english,
+        h.section_stripped_english,
+        h.final_grade              AS grade,
+        COALESCE(NULLIF(TRIM(h.final_grader), ''), 'Unknown') AS final_grader,
+        h.commentary_1             AS commentary,
+        NULL::text                 AS reference,
+        h.matched_hadith           AS matched_hadith,
+        h.ayat                     AS ayat,
+        NULL::text                 AS duplicates,
+        NULLIF(TRIM(h.post_clause_english), '') AS hadith_text,
+        NULLIF(TRIM(h.post_clause_english), '') AS hadith_text_english,
+        -- final_hadith is chain + intro + post already concatenated. Returning
+        -- it here put the isnad inline at the top of the Arabic body instead of
+        -- on its own bold line. Falls back to final_hadith where post_clause
+        -- is empty (~0.5% of rows).
+        COALESCE(NULLIF(TRIM(h.post_clause), ''), h.final_hadith)
+                                   AS hadith_text_arabic,
+        h.chain_clause             AS chain_clause,
+        h.machine_clause,
+        h.intro_clause             AS arabic_intro_clause,
+        m.english                  AS english_narrator,
+        CASE WHEN h.compiler = $2 THEN 'azami' ELSE 'sevenbooks' END AS source
+      FROM hadiths h
+      LEFT JOIN machine_clauses m ON h.machine_clause = m.machine_clause
+      WHERE h.id = $1
+      LIMIT 1
+    `, [numericId, AZAMI]);
+
+    if (result.rows.length === 0) {
       return NextResponse.json(
         { success: false, error: 'Hadith not found' },
         { status: 404 }
       );
     }
-    const { compiler, hadith_number, num } = currentRes.rows[0];
 
-    // ── Previous ──────────────────────────────────────────────────────
-    // Largest row strictly below us. If there isn't one we're at the start,
-    // so wrap to the very last hadith of this compiler.
-    const prevRes = await pool.query(`
-      SELECT * FROM (
-        SELECT id, hadith_number, compiler, 1 AS rank
-        FROM hadiths
-        WHERE compiler = $1
-          AND (${NUM}, hadith_number) < ($2::bigint, $3::text)
-        ORDER BY ${NUM} DESC, hadith_number DESC
-        LIMIT 1
-      ) AS strictly_before
-      UNION ALL
-      SELECT * FROM (
-        SELECT id, hadith_number, compiler, 2 AS rank
-        FROM hadiths
-        WHERE compiler = $1
-        ORDER BY ${NUM} DESC, hadith_number DESC
-        LIMIT 1
-      ) AS wrap_to_last
-      ORDER BY rank
-      LIMIT 1
-    `, [compiler, num, hadith_number]);
-
-    // ── Next ──────────────────────────────────────────────────────────
-    // Smallest row strictly above us, else wrap to the first.
-    const nextRes = await pool.query(`
-      SELECT * FROM (
-        SELECT id, hadith_number, compiler, 1 AS rank
-        FROM hadiths
-        WHERE compiler = $1
-          AND (${NUM}, hadith_number) > ($2::bigint, $3::text)
-        ORDER BY ${NUM} ASC, hadith_number ASC
-        LIMIT 1
-      ) AS strictly_after
-      UNION ALL
-      SELECT * FROM (
-        SELECT id, hadith_number, compiler, 2 AS rank
-        FROM hadiths
-        WHERE compiler = $1
-        ORDER BY ${NUM} ASC, hadith_number ASC
-        LIMIT 1
-      ) AS wrap_to_first
-      ORDER BY rank
-      LIMIT 1
-    `, [compiler, num, hadith_number]);
-
-    // A compiler with exactly one hadith would wrap onto itself. Return null
-    // rather than a button that goes nowhere.
-    const formatRow = (row) => {
-      if (!row || row.id === numericId) return null;
-      return {
-        hadith_id: `${row.compiler === AZAMI ? 'azami' : 'sevenbooks'}-${row.id}`,
-        hadith_number: row.hadith_number,
-        // The client builds the readable URL (/Nasai2) from compiler + number
-        // and falls back to hadith_id without it. Leaving compiler out is why
-        // the arrows used to land on /sevenbooks-48685.
-        compiler: row.compiler,
-      };
-    };
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        prev: formatRow(prevRes.rows[0]),
-        next: formatRow(nextRes.rows[0]),
-      },
-    });
+    return NextResponse.json({ success: true, data: result.rows[0] });
   } catch (error) {
     console.error('Database error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch neighbors', details: error.message },
+      { success: false, error: 'Failed to fetch hadith', details: error.message },
       { status: 500 }
     );
   }

@@ -58,6 +58,9 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  ? `${hadith.english_narrator} reported,`
  : '';
  const arabicNarrator = hadith?.arabic_intro_clause || '';
+ // The isnad. Shown on its own bold line ABOVE the narrator, because the body
+ // text is now the post clause alone and no longer carries the chain inline.
+ const arabicChain = hadith?.chain_clause || '';
 
  const compilerArabic = hadith?.compiler || '';
  const compiler = translateCompiler(compilerArabic);
@@ -205,6 +208,11 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  {/* Arabic card */}
  <div className={`bg-white rounded-[5px] p-6`} dir="rtl" lang="ar">
+ {arabicChain && (
+ <h3 className={`text-right text-[15px] font-bold mb-2 ${notoSansArabic.className} text-[#1D1D1D]`}>
+ <HadithText text={arabicChain} />
+ </h3>
+ )}
  <h3 className={`text-right text-[15px] font-bold mb-3 ${notoSansArabic.className} text-[#1D1D1D]`}>
  {arabicNarrator}
  </h3>
@@ -421,7 +429,10 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  <PanelHeading isArabic={isArabic}>{isArabic ? 'المرجع' : 'Reference'}</PanelHeading>
 
- <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] p-3 mb-4">
+ {/* px-3 py-2: the reference rows carry their own vertical padding, so a
+     full p-3 here stacked into a band of empty white above the first
+     compiler and below the last. */}
+ <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] px-3 py-2 mb-4">
  <MatchedReferenceChips
    value={hadith?.matched_hadith}
    onSelect={openRef} isArabic={isArabic}
@@ -478,6 +489,13 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {selectedLanguage !== 'ar' && (
  <div className="mb-[23px]">
  <div className="bg-white rounded-[5px] pt-4 px-5 pb-4">
+ {arabicChain && (
+ <div className="flex justify-end mb-2">
+ <h3 className={`text-right text-[#1D1D1D] text-[15px] font-bold ${notoSansArabic.className}`} dir="rtl">
+ <HadithText text={arabicChain} />
+ </h3>
+ </div>
+ )}
  <div className="flex justify-end mb-3">
  <h3 className={`text-right text-[#1D1D1D] text-[15px] font-bold ${notoSansArabic.className}`} dir="rtl">
  {arabicNarrator}

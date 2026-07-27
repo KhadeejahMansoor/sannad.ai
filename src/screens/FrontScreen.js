@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { FiEdit, FiFilter } from 'react-icons/fi';
 import { FaBars } from 'react-icons/fa6';
-import { CiGlobe } from 'react-icons/ci';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import FilterSection from '../component/FilterSection';
@@ -142,8 +141,15 @@ export default function FrontScreen() {
 
         {/* header icons */}
     
-<div className="absolute top-5 right-0 md:top-8 md:right-8 flex gap-2 z-10 mx-4">
-          <button className="bg-white p-2 rounded-md md:hidden">
+<div className="absolute top-5 right-4 md:top-8 md:right-8 flex items-center gap-2 z-10">
+          {/* One shared button box for every icon here — w-9/md:w-10 square,
+              centered contents — so the globe and the burger are the same size
+              and sit on the same baseline. They used to be p-2 around icons of
+              different sizes (20px vs 24px), which made two boxes of 36px and
+              40px that couldn't line up. Matches Header.js. */}
+
+          {/* edit (mobile only) */}
+          <button className="w-9 h-9 bg-white rounded-md flex items-center justify-center cursor-pointer md:hidden">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-black">
               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="m18.5 2.5 3 3L12 15l-4 1 1-4z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -152,19 +158,31 @@ export default function FrontScreen() {
 
           {/* world (desktop only) */}
           <button
-            className="hidden md:flex bg-white p-2 rounded-md"
+            className="hidden md:flex w-10 h-10 bg-white rounded-md items-center justify-center cursor-pointer"
             onClick={() => setShowLangBar((p) => !p)}
+            aria-label="Language"
           >
-            <CiGlobe className="w-5 h-5 text-black" />
+            <svg width="21" height="21" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.43359 8.59938C1.43359 12.557 4.64171 15.7652 8.59938 15.7652C12.557 15.7652 15.7652 12.557 15.7652 8.59938C15.7652 4.64171 12.557 1.43359 8.59938 1.43359C4.64171 1.43359 1.43359 4.64171 1.43359 8.59938Z" stroke="black" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M9.31568 1.46973C9.31568 1.46973 11.4654 4.30021 11.4654 8.59968C11.4654 12.8991 9.31568 15.7296 9.31568 15.7296M7.88253 15.7296C7.88253 15.7296 5.73279 12.8991 5.73279 8.59968C5.73279 4.30021 7.88253 1.46973 7.88253 1.46973M1.88477 11.1077H15.3134M1.88477 6.09166H15.3134" stroke="black" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
 
           {/* burger */}
-          <button className="bg-white p-2 rounded-md md:hidden" onClick={() => setShowBottomMenu(true)}>
+          <button
+            className="w-9 h-9 bg-white rounded-md flex items-center justify-center cursor-pointer md:hidden"
+            onClick={() => setShowBottomMenu(true)}
+            aria-label="Menu"
+          >
             <FaBars className="w-5 h-5 text-black opacity-70" style={{ fontWeight: 100 }} />
           </button>
-          <button className="hidden md:flex bg-white p-2 rounded-md" onClick={() => setShowBottomMenu(true)}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M4 18h16M4 12h16M4 6h16" stroke="black" strokeWidth="2" strokeLinecap="round" />
+          <button
+            className="hidden md:flex w-10 h-10 bg-white rounded-md items-center justify-center cursor-pointer"
+            onClick={() => setShowBottomMenu(true)}
+            aria-label="Menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 18C3.71667 18 3.47934 17.904 3.288 17.712C3.09667 17.52 3.00067 17.2827 3 17C2.99934 16.7173 3.09534 16.48 3.288 16.288C3.48067 16.096 3.718 16 4 16H20C20.2833 16 20.521 16.096 20.713 16.288C20.905 16.48 21.0007 16.7173 21 17C20.9993 17.2827 20.9033 17.5203 20.712 17.713C20.5207 17.9057 20.2833 18.0013 20 18H4ZM4 13C3.71667 13 3.47934 12.904 3.288 12.712C3.09667 12.52 3.00067 12.2827 3 12C2.99934 11.7173 3.09534 11.48 3.288 11.288C3.48067 11.096 3.718 11 4 11H20C20.2833 11 20.521 11.096 20.713 11.288C20.905 11.48 21.0007 11.7173 21 12C20.9993 12.2827 20.9033 12.5203 20.712 12.713C20.5207 12.9057 20.2833 13.0013 20 13H4ZM4 8C3.71667 8 3.47934 7.904 3.288 7.712C3.09667 7.52 3.00067 7.28267 3 7C2.99934 6.71733 3.09534 6.48 3.288 6.288C3.48067 6.096 3.718 6 4 6H20C20.2833 6 20.521 6.096 20.713 6.288C20.905 6.48 21.0007 6.71733 21 7C20.9993 7.28267 20.9033 7.52033 20.712 7.713C20.5207 7.90567 20.2833 8.00133 20 8H4Z" fill="black"/>
             </svg>
           </button>
         </div>

@@ -6,6 +6,7 @@ import { useLanguage } from "../lib/LanguageContext";
 import MatchedReferenceChips from "./MatchedReferenceChips";
 import AyatChips from "./AyatChips";
 import HadithText from "./HadithText";
+import { buildCommentaries, noCommentaryText } from "../lib/commentaries";
 import { useOpenReference } from "../hooks/useOpenReference";
 
 import { buildHadithLabel } from '../lib/hadithLabel';
@@ -72,7 +73,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
   // Was `|| 'None'` — a literal English word rendered into the panel, which
   // would sit there in English even in Arabic mode. Empty means empty; the
   // render below picks the right sentence.
-  const commentary  = hadith?.commentary  || '';
+  const commentaries = buildCommentaries(hadith, isArabic);
   const ayat        = hadith?.ayat        || '';
   const source      = hadith?.source      || '';
 
@@ -220,17 +221,31 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
         <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="text-black text-xs font-medium font-['Inter'] ms-2 mb-2 text-start">
           {t.commentary}
         </div>
-        <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="bg-white rounded-[5px] p-3 min-h-[100px]">
-          <p
-            className={`text-sm leading-[26px] whitespace-pre-line ${
-              commentary ? 'text-black' : 'text-[#6B5B55]'
-            }`}
-            dir={commentary ? 'rtl' : (isArabic ? 'rtl' : 'ltr')}
-            lang={commentary ? 'ar' : lang}
-          >
-            {commentary || t.noCommentary}
-          </p>
-        </div>
+        {commentaries.length === 0 ? (
+          <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="bg-white rounded-[5px] p-3 min-h-[100px]">
+            <p className="text-sm leading-[26px] text-[#6B5B55] text-start">{t.noCommentary}</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {commentaries.map((c, ci) => (
+              <div
+                key={ci}
+                dir={c.isArabic ? 'rtl' : 'ltr'}
+                lang={c.isArabic ? 'ar' : 'en'}
+                className="bg-white rounded-[5px] px-4 py-3"
+              >
+                {c.author && (
+                  <div className="text-[13px] text-[#523230] font-medium mb-2 pb-2 border-b border-[#EFE9E6] text-start">
+                    {c.author}
+                  </div>
+                )}
+                <p className="text-sm leading-[26px] whitespace-pre-line text-black text-start">
+                  <HadithText text={c.text} />
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
     </div>

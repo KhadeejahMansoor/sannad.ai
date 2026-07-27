@@ -16,6 +16,7 @@ import MatchedReferenceChips from './MatchedReferenceChips';
 import { useLanguage } from '../lib/LanguageContext';
 import { useOpenReference } from '../hooks/useOpenReference';
 import { buildHadithLabel } from '../lib/hadithLabel';
+import { buildCommentaries, noCommentaryText } from '../lib/commentaries';
 
 const BLANK_TOKENS = new Set(['', '-', '--', '---', '\u2014', '\u2013', 'n/a', 'na', 'none', 'nil', 'null', 'undefined']);
 const isBlank = (v) => {
@@ -24,6 +25,16 @@ const isBlank = (v) => {
   return t === '' || BLANK_TOKENS.has(t.toLowerCase());
 };
 const firstPresent = (...vals) => vals.find((v) => !isBlank(v));
+
+// The KEY stays English — activeTab is compared against it and the panels below
+// switch on it. Only the visible text changes. Wording matches the desktop
+// panel headings so the two views read the same.
+const TAB_LABELS = (isArabic) => ({
+  Contents:   isArabic ? 'التفاصيل' : 'Contents',
+  Reference:  isArabic ? 'المرجع'   : 'Reference',
+  Commentary: isArabic ? 'تخريج'    : 'Commentary',
+  Ayat:       isArabic ? 'الآيات'   : 'Ayat',
+});
 
 // Tabbed layout matching ResultsScreen's mobile expand: Contents / Reference / Commentary / Ayat.
 export default function InlineTabPanels({ hadith }) {
@@ -48,7 +59,7 @@ export default function InlineTabPanels({ hadith }) {
   const section = pick(hadith?.section_stripped, hadith?.section_stripped_english, hadith?.section);
   const reference = hadith?.matched_hadith || '';
   const ayat      = hadith?.ayat || '';
-  const commentary= hadith?.commentary || 'None';
+  const commentaries = buildCommentaries(hadith, isArabic);
   const hadithNumber = hadith?.hadith_number || '';
 
   return (
@@ -57,8 +68,11 @@ export default function InlineTabPanels({ hadith }) {
         {['Contents', 'Reference', 'Commentary', 'Ayat'].map(tab => (
           <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
             <div className="inline-flex flex-col items-start">
-              <div className={`text-[13px] font-medium ${activeTab === tab ? 'text-[#523230]' : 'text-[#9A8A85]'}`}>
-                {tab}
+              <div
+                className={`text-[13px] font-medium ${activeTab === tab ? 'text-[#523230]' : 'text-[#9A8A85]'}`}
+                lang={isArabic ? 'ar' : 'en'}
+              >
+                {TAB_LABELS(isArabic)[tab]}
               </div>
               {activeTab === tab && <div className="h-[2px] bg-[#523230] mt-[7px] w-full rounded-[2px]" />}
             </div>
@@ -103,11 +117,33 @@ export default function InlineTabPanels({ hadith }) {
         </div>
       )}
       {activeTab === 'Commentary' && (
-        <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-          <div className="text-sm leading-[26px] text-black whitespace-pre-line">
-            {commentary || 'None'}
+        commentaries.length === 0 ? (
+          <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
+            <div className="text-sm leading-[26px] text-[#6B5B55]" dir={isArabic ? 'rtl' : 'ltr'}>
+              {noCommentaryText(isArabic)}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {commentaries.map((c, ci) => (
+              <div
+                key={ci}
+                dir={c.isArabic ? 'rtl' : 'ltr'}
+                lang={c.isArabic ? 'ar' : 'en'}
+                className="bg-white border border-[#DDD8D0] rounded-[5px] p-4"
+              >
+                {c.author && (
+                  <div className="text-[13px] text-[#523230] font-medium mb-2 pb-2 border-b border-[#EFE9E6] text-start">
+                    {c.author}
+                  </div>
+                )}
+                <div className="text-sm leading-[26px] text-black whitespace-pre-line text-start">
+                  <HadithText text={c.text} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )
       )}
       {activeTab === 'Ayat' && (
         <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">

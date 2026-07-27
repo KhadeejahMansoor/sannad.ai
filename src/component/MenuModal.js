@@ -110,12 +110,16 @@ const HashModal = ({ isOpen, onClose, onCompleteClose, selectedHadithNumber, set
         <div className="flex items-center justify-between px-5 pt-2 pb-4">
           <div className="text-[#523230] text-base font-medium">{compilerLabel}</div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-[9px] bg-[#F1E9E6] flex items-center justify-center text-[#523230]">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 12H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M11 8L15 12L11 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M19 6V18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            {/* Decorative, not a control — it has no onClick and never had one.
+                The old arrow-to-bar glyph read as a button sitting beside the
+                close X; a hash says what the sheet is for: pick a number.
+                Typed as a character rather than drawn as SVG paths, so it takes
+                the font's own proportions and stays crisp at any size. */}
+            <div
+              className="w-8 h-8 rounded-[9px] bg-[#F1E9E6] flex items-center justify-center text-[#523230] text-[17px] leading-none select-none"
+              aria-hidden="true"
+            >
+              #
             </div>
             <button onClick={onClose} className="w-8 h-8 cursor-pointer flex items-center justify-center hover:bg-gray-100 rounded-full text-[#6B5B55]">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

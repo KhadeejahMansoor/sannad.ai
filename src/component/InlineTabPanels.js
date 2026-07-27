@@ -69,10 +69,23 @@ export default function InlineTabPanels({ hadith }) {
 
   return (
     <div className="mt-4 mb-6">
-      {/* The switch rides at the far right of the tab strip, as it does on the
-          detail page. dir="ltr" on the row so it stays right in Arabic. */}
-      <div dir="ltr" className="flex items-center justify-between gap-3 mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
-      <div className="flex justify-start gap-[22px]">
+      {/* Own row above the tabs, hard right. Sharing the strip with four tabs
+          left no room on a phone — the switch pressed against "Ayat" and the
+          tabs had nowhere to breathe. dir="ltr" so it stays right in Arabic. */}
+      <div dir="ltr" className="mb-2 flex justify-end pe-1">
+        <button
+          onClick={() => setArabicOverride(p => !p)}
+          aria-label={isArabic ? 'Switch to English' : 'Switch to Arabic'}
+          aria-pressed={isArabic}
+          className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
+        >
+          <span
+            className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${isArabic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
+          />
+        </button>
+      </div>
+
+      <div className="flex justify-start gap-[22px] mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
         {['Contents', 'Reference', 'Commentary', 'Ayat'].map(tab => (
           <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
             <div className="inline-flex flex-col items-start">
@@ -86,18 +99,6 @@ export default function InlineTabPanels({ hadith }) {
             </div>
           </div>
         ))}
-      </div>
-
-        <button
-          onClick={() => setArabicOverride(p => !p)}
-          aria-label={isArabic ? 'Switch to English' : 'Switch to Arabic'}
-          aria-pressed={isArabic}
-          className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
-        >
-          <span
-            className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${isArabic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
-          />
-        </button>
       </div>
 
       {activeTab === 'Contents' && (

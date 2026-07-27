@@ -241,7 +241,13 @@ export default function ResultsScreen() {
 // Reference / Commentary / Ayat, one at a time), which is why the results page
 // looked different from everywhere else.
 function InlinePanels({ hadith }) {
-  const { isArabic } = useLanguage();
+  const { isArabic: siteIsArabic } = useLanguage();
+
+  // Same contract as HadithDetailBottomSheet: the switch is an override, not a
+  // replacement. Arabic if the SITE is Arabic, or if the reader flips it here.
+  // Per-card state, so opening one card in Arabic doesn't flip the whole list.
+  const [arabicOverride, setArabicOverride] = useState(false);
+  const isArabic = siteIsArabic || arabicOverride;
 
   // Mobile shares the tabbed panel with the compiler page — the stacked
   // version below is a two-column desktop layout that collapses badly on a
@@ -316,7 +322,27 @@ function InlinePanels({ hadith }) {
 
       {/* Reference + Commentary */}
       <div className="w-full md:w-1/2">
-        <PanelHeading isArabic={isArabic}>{isArabic ? 'المرجع' : 'Reference'}</PanelHeading>
+        {/* Own row above the heading, hard right in both languages — dir="ltr"
+            because it's a control, not content, so it shouldn't mirror. */}
+        <div dir="ltr" className="mt-8 mb-1 flex justify-end pe-1">
+          <button
+            onClick={() => setArabicOverride(p => !p)}
+            aria-label={isArabic ? 'Switch to English' : 'Switch to Arabic'}
+            aria-pressed={isArabic}
+            className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
+          >
+            <span
+              className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${isArabic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
+            />
+          </button>
+        </div>
+
+        <div
+          dir={isArabic ? 'rtl' : 'ltr'}
+          className="text-black text-xs font-medium font-['Inter'] ms-2 mb-2 text-start"
+        >
+          {isArabic ? 'المرجع' : 'Reference'}
+        </div>
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
           <MatchedReferenceChips
             value={hadith?.matched_hadith}

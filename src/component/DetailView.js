@@ -308,7 +308,11 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <>
  {/* ─── MOBILE: tabbed view ─── */}
  <div className="md:hidden">
- <div className="flex justify-start gap-[22px] mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
+ {/* The tab strip carries the language switch at its far right — the same
+     control, doing the same thing, as the one beside Reference on desktop.
+     dir="ltr" on the row so the switch stays right in Arabic too. */}
+ <div dir="ltr" className="flex items-center justify-between gap-3 mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
+ <div className="flex justify-start gap-[22px]">
  {["Contents", "Reference", "Commentary", "Ayat"].map(tab => (
  <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
  <div className="inline-flex flex-col items-start">
@@ -317,6 +321,18 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </div>
  </div>
  ))}
+ </div>
+
+ <button
+ onClick={() => setIsArabic(p => !p)}
+ aria-label={isArabic ? 'Switch to English' : 'Switch to Arabic'}
+ aria-pressed={isArabic}
+ className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
+ >
+ <span
+ className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${isArabic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
+ />
+ </button>
  </div>
 
  {activeTab === "Contents" && (

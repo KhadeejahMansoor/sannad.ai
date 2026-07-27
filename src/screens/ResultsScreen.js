@@ -302,7 +302,7 @@ function InlinePanels({ hadith }) {
           ))}
         </div>
 
-        <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat annotation'}</PanelHeading>
+        <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat'}</PanelHeading>
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
           <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
             {ayat

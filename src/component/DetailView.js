@@ -384,7 +384,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  />
  </div>
 
- <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat annotation'}</PanelHeading>
+ <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat'}</PanelHeading>
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white px-4 py-3 rounded-[5px]">
  <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${getFont()} ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
  {ayat

@@ -43,7 +43,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
     details:      isArabic ? 'التفاصيل'  : 'Details',
     reference:    isArabic ? 'المرجع'    : 'Reference',
     commentary:   isArabic ? 'تخريج'     : 'Commentary',
-    ayat:         isArabic ? 'الآيات'    : 'Ayat annotation',
+    ayat:         isArabic ? 'الآيات'    : 'Ayat',
     book:         isArabic ? 'الكتاب'    : 'Book',
     chapter:      isArabic ? 'الباب'     : 'Chapter',
     section:      isArabic ? 'الفصل'     : 'Section',

@@ -5,6 +5,7 @@ import { FiBox } from 'react-icons/fi';
 import { CiGlobe } from 'react-icons/ci';
 import { RiBuilding2Line } from 'react-icons/ri';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import LanguageMenu from './LanguageMenu';
 import { useLanguage } from '../lib/LanguageContext';
@@ -37,13 +38,16 @@ export default function BottomPopupMenu({
   // so /desktopcompiler can read ?compiler=Tirmidhi (etc.) and load that
   // scholar's hadith. Previously this navigated to bare /desktopcompiler,
   // which always fell back to the default ("Azami").
-  const handleScholarClick = (scholar) => {
-    // `scholar` is the English key ('Ahmad'). It stays English in the URL —
-    // HadithByCompiler translates it to Arabic on arrival. Only the LABEL below
-    // changes with the language.
-    router.push(`/desktopcompiler?compiler=${encodeURIComponent(scholar)}`);
-    onClose();
-  };
+  // `scholar` is the English key ('Ahmad'). It stays English in the URL —
+  // HadithByCompiler translates it to Arabic on arrival. Only the LABEL changes
+  // with the language.
+  //
+  // These render as real <Link> elements rather than <button onClick>, so the
+  // browser owns the navigation: right-click > "Open link in new tab",
+  // middle-click, and ctrl/cmd-click all work. A button has no href, so the
+  // context menu has nothing to offer.
+  const compilerHref = (scholar) =>
+    `/desktopcompiler?compiler=${encodeURIComponent(scholar)}`;
 
   // ✅ NEW: Handle About Hadith click to navigate to Timeline
   const handleAboutHadithClick = () => {
@@ -144,17 +148,18 @@ export default function BottomPopupMenu({
                 same ten names in this codebase. */}
             <nav className="flex flex-col gap-2 px-5 mt-2 text-black text-base font-medium">
               {COMPILER_KEYS.map((key) => (
-                <button
+                <Link
                   key={key}
-                  onClick={() => handleScholarClick(key)}
+                  href={compilerHref(key)}
+                  onClick={onClose}
                   dir={isArabic ? 'rtl' : 'ltr'}
                   lang={isArabic ? 'ar' : 'en'}
-                  className={`px-2 py-1 rounded-[5px] hover:bg-[#EDEDED] ${
+                  className={`px-2 py-1 rounded-[5px] no-underline text-black hover:bg-[#EDEDED] ${
                     isArabic ? 'text-right' : 'text-left'
                   }`}
                 >
                   {compilerLabel(key, language)}
-                </button>
+                </Link>
               ))}
             </nav>
 

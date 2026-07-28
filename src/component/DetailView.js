@@ -226,7 +226,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className={`mt-3 text-[13px] text-black text-start`}>
  {gradedByLabel(false)}<span>{graderInfoEn.name}</span>
  {graderInfoEn.descriptor && (
- <div className="text-black text-[12px] mt-0.5">
+ <div className="text-black text-[13px] mt-0.5">
  {graderInfoEn.descriptor}
  </div>
  )}
@@ -271,7 +271,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {gradedByLabel(true)}
  <span>{graderInfoAr.name}</span>
  {graderInfoAr.descriptor && (
- <div className="text-black text-[12px] mt-0.5">
+ <div className="text-black text-[13px] mt-0.5">
  {graderInfoAr.descriptor}
  </div>
  )}
@@ -653,7 +653,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {gradedByLabel(isArabic)}<span>{graderInfo.name}</span>
  </p>
  {graderInfo.descriptor && (
- <p className="text-[12px] text-black mt-0.5">{graderInfo.descriptor}</p>
+ <p className="text-[13px] text-black mt-0.5">{graderInfo.descriptor}</p>
  )}
  </div>
  )}

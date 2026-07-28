@@ -314,7 +314,7 @@ function InlinePanels({ hadith }) {
 
         <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat'}</PanelHeading>
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
-          <div className={`text-xs leading-[18px] whitespace-pre-line text-start text-black`}>
+          <div className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} whitespace-pre-line text-start text-black`}>
             {ayat
               ? <AyatChips ayat={ayat} isArabic={isArabic} />
               : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}

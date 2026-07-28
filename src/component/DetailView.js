@@ -449,7 +449,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  )}
  {activeTab === "Ayat" && (
  <div className="bg-white rounded-[5px] p-4 mb-6">
- <div className={`text-sm text-black leading-[20px] whitespace-pre-line ${getFont()}`} dir={getDir()}>
+ <div className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-black whitespace-pre-line ${getFont()}`} dir={getDir()}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
    : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}
@@ -490,7 +490,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat'}</PanelHeading>
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white px-4 py-3 rounded-[5px]">
- <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${getFont()} text-black`}>
+ <div className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} whitespace-pre-line text-start ${getFont()} text-black`}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
    : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}
@@ -713,7 +713,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  )}
  {activeTab === "Ayat" && (
  <div className="bg-white p-4 rounded-[5px]">
- <div className={`text-black text-xs leading-[18px] ${getFont()}`} dir={getDir()}>
+ <div className={`text-black ${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} ${getFont()}`} dir={getDir()}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
    : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}

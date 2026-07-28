@@ -170,7 +170,7 @@ export default function InlineTabPanels({ hadith }) {
         <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
           {ayat
             ? <AyatChips ayat={ayat} isArabic={isArabic} />
-            : <div className="text-sm text-black">No annotations are available.</div>}
+            : <div className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-black`}>No annotations are available.</div>}
         </div>
       )}
     </div>

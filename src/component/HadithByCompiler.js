@@ -661,6 +661,7 @@ export default function HadithByCompiler() {
                         hadithId={`${compilerFor(hadith.compiler, 'en')} ${hadith.hadith_number}`}
                         grade={gradeFor(hadith.grade, 'en')}
                         finalGrader={hadith.final_grader}
+                        finalGraderDescription={hadith.final_grader_description}
                         /* Arabic side — mobile shows English only by default;
                            Arabic only when the Arabic language is selected. */
                         chainAr={showArabicSide ? hadith.chain_clause : undefined}

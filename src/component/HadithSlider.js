@@ -4,24 +4,7 @@ import { BookOpen, Share2 } from "lucide-react";
 import HadithDetailBottomSheet from "./HadithDetailBottomSheet";
 import HadithText from "./HadithText";
 import { compilerFor, gradeFor } from "../lib/i18n";
-
-// Pretty-print the grader name returned from the API.
-// Backend guarantees final_grader is non-null: "Azami" for azami rows,
-// the actual grader (e.g. "Darussalam", "Albani") for sevenbooks rows.
-// We add the longer descriptor only for Azami since that's the special case
-// the original UI was already calling out.
-function formatGrader(name) {
-  if (!name) return null;
-  const trimmed = String(name).trim();
-  if (!trimmed) return null;
-  if (trimmed.toLowerCase() === 'azami') {
-    return {
-      primary: 'Graded by Zia-ur-Rahman Azami',
-      secondary: '(Dean of the College of Hadith at the Islamic University of Madinah)',
-    };
-  }
-  return { primary: `Graded by ${trimmed}`, secondary: null };
-}
+import { formatGrader, gradedByLabel } from "../lib/graders";
 
 // `language` comes from HadithByCompiler, which reads it from LanguageProvider.
 // 'en' => English + Arabic side by side (the default)
@@ -123,7 +106,10 @@ export default function HadithSlider({
     // Pulled from the API (final_grader column). For Azami rows the backend
     // hardcodes the value to "Azami"; for sevenbooks rows it uses whatever
     // the Final Grader column held (Darussalam, Albani, etc.).
-    const graderInfo = formatGrader(hadith.final_grader);
+    // Fixed per card: the English chip reads English, the Arabic chip Arabic.
+    // Both name and description come straight from the row.
+    const graderInfoEn = formatGrader(hadith, false);
+    const graderInfoAr = formatGrader(hadith, true);
 
     return (
         <div className="flex flex-col w-full font-['Inter'] bg-[#F6F4F1] min-h-screen ">
@@ -151,16 +137,15 @@ export default function HadithSlider({
                                 </div>
                             </div>
 
-                            {showEnglishGradeInfo[index] && graderInfo && (
-                                <p className="text-black text-xs font-medium font-['Inter'] mt-2">
-                                    {graderInfo.primary}
-                                    {graderInfo.secondary && (
-                                        <>
-                                            <br />
-                                            {graderInfo.secondary}
-                                        </>
+                            {showEnglishGradeInfo[index] && graderInfoEn && (
+                                <div className="text-black text-[13px] font-['Inter'] mt-2 text-start">
+                                    {gradedByLabel(false)}{graderInfoEn.name}
+                                    {graderInfoEn.descriptor && (
+                                        <div className="text-black text-[13px] mt-0.5">
+                                            {graderInfoEn.descriptor}
+                                        </div>
                                     )}
-                                </p>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -188,14 +173,30 @@ export default function HadithSlider({
                             right-to-left: "end" is the LEFT edge. To pin the chips to
                             the right — where an Arabic reader's eye starts — the
                             correct value is `start`. */}
-                        <div className="flex gap-3 justify-start mt-auto pt-6">
-                            <div className="flex items-center justify-center gap-2 px-3 py-1 bg-[#EDE4E1] rounded-[10px] text-sm font-['Inter'] text-[#6E4A44]">
-                                <span className="relative -translate-y-0.5">{arabicGrade}</span>
-                                <BookOpen size={15} />
+                        <div className="mt-auto pt-6">
+                            <div className="flex gap-3 justify-start">
+                                <div
+                                    className="flex items-center justify-center gap-2 px-3 py-1 bg-[#EDE4E1] rounded-[10px] text-sm font-['Inter'] text-[#6E4A44] cursor-pointer hover:bg-[#E4D8D4] transition-colors"
+                                    onClick={() => toggleEnglishGradeInfo(index)}
+                                >
+                                    <span className="relative -translate-y-0.5">{arabicGrade}</span>
+                                    <BookOpen size={15} />
+                                </div>
+                                <div className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm text-[#6B5B55] font-['Inter']">
+                                    {arabicLabel}
+                                </div>
                             </div>
-                            <div className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm text-[#6B5B55] font-['Inter']">
-                                {arabicLabel}
-                            </div>
+
+                            {showEnglishGradeInfo[index] && graderInfoAr && (
+                                <div className="text-black text-[13px] mt-2 text-start" lang="ar">
+                                    {gradedByLabel(true)}{graderInfoAr.name}
+                                    {graderInfoAr.descriptor && (
+                                        <div className="text-black text-[13px] mt-0.5">
+                                            {graderInfoAr.descriptor}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

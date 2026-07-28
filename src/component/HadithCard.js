@@ -4,21 +4,7 @@ import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import HadithText from "./HadithText";
 import { slugFromLabel } from "../lib/hadithUrl";
-
-// Pretty-print the grader name from the API's final_grader column.
-// Azami rows get the longer Madinah descriptor; everyone else gets just the name.
-function formatGrader(name) {
-  if (!name) return null;
-  const trimmed = String(name).trim();
-  if (!trimmed) return null;
-  if (trimmed.toLowerCase() === 'azami') {
-    return {
-      name: 'Zia-ur-Rahman Azami',
-      descriptor: '(Dean of the College of Hadith at the Islamic University of Madinah)',
-    };
-  }
-  return { name: trimmed, descriptor: null };
-}
+import { formatGrader, gradedByLabel } from "../lib/graders";
 
 // The maroon expand button (the book icon). Shared by both the English and
 // Arabic sides so the control exists in every language, not just English.
@@ -65,6 +51,7 @@ export default function HadithCard({
   hadithLinkId,    // raw id used for the URL, e.g. "sevenbooks-43180"
   grade,
   finalGrader,     // who graded the hadith — from API's final_grader column
+  finalGraderDescription, // final_grader_description — shown under the name
   // Arabic side
   narratorAr,
   contentAr,
@@ -86,7 +73,10 @@ export default function HadithCard({
   // when it's tapped. Independent of the panel expansion (isExpanded) so
   // either can be open without the other.
   const [showGrader, setShowGrader] = useState(false);
-  const graderInfo = formatGrader(finalGrader);
+  // Fixed per card: English chip reads English, Arabic chip reads Arabic.
+  const graderRow = { final_grader: finalGrader, final_grader_description: finalGraderDescription };
+  const graderInfoEn = formatGrader(graderRow, false);
+  const graderInfoAr = formatGrader(graderRow, true);
 
   // Prefer the new toggle handler if provided; fall back to legacy onView.
   const handleBookClick = onToggleExpand || onView;
@@ -149,8 +139,8 @@ export default function HadithCard({
               {EnglishIdTag}
 
               <div
-                onClick={graderInfo ? () => setShowGrader(p => !p) : undefined}
-                className={`inline-flex h-[32px] px-4 bg-[#EDE4E1] rounded-[10px] items-center justify-center ${graderInfo ? 'cursor-pointer hover:bg-[#E4D8D4] transition-colors' : ''}`}
+                onClick={graderInfoEn ? () => setShowGrader(p => !p) : undefined}
+                className={`inline-flex h-[32px] px-4 bg-[#EDE4E1] rounded-[10px] items-center justify-center ${graderInfoEn ? 'cursor-pointer hover:bg-[#E4D8D4] transition-colors' : ''}`}
               >
                 <div
                   className="flex items-center text-sm font-medium"
@@ -195,12 +185,12 @@ export default function HadithCard({
           </div>
 
           {/* "Graded by" reveal — only when the user taps the grade chip */}
-          {showGrader && graderInfo && (
-            <div className="mt-3 text-[13px] text-gray-700">
-              Graded by <span className="font-semibold">{graderInfo.name}</span>
-              {graderInfo.descriptor && (
-                <div className="text-gray-500 text-[12px] mt-0.5">
-                  {graderInfo.descriptor}
+          {showGrader && graderInfoEn && (
+            <div className="mt-3 text-[13px] text-black text-start">
+              {gradedByLabel(false)}{graderInfoEn.name}
+              {graderInfoEn.descriptor && (
+                <div className="text-black text-[13px] mt-0.5">
+                  {graderInfoEn.descriptor}
                 </div>
               )}
             </div>
@@ -232,7 +222,10 @@ export default function HadithCard({
               <div className="flex items-center gap-2 flex-wrap">
                 {ArabicIdTag}
 
-                <div className="inline-flex h-[32px] px-4 bg-[#EDE4E1] rounded-[10px] items-center justify-center">
+                <div
+                  onClick={graderInfoAr ? () => setShowGrader(p => !p) : undefined}
+                  className={`inline-flex h-[32px] px-4 bg-[#EDE4E1] rounded-[10px] items-center justify-center ${graderInfoAr ? 'cursor-pointer hover:bg-[#E4D8D4] transition-colors' : ''}`}
+                >
                   <div
                     className="flex items-center text-sm font-medium gap-3"
                     style={{ color: "#6E4A44" }}
@@ -245,6 +238,17 @@ export default function HadithCard({
 
               {!showEnglish && handleBookClick && <ExpandBookButton onClick={handleBookClick} />}
             </div>
+
+            {showGrader && graderInfoAr && (
+              <div className="mt-3 text-[13px] text-black text-start" lang="ar">
+                {gradedByLabel(true)}{graderInfoAr.name}
+                {graderInfoAr.descriptor && (
+                  <div className="text-black text-[13px] mt-0.5">
+                    {graderInfoAr.descriptor}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

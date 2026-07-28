@@ -166,9 +166,14 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
             className={`py-1 first:pt-0 last:pb-0 ${gi < groups.length - 1 ? 'border-b border-[#EDE4E1]' : ''}`}
             style={{
               display: 'grid',
-              gridTemplateColumns: '104px minmax(0, 1fr)',
+              // A fixed name column keeps every row's numbers on one vertical
+              // line, which is what makes the panel scannable — but 104px was
+              // sized for the longest name, so "Nasai" left a void beside it.
+              // 88px still clears "Abu Dawud" and "Ibn Majah" at 14px, and the
+              // gap comes down with it.
+              gridTemplateColumns: '88px minmax(0, 1fr)',
               alignItems: 'baseline',
-              columnGap: '18px',
+              columnGap: '10px',
             }}
           >
             {/* ps-2 (padding-inline-start) rather than pl-2, so the indent

@@ -246,11 +246,28 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-[#6B5B55] text-sm font-medium whitespace-nowrap">
  {arabicIdLabel}
  </span>
- <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#EDE4E1] rounded-[10px] text-[#6E4A44] text-sm font-medium gap-2">
+ <span
+ onClick={() => setShowGradingDetail(p => !p)}
+ className="h-[32px] px-4 inline-flex items-center justify-center bg-[#EDE4E1] rounded-[10px] text-[#6E4A44] text-sm font-medium gap-2 cursor-pointer hover:bg-[#E4D8D4] transition-colors"
+ >
  {gradeArabic}
  <BookOpen size={16} />
  </span>
  </div>
+
+ {/* Same state as the English chip, so tapping either opens both — the two
+     cards describe one hadith and one grading. */}
+ {showGradingDetail && graderInfo && (
+ <div className="mt-3 text-[13px] text-gray-700 text-start">
+ {isArabic ? 'حكم عليه ' : 'Graded by '}
+ <span className="font-semibold">{graderInfo.name}</span>
+ {graderInfo.descriptor && (
+ <div className="text-gray-500 text-[12px] mt-0.5">
+ {graderInfo.descriptor}
+ </div>
+ )}
+ </div>
+ )}
  </div>
  </div>
 

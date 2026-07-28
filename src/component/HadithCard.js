@@ -140,11 +140,11 @@ export default function HadithCard({
 
               <div
                 onClick={graderInfoEn ? () => setShowGrader(p => !p) : undefined}
-                className={`inline-flex h-[32px] px-4 bg-[#EDE4E1] rounded-[10px] items-center justify-center ${graderInfoEn ? 'cursor-pointer hover:bg-[#E4D8D4] transition-colors' : ''}`}
+                className={`inline-flex h-[32px] px-4 bg-[#E6DEDA] rounded-[10px] items-center justify-center ${graderInfoEn ? 'cursor-pointer hover:bg-[#DDD2CD] transition-colors' : ''}`}
               >
                 <div
                   className="flex items-center text-sm font-medium"
-                  style={{ color: "#6E4A44" }}
+                  style={{ color: "#6B5B55" }}
                 >
                   <BookOpen size={16} className="mr-3" />
                   {grade}
@@ -224,11 +224,11 @@ export default function HadithCard({
 
                 <div
                   onClick={graderInfoAr ? () => setShowGrader(p => !p) : undefined}
-                  className={`inline-flex h-[32px] px-4 bg-[#EDE4E1] rounded-[10px] items-center justify-center ${graderInfoAr ? 'cursor-pointer hover:bg-[#E4D8D4] transition-colors' : ''}`}
+                  className={`inline-flex h-[32px] px-4 bg-[#E6DEDA] rounded-[10px] items-center justify-center ${graderInfoAr ? 'cursor-pointer hover:bg-[#DDD2CD] transition-colors' : ''}`}
                 >
                   <div
                     className="flex items-center text-sm font-medium gap-3"
-                    style={{ color: "#6E4A44" }}
+                    style={{ color: "#6B5B55" }}
                   >
                     {gradeAr}
                     <BookOpen size={16} />

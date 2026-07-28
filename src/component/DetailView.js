@@ -356,7 +356,11 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {/* The tab strip carries the language switch at its far right — the same
      control, doing the same thing, as the one beside Reference on desktop.
      dir="ltr" on the row so the switch stays right in Arabic too. */}
- <div dir="ltr" className="flex items-center justify-between gap-3 mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
+ {/* items-START, not center. The active tab draws a 2px underline 7px below
+     its label, so the strip is taller than the text line and centering pushed
+     the switch below the tab labels. Aligning to the top and nudging down 3px
+     puts it level with the label text itself. */}
+ <div dir="ltr" className="flex items-start justify-between gap-3 mb-4 px-3 py-2 bg-[#F6F4F1] rounded-[10px]">
  <div className="flex justify-start gap-[22px]">
  {["Contents", "Reference", "Commentary", "Ayat"].map(tab => (
  <div key={tab} onClick={() => setActiveTab(tab)} className="cursor-pointer">
@@ -377,7 +381,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  onClick={() => setIsArabic(p => !p)}
  aria-label={isArabic ? 'Switch to English' : 'Switch to Arabic'}
  aria-pressed={isArabic}
- className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
+ className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors focus:outline-none mt-[3px] ${isArabic ? 'bg-black' : 'bg-gray-300'}`}
  >
  <span
  className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition-transform ${isArabic ? 'translate-x-3.5' : 'translate-x-0.5'}`}

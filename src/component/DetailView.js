@@ -467,7 +467,16 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  {/* Details + Ayat */}
  <div className="w-[50%]">
- <PanelHeading isArabic={isArabic}>{isArabic ? 'التفاصيل' : 'Details'}</PanelHeading>
+ {/* Mirrors the toggle row in the right column so both columns' first
+     heading lands at the same height. Without it the Details card sat
+     lower than the Reference card. */}
+ <div className="mt-8 mb-1 h-4" aria-hidden="true" />
+ <div
+ dir={isArabic ? 'rtl' : 'ltr'}
+ className="text-black text-xs font-medium font-['Inter'] ms-2 mb-2 text-start"
+ >
+ {isArabic ? 'التفاصيل' : 'Details'}
+ </div>
 
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white p-3 rounded-[5px] mb-4">
  {/* Book > Chapter > Section — the real hierarchy, and the parameter order
@@ -489,7 +498,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </div>
 
  <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat'}</PanelHeading>
- <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white px-4 py-3 rounded-[5px]">
+ <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white p-3 rounded-[5px]">
  <div className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} whitespace-pre-line text-start ${getFont()} text-black`}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
@@ -530,7 +539,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {/* px-3 py-2: the reference rows carry their own vertical padding, so a
      full p-3 here stacked into a band of empty white above the first
      compiler and below the last. */}
- <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] px-3 py-2 mb-4">
+ <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] p-3 mb-4">
  <MatchedReferenceChips
    value={hadith?.matched_hadith}
    onSelect={openRef} isArabic={isArabic}
@@ -557,7 +566,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  key={ci}
  dir={showingArabic ? 'rtl' : 'ltr'}
  lang={showingArabic ? 'ar' : 'en'}
- className="bg-white rounded-[5px] px-4 py-3"
+ className="bg-white rounded-[5px] p-3"
  >
  {c.author && (
  <div className="text-[13px] text-[#523230] font-medium mb-2 pb-2 border-b border-[#EFE9E6] text-start">

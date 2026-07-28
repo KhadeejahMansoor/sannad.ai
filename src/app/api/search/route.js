@@ -134,6 +134,7 @@ export async function GET(request) {
         h.chapter,
         h.final_grade               AS grade,
         COALESCE(NULLIF(TRIM(h.final_grader), ''), 'Unknown') AS final_grader,
+        h.final_grader_description AS final_grader_description,
         -- Up to two attributed commentaries. Slot 1 names its scholar in
         -- commentary_person_1; slots 2 and 3 were pivoted into named columns on
         -- import (ibn_hajar / hadi), so their author is implied by the column.

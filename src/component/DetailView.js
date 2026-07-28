@@ -12,6 +12,7 @@ import { Noto_Sans_Arabic } from "next/font/google";
 import { translateCompiler, translateGrade } from "../lib/i18n";
 import MatchedReferenceChips from "./MatchedReferenceChips";
 import { buildCommentaries, noCommentaryText } from "../lib/commentaries";
+import { formatGrader, gradedByLabel } from "../lib/graders";
 import AyatChips from "./AyatChips";
 import HadithText from "./HadithText";
 import { useOpenReference } from "../hooks/useOpenReference";
@@ -83,7 +84,15 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  // the actual grader name (e.g. "Darussalam", "Albani") for sevenbooks rows.
  // For the Azami case we still show the longer Madinah descriptor that the
  // original UI had hardcoded; for everyone else we just show the name.
- const graderInfo = formatGrader(hadith?.final_grader);
+ // Reads final_grader AND final_grader_description straight from the row.
+ //
+ // Two fixed versions, not one that follows the toggle: the English card is
+ // English and the Arabic card is Arabic, always. Sharing one value meant the
+ // toggle could put an Arabic grader name under the English chips.
+ const graderInfoEn = formatGrader(hadith, false);
+ const graderInfoAr = formatGrader(hadith, true);
+ // Panels outside the two cards still follow the UI language.
+ const graderInfo = isArabic ? graderInfoAr : graderInfoEn;
 
  const reference = hadith?.reference || '';
  // Display labels, not the raw columns.
@@ -213,12 +222,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </svg>
  </button>
  </div>
- {showGradingDetail && graderInfo && (
- <div className={`mt-3 text-[13px] text-gray-700`}>
- Graded by <span className="font-semibold">{graderInfo.name}</span>
- {graderInfo.descriptor && (
+ {showGradingDetail && graderInfoEn && (
+ <div className={`mt-3 text-[13px] text-gray-700 text-start`}>
+ {gradedByLabel(false)}<span className="font-semibold">{graderInfoEn.name}</span>
+ {graderInfoEn.descriptor && (
  <div className="text-gray-500 text-[12px] mt-0.5">
- {graderInfo.descriptor}
+ {graderInfoEn.descriptor}
  </div>
  )}
  </div>
@@ -257,13 +266,13 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  {/* Same state as the English chip, so tapping either opens both — the two
      cards describe one hadith and one grading. */}
- {showGradingDetail && graderInfo && (
+ {showGradingDetail && graderInfoAr && (
  <div className="mt-3 text-[13px] text-gray-700 text-start">
- {isArabic ? 'حكم عليه ' : 'Graded by '}
- <span className="font-semibold">{graderInfo.name}</span>
- {graderInfo.descriptor && (
+ {gradedByLabel(true)}
+ <span className="font-semibold">{graderInfoAr.name}</span>
+ {graderInfoAr.descriptor && (
  <div className="text-gray-500 text-[12px] mt-0.5">
- {graderInfo.descriptor}
+ {graderInfoAr.descriptor}
  </div>
  )}
  </div>
@@ -640,8 +649,8 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </div>
  {showGradingDetail && graderInfo && (
  <div className="mt-3 text-sm text-gray-700">
- <p className="text-[13px]">
- Graded by <span className="font-semibold">{graderInfo.name}</span>
+ <p className="text-[13px] text-start">
+ {gradedByLabel(isArabic)}<span className="font-semibold">{graderInfo.name}</span>
  </p>
  {graderInfo.descriptor && (
  <p className="text-[12px] text-gray-500 mt-0.5">{graderInfo.descriptor}</p>
@@ -737,18 +746,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 // Pretty-print the grader name returned from the API's final_grader column.
 // Azami rows get the longer Madinah descriptor that the old hardcoded UI used;
 // every other grader just gets their plain name.
-function formatGrader(name) {
- if (!name) return null;
- const trimmed = String(name).trim();
- if (!trimmed) return null;
- if (trimmed.toLowerCase() === 'azami') {
- return {
- name: 'Zia-ur-Rahman Azami',
- descriptor: '(Dean of the College of Hadith at the Islamic University of Madinah)',
- };
- }
- return { name: trimmed, descriptor: null };
-}
+
 
 // Just the heading. The white card is written at each call site now, so Details
 // and Ayat can sit in one column while Reference and Commentary sit in the

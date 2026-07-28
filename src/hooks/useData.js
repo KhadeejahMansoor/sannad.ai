@@ -428,6 +428,7 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
           // Slots 2 and 3 arrive under two different names depending on the
           // path: the RPC aliases them to commentary_2 / commentary_3, while
           // the direct select('*') returns the raw columns ibn_hajar / hadi.
+          final_grader_description: r.final_grader_description,
           commentary: r.commentary_1,
           commentary_1: r.commentary_1,
           commentary_person_1: r.commentary_person_1,

@@ -48,6 +48,7 @@ export async function GET(_request, { params }) {
         h.section_stripped_english,
         h.final_grade              AS grade,
         COALESCE(NULLIF(TRIM(h.final_grader), ''), 'Unknown') AS final_grader,
+        h.final_grader_description AS final_grader_description,
         -- Commentary comes as up to two attributed entries. Slot 1 is one of
         -- three scholars, named in commentary_person_1. Slots 2 and 3 were
         -- pivoted into named columns on import, so their author is implied by

@@ -223,7 +223,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </button>
  </div>
  {showGradingDetail && graderInfoEn && (
- <div className={`mt-3 text-[13px] text-gray-700 text-start`}>
+ <div className={`mt-3 text-[13px] text-black text-start`}>
  {gradedByLabel(false)}<span>{graderInfoEn.name}</span>
  {graderInfoEn.descriptor && (
  <div className="text-black text-[12px] mt-0.5">
@@ -267,7 +267,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {/* Same state as the English chip, so tapping either opens both — the two
      cards describe one hadith and one grading. */}
  {showGradingDetail && graderInfoAr && (
- <div className="mt-3 text-[13px] text-gray-700 text-start">
+ <div className="mt-3 text-[13px] text-black text-start">
  {gradedByLabel(true)}
  <span>{graderInfoAr.name}</span>
  {graderInfoAr.descriptor && (
@@ -648,7 +648,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </div>
  </div>
  {showGradingDetail && graderInfo && (
- <div className="mt-3 text-sm text-gray-700">
+ <div className="mt-3 text-sm text-black">
  <p className="text-[13px] text-start">
  {gradedByLabel(isArabic)}<span>{graderInfo.name}</span>
  </p>

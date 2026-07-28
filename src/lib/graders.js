@@ -31,7 +31,7 @@ const GRADER_NAMES = {
 const GRADER_DESCRIPTIONS = {
   'بقيادة صالح بن عبد العزيز': {
     ar: 'بقيادة صالح بن عبد العزيز',
-    en: 'Led by Salih bin Abdul Aziz',
+    en: 'Led by Salih bin Abdul-Aziz',
   },
   'بقيادة زبير علي زئي': {
     ar: 'بقيادة زبير علي زئي',

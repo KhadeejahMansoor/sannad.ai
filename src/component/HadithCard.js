@@ -135,7 +135,16 @@ export default function HadithCard({
             <HadithText text={content} />
           </p>
 
-          <div className="flex items-center justify-between mt-auto">
+          {/* min-h-12 on BOTH footers.
+
+              The two cards already stretch to equal height and both footers are
+              mt-auto, so they share a bottom edge. But this one holds the 48px
+              book button while the Arabic one holds only 32px chips, and
+              items-center then centres each row's chips within a different
+              height — leaving the two id tags about 8px apart no matter how long
+              the text was. Giving both rows the taller row's height makes the
+              chips line up at every text length. */}
+          <div className="flex items-center justify-between mt-auto min-h-12">
             <div className="flex items-center gap-2 flex-wrap">
               {EnglishIdTag}
 
@@ -218,7 +227,8 @@ export default function HadithCard({
               <HadithText text={contentAr} />
             </p>
 
-            <div className="flex items-center justify-between gap-2 mt-auto">
+            {/* Matches the English footer's min-h-12 — see the note there. */}
+            <div className="flex items-center justify-between gap-2 mt-auto min-h-12">
               <div className="flex items-center gap-2 flex-wrap">
                 {ArabicIdTag}
 

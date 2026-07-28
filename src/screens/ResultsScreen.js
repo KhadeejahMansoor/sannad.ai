@@ -360,7 +360,7 @@ function InlinePanels({ hadith }) {
 
         <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
         {commentaries.length === 0 ? (
-          <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3 min-h-[80px]">
+          <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
             <p className="text-sm leading-[26px] text-start text-black">{noCommentaryText(isArabic)}</p>
           </div>
         ) : (

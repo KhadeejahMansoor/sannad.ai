@@ -541,7 +541,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
 
  {commentaries.length === 0 ? (
- <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] p-3 min-h-[100px]">
+ <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] p-3">
  <p className="text-sm leading-[26px] text-start text-black">
  {noCommentaryText(isArabic)}
  </p>

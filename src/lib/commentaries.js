@@ -88,5 +88,5 @@ export function buildCommentaries(hadith, wantArabic) {
 }
 
 export function noCommentaryText(isArabic) {
-  return isArabic ? 'لا يوجد شرح لهذا الحديث.' : 'No commentary is available.';
+  return isArabic ? 'لا يوجد شرح لهذا الحديث.' : 'No commentaries are available.';
 }

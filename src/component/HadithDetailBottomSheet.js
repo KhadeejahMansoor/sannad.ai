@@ -51,7 +51,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
     hadith:       isArabic ? 'الترقيم'    : 'Numbering',
     noReference:  isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No references are available.',
     noAyat:       isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.'  : 'No annotations are available.',
-    noCommentary: isArabic ? 'لا يوجد شرح لهذا الحديث.'          : 'No commentary is available.',
+    noCommentary: isArabic ? 'لا يوجد شرح لهذا الحديث.'          : 'No commentaries are available.',
   };
 
   // Was reading hadith.book straight — the RAW column, prefix and all
@@ -222,7 +222,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
           {t.commentary}
         </div>
         {commentaries.length === 0 ? (
-          <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="bg-white rounded-[5px] p-3 min-h-[100px]">
+          <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="bg-white rounded-[5px] p-3">
             <p className="text-sm leading-[26px] text-black text-start">{t.noCommentary}</p>
           </div>
         ) : (

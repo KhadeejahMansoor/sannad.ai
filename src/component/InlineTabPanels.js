@@ -140,7 +140,7 @@ export default function InlineTabPanels({ hadith }) {
       {activeTab === 'Commentary' && (
         commentaries.length === 0 ? (
           <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-            <div className="text-sm leading-[26px] text-[#6B5B55]" dir={isArabic ? 'rtl' : 'ltr'}>
+            <div className="text-sm leading-[26px] text-black" dir={isArabic ? 'rtl' : 'ltr'}>
               {noCommentaryText(isArabic)}
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function InlineTabPanels({ hadith }) {
         <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
           {ayat
             ? <AyatChips ayat={ayat} isArabic={isArabic} />
-            : <div className="text-sm text-[#6B5B55]">No annotations are available.</div>}
+            : <div className="text-sm text-black">No annotations are available.</div>}
         </div>
       )}
     </div>

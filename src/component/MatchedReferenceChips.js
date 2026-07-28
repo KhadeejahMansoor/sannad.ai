@@ -143,8 +143,8 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
 
   if (chips.length === 0) {
     return (
-      <p className="text-[#6B5B55] text-xs text-start">
-        {emptyText || "No references available."}
+      <p className="text-black text-sm text-start">
+        {emptyText || "No references are available."}
       </p>
     );
   }

@@ -314,7 +314,7 @@ function InlinePanels({ hadith }) {
 
         <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat'}</PanelHeading>
         <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
-          <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
+          <div className={`text-xs leading-[18px] whitespace-pre-line text-start text-black`}>
             {ayat
               ? <AyatChips ayat={ayat} isArabic={isArabic} />
               : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}
@@ -361,7 +361,7 @@ function InlinePanels({ hadith }) {
         <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
         {commentaries.length === 0 ? (
           <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3 min-h-[80px]">
-            <p className="text-sm leading-[26px] text-start text-[#6B5B55]">{noCommentaryText(isArabic)}</p>
+            <p className="text-sm leading-[26px] text-start text-black">{noCommentaryText(isArabic)}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">

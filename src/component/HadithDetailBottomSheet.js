@@ -223,7 +223,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
         </div>
         {commentaries.length === 0 ? (
           <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="bg-white rounded-[5px] p-3 min-h-[100px]">
-            <p className="text-sm leading-[26px] text-[#6B5B55] text-start">{t.noCommentary}</p>
+            <p className="text-sm leading-[26px] text-black text-start">{t.noCommentary}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">

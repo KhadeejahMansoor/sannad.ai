@@ -194,7 +194,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </p>
  <div className="flex items-center justify-between gap-3 mt-auto">
  <div className="flex items-center gap-3">
- <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-[#6B5B55] text-sm font-medium whitespace-nowrap">
+ <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-black text-sm font-medium whitespace-nowrap">
  {hadithIdLabel}
  </span>
  <span
@@ -252,7 +252,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <HadithText text={arabicText} />
  </p>
  <div className="flex items-center gap-3 mt-auto">
- <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-[#6B5B55] text-sm font-medium whitespace-nowrap">
+ <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-black text-sm font-medium whitespace-nowrap">
  {arabicIdLabel}
  </span>
  <span
@@ -421,7 +421,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {activeTab === "Commentary" && (
  commentaries.length === 0 ? (
  <div className="bg-white rounded-[5px] p-4 mb-6">
- <div className="text-sm leading-[20px] text-[#6B5B55]" dir={getDir()}>
+ <div className="text-sm leading-[20px] text-black" dir={getDir()}>
  {noCommentaryText(isArabic)}
  </div>
  </div>
@@ -490,7 +490,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  <PanelHeading isArabic={isArabic}>{isArabic ? 'الآيات' : 'Ayat'}</PanelHeading>
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white px-4 py-3 rounded-[5px]">
- <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${getFont()} ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
+ <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${getFont()} text-black`}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
    : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}
@@ -542,7 +542,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  {commentaries.length === 0 ? (
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] p-3 min-h-[100px]">
- <p className="text-sm leading-[26px] text-start text-[#6B5B55]">
+ <p className="text-sm leading-[26px] text-start text-black">
  {noCommentaryText(isArabic)}
  </p>
  </div>
@@ -636,7 +636,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <p className="text-sm text-black leading-[22px] mt-2 mb-4 whitespace-pre-line">{englishText}</p>
  <div className="flex items-center justify-between mt-4">
  <div className="flex gap-7">
- <span className="w-[100px] h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] inline-flex justify-center items-center text-[#6B5B55] text-sm font-medium whitespace-nowrap">
+ <span className="w-[100px] h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] inline-flex justify-center items-center text-black text-sm font-medium whitespace-nowrap">
  {hadithIdLabel}
  </span>
  <span

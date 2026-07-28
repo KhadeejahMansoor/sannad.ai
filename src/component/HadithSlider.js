@@ -129,7 +129,7 @@ export default function HadithSlider({
                                     {englishLabel}
                                 </div>
                                 <div
-                                    className="px-3 py-1 bg-[#EDE4E1] rounded-[10px] text-sm font-medium text-[#6E4A44] flex items-center gap-1 cursor-pointer"
+                                    className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm font-medium text-[#6B5B55] flex items-center gap-1 cursor-pointer"
                                     onClick={() => toggleEnglishGradeInfo(index)}
                                 >
                                     <BookOpen size={15} className="mr-1" />
@@ -176,7 +176,7 @@ export default function HadithSlider({
                         <div className="mt-auto pt-6">
                             <div className="flex gap-3 justify-start">
                                 <div
-                                    className="flex items-center justify-center gap-2 px-3 py-1 bg-[#EDE4E1] rounded-[10px] text-sm font-['Inter'] text-[#6E4A44] cursor-pointer hover:bg-[#E4D8D4] transition-colors"
+                                    className="flex items-center justify-center gap-2 px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm font-['Inter'] text-[#6B5B55] cursor-pointer hover:bg-[#DDD2CD] transition-colors"
                                     onClick={() => toggleEnglishGradeInfo(index)}
                                 >
                                     <span className="relative -translate-y-0.5">{arabicGrade}</span>

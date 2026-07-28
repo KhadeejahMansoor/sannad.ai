@@ -170,14 +170,20 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {/* Mobile: flex-col-reverse so Arabic (rendered second in DOM) appears on top. */}
  <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-6 mb-4">
  {/* English card */}
- <div className={`bg-white rounded-[5px] p-6`}>
+ {/* flex-col + mt-auto on the chip row below.
+
+     The two cards are grid items, so they're already the same height — but the
+     chips simply followed the text, so whichever translation was shorter left
+     its chips floating partway up while the other sat lower. Pinning both chip
+     rows to the bottom of their card lines them up at any text length. */}
+ <div className={`bg-white rounded-[5px] p-6 flex flex-col`}>
  <h3 className={`text-sm font-semibold mb-3 text-gray-900`}>
  {englishNarrator}
  </h3>
  <p className={`text-sm leading-[22px] mt-2 mb-5 whitespace-pre-line text-black`}>
  <HadithText text={englishText} />
  </p>
- <div className="flex items-center justify-between gap-3">
+ <div className="flex items-center justify-between gap-3 mt-auto">
  <div className="flex items-center gap-3">
  <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-[#6B5B55] text-sm font-medium whitespace-nowrap">
  {hadithIdLabel}
@@ -220,7 +226,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </div>
 
  {/* Arabic card */}
- <div className={`bg-white rounded-[5px] p-6`} dir="rtl" lang="ar">
+ <div className={`bg-white rounded-[5px] p-6 flex flex-col`} dir="rtl" lang="ar">
  {/* The isnad is supporting material, not the hadith. Bold black made it
      compete with the narrator line directly beneath it — two heavy blocks
      stacked, and the reader's eye had nowhere to land. Smaller, lighter and
@@ -236,7 +242,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <p className={`${notoSansArabic.className} text-sm font-normal leading-[28px] mt-2 mb-5 whitespace-pre-line text-black`}>
  <HadithText text={arabicText} />
  </p>
- <div className="flex items-center gap-3">
+ <div className="flex items-center gap-3 mt-auto">
  <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-[#6B5B55] text-sm font-medium whitespace-nowrap">
  {arabicIdLabel}
  </span>

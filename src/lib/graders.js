@@ -31,11 +31,11 @@ const GRADER_NAMES = {
 const GRADER_DESCRIPTIONS = {
   'بقيادة صالح بن عبد العزيز': {
     ar: 'بقيادة صالح بن عبد العزيز',
-    en: 'Under the direction of Salih bin Abdul Aziz',
+    en: 'Led by Salih bin Abdul Aziz',
   },
   'بقيادة زبير علي زئي': {
     ar: 'بقيادة زبير علي زئي',
-    en: 'Under the direction of Zubair Ali Zai',
+    en: 'Led by Zubair Ali Zai',
   },
   'عميد قسم الحديث بالجامعة الإسلامية بالمدينة المنورة': {
     ar: 'عميد قسم الحديث بالجامعة الإسلامية بالمدينة المنورة',

@@ -88,23 +88,30 @@ export default function HadithCard({
   // isn't that shape, fall back to the id, which still resolves.
   const linkTarget = slugFromLabel(hadithId) || hadithLinkId;
 
+  // Colour is an INLINE STYLE, not a text-[...] class.
+  //
+  // Measured off the rendered page: the grade chip came out #6B5B55 while this
+  // one came out near-black (#171717 — the body's --foreground). The grade chip
+  // sets its colour inline and this one set it by class, and the class was not
+  // winning. Same approach for both removes the discrepancy.
   const idTagClassName =
-    "h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] flex items-center justify-center whitespace-nowrap text-[#6B5B55] text-sm font-medium hover:bg-[#DDD2CD] transition-colors";
+    "h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] flex items-center justify-center whitespace-nowrap text-sm font-medium hover:bg-[#DDD2CD] transition-colors";
+  const idTagStyle = { color: '#6B5B55' };
 
   const EnglishIdTag = hadithLinkId ? (
-    <Link href={`/${encodeURIComponent(linkTarget)}`} className={idTagClassName}>
+    <Link href={`/${encodeURIComponent(linkTarget)}`} className={idTagClassName} style={idTagStyle}>
       {hadithId}
     </Link>
   ) : (
-    <div className={idTagClassName}>{hadithId}</div>
+    <div className={idTagClassName} style={idTagStyle}>{hadithId}</div>
   );
 
   const ArabicIdTag = hadithLinkId ? (
-    <Link href={`/${encodeURIComponent(linkTarget)}`} className={idTagClassName}>
+    <Link href={`/${encodeURIComponent(linkTarget)}`} className={idTagClassName} style={idTagStyle}>
       {hadithIdAr}
     </Link>
   ) : (
-    <div className={idTagClassName}>{hadithIdAr}</div>
+    <div className={idTagClassName} style={idTagStyle}>{hadithIdAr}</div>
   );
 
   return (

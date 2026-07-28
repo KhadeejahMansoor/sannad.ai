@@ -125,11 +125,11 @@ export default function HadithSlider({
 
                         <div className="mt-auto pt-6">
                             <div className="flex gap-3">
-                                <div className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm text-[#6B5B55] font-medium">
+                                <div className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm font-medium" style={{ color: "#6B5B55" }}>
                                     {englishLabel}
                                 </div>
                                 <div
-                                    className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm font-medium text-[#6B5B55] flex items-center gap-1 cursor-pointer"
+                                    className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm font-medium flex items-center gap-1 cursor-pointer" style={{ color: "#6B5B55" }}
                                     onClick={() => toggleEnglishGradeInfo(index)}
                                 >
                                     <BookOpen size={15} className="mr-1" />
@@ -176,13 +176,13 @@ export default function HadithSlider({
                         <div className="mt-auto pt-6">
                             <div className="flex gap-3 justify-start">
                                 <div
-                                    className="flex items-center justify-center gap-2 px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm font-['Inter'] text-[#6B5B55] cursor-pointer hover:bg-[#DDD2CD] transition-colors"
+                                    className="flex items-center justify-center gap-2 px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm font-['Inter'] cursor-pointer hover:bg-[#DDD2CD] transition-colors" style={{ color: "#6B5B55" }}
                                     onClick={() => toggleEnglishGradeInfo(index)}
                                 >
                                     <span className="relative -translate-y-0.5">{arabicGrade}</span>
                                     <BookOpen size={15} />
                                 </div>
-                                <div className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm text-[#6B5B55] font-['Inter']">
+                                <div className="px-3 py-1 bg-[#E6DEDA] rounded-[10px] text-sm font-['Inter']" style={{ color: "#6B5B55" }}>
                                     {arabicLabel}
                                 </div>
                             </div>

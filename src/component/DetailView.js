@@ -194,12 +194,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </p>
  <div className="flex items-center justify-between gap-3 mt-auto">
  <div className="flex items-center gap-3">
- <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-black text-sm font-medium whitespace-nowrap">
+ <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap" style={{ color: "#6B5B55" }}>
  {hadithIdLabel}
  </span>
  <span
  onClick={() => setShowGradingDetail(p => !p)}
- className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-[#6B5B55] text-sm font-medium cursor-pointer"
+ className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium cursor-pointer" style={{ color: "#6B5B55" }}
  >
  <BookOpen size={16} className="mr-2" />
  {grade}
@@ -252,12 +252,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <HadithText text={arabicText} />
  </p>
  <div className="flex items-center gap-3 mt-auto">
- <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-black text-sm font-medium whitespace-nowrap">
+ <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap" style={{ color: "#6B5B55" }}>
  {arabicIdLabel}
  </span>
  <span
  onClick={() => setShowGradingDetail(p => !p)}
- className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-[#6B5B55] text-sm font-medium gap-2 cursor-pointer hover:bg-[#DDD2CD] transition-colors"
+ className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium gap-2 cursor-pointer hover:bg-[#DDD2CD] transition-colors" style={{ color: "#6B5B55" }}
  >
  {gradeArabic}
  <BookOpen size={16} />
@@ -636,14 +636,14 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <p className="text-sm text-black leading-[22px] mt-2 mb-4 whitespace-pre-line">{englishText}</p>
  <div className="flex items-center justify-between mt-4">
  <div className="flex gap-7">
- <span className="w-[100px] h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] inline-flex justify-center items-center text-black text-sm font-medium whitespace-nowrap">
+ <span className="w-[100px] h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] inline-flex justify-center items-center text-sm font-medium whitespace-nowrap" style={{ color: "#6B5B55" }}>
  {hadithIdLabel}
  </span>
  <span
  onClick={() => setShowGradingDetail(p => !p)}
- className="w-[100px] h-[32px] bg-[#E6DEDA] rounded-[10px] inline-flex items-center justify-center text-[#6B5B55] text-sm font-medium cursor-pointer"
+ className="w-[100px] h-[32px] bg-[#E6DEDA] rounded-[10px] inline-flex items-center justify-center text-sm font-medium cursor-pointer" style={{ color: "#6B5B55" }}
  >
- <BookOpen size={16} className="mr-3 text-[#6B5B55]" />
+ <BookOpen size={16} className="mr-3" style={{ color: "#6B5B55" }} />
  {grade}
  </span>
  </div>

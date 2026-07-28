@@ -140,7 +140,7 @@ export default function InlineTabPanels({ hadith }) {
       {activeTab === 'Commentary' && (
         commentaries.length === 0 ? (
           <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
-            <div className="text-sm leading-[26px] text-black" dir={isArabic ? 'rtl' : 'ltr'}>
+            <div className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-black`} dir={isArabic ? 'rtl' : 'ltr'}>
               {noCommentaryText(isArabic)}
             </div>
           </div>
@@ -158,7 +158,7 @@ export default function InlineTabPanels({ hadith }) {
                     {c.author}
                   </div>
                 )}
-                <div className="text-sm leading-[26px] text-black whitespace-pre-line text-start">
+                <div className={`${c.isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-black whitespace-pre-line text-start`}>
                   <HadithText text={c.text} />
                 </div>
               </div>

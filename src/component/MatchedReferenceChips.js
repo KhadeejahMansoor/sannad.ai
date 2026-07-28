@@ -143,7 +143,7 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
 
   if (chips.length === 0) {
     return (
-      <p className="text-black text-sm text-start">
+      <p className={`text-black text-start ${isArabic ? "text-sm" : "text-xs"}`}>
         {emptyText || "No references are available."}
       </p>
     );
@@ -171,14 +171,14 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
               // sized for the longest name, so "Nasai" left a void beside it.
               // 88px still clears "Abu Dawud" and "Ibn Majah" at 14px, and the
               // gap comes down with it.
-              gridTemplateColumns: '88px minmax(0, 1fr)',
+              gridTemplateColumns: isArabic ? '88px minmax(0, 1fr)' : '76px minmax(0, 1fr)',
               alignItems: 'baseline',
               columnGap: '10px',
             }}
           >
             {/* ps-2 (padding-inline-start) rather than pl-2, so the indent
                 follows the text direction and lands on the right in Arabic. */}
-            <span className="text-sm font-medium text-[#523230] text-start leading-6 ps-2">{name}</span>
+            <span className={`font-medium text-[#523230] text-start leading-6 ps-2 ${isArabic ? "text-sm" : "text-xs"}`}>{name}</span>
 
             {/* Numbers read as a run of text, separated by dots. Each one still
                 takes a background on hover, so the target is obvious without
@@ -190,7 +190,7 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
                 them, so an inline run has no soft-wrap opportunity and a
                 compiler with a dozen references overflows the card. Flex items
                 wrap on their own. */}
-            <span className="flex flex-wrap items-baseline text-sm leading-6">
+            <span className={`flex flex-wrap items-baseline leading-6 ${isArabic ? "text-sm" : "text-xs"}`}>
               {group.refs.map((ref, i) => {
                 const label = isArabic ? toArabicDigits(ref.number) : ref.number;
                 const href = clickable ? hrefFor(group.compiler, ref.number) : null;

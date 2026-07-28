@@ -223,7 +223,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
         </div>
         {commentaries.length === 0 ? (
           <div dir={isArabic ? 'rtl' : 'ltr'} lang={lang} className="bg-white rounded-[5px] p-3">
-            <p className="text-sm leading-[26px] text-black text-start">{t.noCommentary}</p>
+            <p className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-black text-start`}>{t.noCommentary}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
@@ -239,7 +239,7 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
                     {c.author}
                   </div>
                 )}
-                <p className="text-sm leading-[26px] whitespace-pre-line text-black text-start">
+                <p className={`${c.isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} whitespace-pre-line text-black text-start`}>
                   <HadithText text={c.text} />
                 </p>
               </div>

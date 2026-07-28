@@ -361,7 +361,7 @@ function InlinePanels({ hadith }) {
         <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
         {commentaries.length === 0 ? (
           <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
-            <p className="text-sm leading-[26px] text-start text-black">{noCommentaryText(isArabic)}</p>
+            <p className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-start text-black`}>{noCommentaryText(isArabic)}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
@@ -377,7 +377,7 @@ function InlinePanels({ hadith }) {
                     {c.author}
                   </div>
                 )}
-                <p className="text-sm leading-[26px] whitespace-pre-line text-start text-black">
+                <p className={`${c.isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} whitespace-pre-line text-start text-black`}>
                   <HadithText text={c.text} />
                 </p>
               </div>

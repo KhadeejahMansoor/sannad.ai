@@ -542,7 +542,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
 
  {commentaries.length === 0 ? (
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white rounded-[5px] p-3">
- <p className="text-sm leading-[26px] text-start text-black">
+ <p className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-start text-black`}>
  {noCommentaryText(isArabic)}
  </p>
  </div>
@@ -564,7 +564,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {c.author}
  </div>
  )}
- <p className="text-sm leading-[26px] whitespace-pre-line text-start text-black">
+ <p className={`${c.isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} whitespace-pre-line text-start text-black`}>
  <HadithText text={c.text} />
  </p>
  </div>

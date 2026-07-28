@@ -133,7 +133,7 @@ export default function InlineTabPanels({ hadith }) {
             value={hadith?.matched_hadith}
             onSelect={openRef}
             isArabic={isArabic}
-            emptyText={isArabic ? 'لا توجد مراجع لهذا الحديث.' : 'No reference available'}
+            emptyText={isArabic ? 'لا توجد مراجع لهذا الحديث.' : 'No references are available.'}
           />
         </div>
       )}
@@ -170,7 +170,7 @@ export default function InlineTabPanels({ hadith }) {
         <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
           {ayat
             ? <AyatChips ayat={ayat} isArabic={isArabic} />
-            : <div className="text-sm text-gray-400 italic">No annotations are available for this hadith.</div>}
+            : <div className="text-sm text-gray-400 italic">No annotations are available.</div>}
         </div>
       )}
     </div>

@@ -49,8 +49,8 @@ export default function HadithDetailStatic({ isOpen, onClose, hadith, className 
     chapter:      isArabic ? 'الباب'     : 'Chapter',
     section:      isArabic ? 'الفصل'     : 'Section',
     hadith:       isArabic ? 'الترقيم'    : 'Numbering',
-    noReference:  isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No external references available for this hadith.',
-    noAyat:       isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.'  : 'No annotations are available for this hadith.',
+    noReference:  isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No references are available.',
+    noAyat:       isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.'  : 'No annotations are available.',
     noCommentary: isArabic ? 'لا يوجد شرح لهذا الحديث.'          : 'No commentary available for this hadith.',
   };
 

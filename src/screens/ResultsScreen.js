@@ -317,7 +317,7 @@ function InlinePanels({ hadith }) {
           <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
             {ayat
               ? <AyatChips ayat={ayat} isArabic={isArabic} />
-              : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available for this hadith.')}
+              : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}
           </div>
         </div>
       </div>
@@ -354,7 +354,7 @@ function InlinePanels({ hadith }) {
             value={hadith?.matched_hadith}
             onSelect={openRef}
             isArabic={isArabic}
-            emptyText={isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No external references available for this hadith.'}
+            emptyText={isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No references are available.'}
           />
         </div>
 

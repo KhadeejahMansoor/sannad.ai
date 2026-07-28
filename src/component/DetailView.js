@@ -414,7 +414,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <MatchedReferenceChips
    value={hadith?.matched_hadith}
    onSelect={openRef} isArabic={isArabic}
-   emptyText={isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No external references available for this hadith.'}
+   emptyText={isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No references are available.'}
  />
  </div>
  )}
@@ -452,7 +452,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className={`text-sm text-black leading-[20px] whitespace-pre-line ${getFont()}`} dir={getDir()}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
-   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available for this hadith.')}
+   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}
  </div>
  </div>
  )}
@@ -493,7 +493,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className={`text-xs leading-[18px] whitespace-pre-line text-start ${getFont()} ${ayat ? 'text-black' : 'text-[#6B5B55]'}`}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
-   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available for this hadith.')}
+   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}
  </div>
  </div>
  </div>
@@ -534,7 +534,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <MatchedReferenceChips
    value={hadith?.matched_hadith}
    onSelect={openRef} isArabic={isArabic}
-   emptyText={'No reference available'}
+   emptyText={'No references are available.'}
  />
  </div>
 
@@ -700,7 +700,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {activeTab === "Reference" && (
  <div className="bg-white p-4 rounded-[5px]">
  <div className={`text-black text-xs ${getFont()}`} dir={getDir()}>
- <MatchedReferenceChips value={hadith?.matched_hadith} onSelect={openRef} isArabic={isArabic} emptyText={'No reference available'} />
+ <MatchedReferenceChips value={hadith?.matched_hadith} onSelect={openRef} isArabic={isArabic} emptyText={'No references are available.'} />
  </div>
  </div>
  )}
@@ -716,7 +716,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className={`text-black text-xs leading-[18px] ${getFont()}`} dir={getDir()}>
  {ayat
    ? <AyatChips ayat={ayat} isArabic={isArabic} />
-   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available for this hadith.')}
+   : (isArabic ? 'لا توجد آيات مرتبطة بهذا الحديث.' : 'No annotations are available.')}
  </div>
  </div>
  )}

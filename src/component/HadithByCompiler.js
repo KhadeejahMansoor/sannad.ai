@@ -440,28 +440,36 @@ export default function HadithByCompiler() {
           <button onClick={() => router.push('/')} className="text-gray-600 hover:text-gray-800">
             <ChevronLeft size={24} />
           </button>
-          <h1
-            className="text-2xl font-bold text-gray-900"
-            dir={isArabic ? 'rtl' : 'ltr'}
-            lang={isArabic ? 'ar' : 'en'}
-          >
-            {compilerFor(compilerArabic, language)}
-          </h1>
-
-          {/* The count for the CURRENT selection — it follows the book /
-              chapter / section filters, because pagination.total is computed
-              from the same WHERE clause the rows come from. Reads the API's
-              total rather than hadiths.length, which is only the loaded page. */}
-          {total > 0 && (
-            <span
+          {/* Column wrapper so the count sits beneath the title instead of
+              beside it. The h1 is unchanged — only its position in the tree.
+              Default align-items: stretch is deliberate: both children take the
+              column's width (set by the wider title), so each one's own dir
+              aligns its text to the correct edge in Arabic as well as English. */}
+          <div className="flex flex-col">
+            <h1
+              className="text-2xl font-bold text-gray-900"
               dir={isArabic ? 'rtl' : 'ltr'}
-              className="text-xs text-[#6B5B55]"
+              lang={isArabic ? 'ar' : 'en'}
             >
-              {isArabic
-                ? `${total.toLocaleString('ar-EG')} حديث`
-                : `${total.toLocaleString('en-US')} hadith`}
-            </span>
-          )}
+              {compilerFor(compilerArabic, language)}
+            </h1>
+
+            {/* The count for the CURRENT selection — it follows the book /
+                chapter / section filters, because pagination.total is computed
+                from the same WHERE clause the rows come from. Reads the API's
+                total rather than hadiths.length, which is only the loaded page. */}
+            {total > 0 && (
+              <span
+                dir={isArabic ? 'rtl' : 'ltr'}
+                lang={isArabic ? 'ar' : 'en'}
+                className="mt-0.5 text-xs leading-tight text-[#6B5B55] tabular-nums"
+              >
+                {isArabic
+                  ? `${total.toLocaleString('ar-EG')} حديث`
+                  : `${total.toLocaleString('en-US')} hadith`}
+              </span>
+            )}
+          </div>
           {/* Was a decorative SVG. Now it reveals the current hadith's book in
               the sidebar — expand, highlight, scroll to it — without changing
               the filter, so you keep your place. */}

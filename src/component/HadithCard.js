@@ -65,6 +65,8 @@ export default function HadithCard({
   // Language
   showEnglish = true, // false in Arabic mode: hide the English column entirely
   //                     and let the Arabic run full width.
+  isNotHadith = false, // row is a "not hadith" marker: the Arabic exists but
+  //                      was never translated and was never graded.
 }) {
   const hasArabic = !!(contentAr || narratorAr);
   const bilingual = showEnglish && hasArabic;
@@ -128,9 +130,18 @@ export default function HadithCard({
         <div className={`bg-white rounded-[5px] px-6 py-6 flex flex-col ${bilingual ? 'md:flex-1' : ''}`}>
           <p className="text-sm font-semibold text-black mb-5">{narrator}</p>
 
-          <p className="text-sm text-black font-normal leading-[22px] mt-2 mb-4 whitespace-pre-line">
-            <HadithText text={content} />
-          </p>
+          {/* "not hadith" rows carry Arabic but no English. Left blank, the
+              card reads as a loading failure; naming the absence is honest
+              and stops the panel collapsing to nothing. */}
+          {isNotHadith ? (
+            <p className="text-sm font-normal italic leading-[22px] mt-2 mb-4" style={{ color: '#8A7A72' }}>
+              No translation available
+            </p>
+          ) : (
+            <p className="text-sm text-black font-normal leading-[22px] mt-2 mb-4 whitespace-pre-line">
+              <HadithText text={content} />
+            </p>
+          )}
 
           {/* min-h-12 on BOTH footers.
 
@@ -154,7 +165,7 @@ export default function HadithCard({
                   style={{ color: "#6B5B55" }}
                 >
                   <BookOpen size={16} className="mr-3" />
-                  {grade}
+                  {isNotHadith ? 'Not graded' : grade}
                 </div>
               </div>
             </div>

@@ -134,6 +134,8 @@ export async function GET(request) {
         h.hadith_number,
         h.compiler,
         h.volume,
+        h.red_flag,
+        h.final_hadith,
         h.collection,
         h.collection_english,
         h.book,

@@ -695,6 +695,8 @@ export default function HadithByCompiler() {
                         /* Behavior */
                         hadithLinkId={hadith.hadith_id}
                         isNotHadith={hadith.machine_clause === 'not hadith'}
+                        redFlag={hadith.red_flag}
+                        finalHadithAr={hadith.final_hadith}
                         isExpanded={expanded}
                         onToggleExpand={() => handleToggleExpand(hadith.hadith_id)}
                       />

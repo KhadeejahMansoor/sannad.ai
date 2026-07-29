@@ -168,6 +168,8 @@ export default function ResultsScreen() {
                     gradeAr={isArabic ? hadith.grade : undefined}
                     hadithLinkId={hadith.hadith_id}
                     isNotHadith={hadith.machine_clause === 'not hadith'}
+                    redFlag={hadith.red_flag}
+                    finalHadithAr={hadith.final_hadith}
                     isExpanded={expanded}
                     onToggleExpand={() => handleToggleExpand(hadith.hadith_id)}
                   />
@@ -202,6 +204,8 @@ export default function ResultsScreen() {
                     hadithIdAr={`${hadith.compiler} ${hadith.hadith_number}`}
                     gradeAr={hadith.grade}
                     isNotHadith={hadith.machine_clause === 'not hadith'}
+                    redFlag={hadith.red_flag}
+                    finalHadithAr={hadith.final_hadith}
                     isExpanded={expanded}
                     onToggleExpand={() => handleToggleExpand(hadith.hadith_id)}
                   />

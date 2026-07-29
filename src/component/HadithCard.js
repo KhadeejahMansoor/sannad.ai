@@ -67,8 +67,21 @@ export default function HadithCard({
   //                     and let the Arabic run full width.
   isNotHadith = false, // row is a "not hadith" marker: the Arabic exists but
   //                      was never translated and was never graded.
+  redFlag,           // red_flag column. "yes" means the clause split is not
+  //                    trustworthy for this row.
+  finalHadithAr,     // final_hadith — chain + intro + post as one stored
+  //                    string, i.e. the text as transmitted.
 }) {
   const hasArabic = !!(contentAr || narratorAr);
+
+  // Red-flagged rows are ones where splitting final_hadith into chain /
+  // intro / post is unreliable, so the split view can drop or mangle text.
+  // Those default to the stored string and let the reader opt into the split.
+  // Only offered when both halves actually exist — a toggle that reveals an
+  // empty card is worse than no toggle.
+  const isRedFlagged = String(redFlag ?? '').trim().toLowerCase() === 'yes';
+  const canToggleArabic = isRedFlagged && !!finalHadithAr && !!(contentAr || chainAr || narratorAr);
+  const [showSplit, setShowSplit] = useState(false);
   const bilingual = showEnglish && hasArabic;
 
   // Local toggle for the "Graded by" line that drops below the grade chip
@@ -134,7 +147,7 @@ export default function HadithCard({
               card reads as a loading failure; naming the absence is honest
               and stops the panel collapsing to nothing. */}
           {isNotHadith ? (
-            <p className="text-sm text-black font-normal leading-[22px] mt-2 mb-4">
+            <p className="text-sm font-normal italic leading-[22px] mt-2 mb-4" style={{ color: '#8A7A72' }}>
               No translation available
             </p>
           ) : (
@@ -221,19 +234,29 @@ export default function HadithCard({
           <div className={`bg-white rounded-[5px] px-6 py-6 flex flex-col ${bilingual ? 'md:flex-1' : ''}`} dir="rtl" lang="ar">
             {/* Muted and set off by a rule: the isnad is the header to the
                 hadith, not a second headline competing with the narrator. */}
-            {chainAr && (
-              <p className="text-[13px] font-normal text-[#8A7A72] leading-[26px] mb-2 pb-2 border-b border-[#EFE9E6]">
-                <HadithText text={chainAr} />
+            {canToggleArabic && !showSplit ? (
+              /* As transmitted: one stored string, no clause boundaries drawn
+                 across it, because on these rows those boundaries are wrong. */
+              <p className="text-[15px] text-black font-normal leading-[30px] mb-4 whitespace-pre-line">
+                <HadithText text={finalHadithAr} />
               </p>
+            ) : (
+              <>
+                {chainAr && (
+                  <p className="text-[13px] font-normal text-[#8A7A72] leading-[26px] mb-2 pb-2 border-b border-[#EFE9E6]">
+                    <HadithText text={chainAr} />
+                  </p>
+                )}
+
+                <p className="text-[15px] font-semibold text-black mb-5 leading-[30px]">
+                  {narratorAr}
+                </p>
+
+                <p className="text-[15px] text-black font-normal leading-[30px] mt-2 mb-4 whitespace-pre-line">
+                  <HadithText text={contentAr} />
+                </p>
+              </>
             )}
-
-            <p className="text-[15px] font-semibold text-black mb-5 leading-[30px]">
-              {narratorAr}
-            </p>
-
-            <p className="text-[15px] text-black font-normal leading-[30px] mt-2 mb-4 whitespace-pre-line">
-              <HadithText text={contentAr} />
-            </p>
 
             {/* Matches the English footer's min-h-12 — see the note there. */}
             <div className="flex items-center justify-between gap-2 mt-auto min-h-12">
@@ -254,7 +277,23 @@ export default function HadithCard({
                 </div>
               </div>
 
-              {!showEnglish && handleBookClick && <ExpandBookButton onClick={handleBookClick} />}
+              {/* Far end of the footer. The row is justify-between and this
+                  panel is dir="rtl", so the last child lands on the visual
+                  LEFT — opposite the id and grade chips. */}
+              <div className="flex items-center gap-2">
+                {canToggleArabic && (
+                  <button
+                    type="button"
+                    dir="ltr"
+                    onClick={() => setShowSplit((v) => !v)}
+                    className="h-[32px] px-4 bg-[#E6DEDA] rounded-[10px] inline-flex items-center justify-center text-sm font-medium whitespace-nowrap cursor-pointer hover:bg-[#DDD2CD] transition-colors"
+                    style={{ color: '#6B5B55' }}
+                  >
+                    {showSplit ? 'Show as transmitted' : 'Show full text'}
+                  </button>
+                )}
+                {!showEnglish && handleBookClick && <ExpandBookButton onClick={handleBookClick} />}
+              </div>
             </div>
 
             {showGrader && graderInfoAr && (

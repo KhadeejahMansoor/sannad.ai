@@ -103,6 +103,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  // The detail page was the last thing still disagreeing with them.
  //
  // English side: prefer the English name, fall back to stripped Arabic, then raw.
+ const collection = firstPresent(hadith?.collection_english, hadith?.collection) || '';
  const book = firstPresent(hadith?.book_stripped_english, hadith?.book_stripped, hadith?.book) || '';
  const chapter = firstPresent(hadith?.chapter_stripped_english, hadith?.chapter_stripped, hadith?.chapter) || '';
  const section = firstPresent(hadith?.section_stripped_english, hadith?.section_stripped, hadith?.section) || '';
@@ -133,6 +134,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  arabicText: hadith?.hadith_text_arabic || '',
  reference: hadith?.reference || '',
  // Arabic side: stripped Arabic, falling back to raw.
+ collection: hadith?.collection || '',
  book: hadith?.book_stripped || hadith?.book || '',
  chapter: hadith?.chapter_stripped || hadith?.chapter || '',
  section: hadith?.section_stripped || hadith?.section || '',
@@ -392,11 +394,14 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {activeTab === "Contents" && (
  <div className="bg-white rounded-[5px] p-4 mb-6">
           {[
+ { type: "Collection", label: isArabic || selectedLanguage === 'ar' ? 'المجموعة' : 'Collection', title: getField(collection, arabicFields.collection) },
  { type: "Book", title: getField(book, arabicFields.book) },
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
  { type: "Hadith", label: isArabic || selectedLanguage === 'ar' ? 'الترقيم' : 'Numbering', title: hadithRowLabel },
- ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || !isBlank(item.title)).map((item, i) => (
+ ].filter((item) =>
+   (item.type !== "Section" && item.type !== "Chapter" && item.type !== "Collection")
+   || !isBlank(item.title)).map((item, i) => (
  <div key={i} className="py-1.5" style={{ display: 'grid', gridTemplateColumns: '16px 76px minmax(0, 1fr)', alignItems: 'start', columnGap: '12px' }}>
  <span className="w-4 h-5 flex items-center justify-center flex-shrink-0 text-gray-400">
  <RowIcon type={item.type} />
@@ -481,6 +486,9 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div dir={getDir()} lang={isArabic ? 'ar' : 'en'} className="bg-white p-3 rounded-[5px] mb-4">
  {/* Book > Chapter > Section — the real hierarchy, and the parameter order
      /api/sections-by-chapter takes. */}
+ {!isBlank(getField(collection, arabicFields.collection)) && (
+   <DetailRow label="Collection" display={isArabic ? 'المجموعة' : 'Collection'} value={getField(collection, arabicFields.collection)} font={getFont()} />
+ )}
  <DetailRow label="Book" display={isArabic ? 'الكتاب' : 'Book'} value={getField(book, arabicFields.book)} font={getFont()} />
  {!isBlank(getField(chapter, arabicFields.chapter)) && (
    <DetailRow label="Chapter" display={isArabic ? 'الباب' : 'Chapter'} value={getField(chapter, arabicFields.chapter)} font={getFont()} />
@@ -692,11 +700,14 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {activeTab === "Contents" && (
  <div className="bg-white p-4">
           {[
+ { type: "Collection", label: isArabic || selectedLanguage === 'ar' ? 'المجموعة' : 'Collection', title: getField(collection, arabicFields.collection) },
  { type: "Book", title: getField(book, arabicFields.book) },
  { type: "Chapter", title: getField(chapter, arabicFields.chapter) },
  { type: "Section", title: getField(section, arabicFields.section) },
  { type: "Hadith", label: isArabic || selectedLanguage === 'ar' ? 'الترقيم' : 'Numbering', title: hadithRowLabel },
- ].filter((item) => (item.type !== "Section" && item.type !== "Chapter") || !isBlank(item.title)).map((item, i) => (
+ ].filter((item) =>
+   (item.type !== "Section" && item.type !== "Chapter" && item.type !== "Collection")
+   || !isBlank(item.title)).map((item, i) => (
  <div key={i} className="py-1.5" style={{ display: 'grid', gridTemplateColumns: '76px minmax(0, 1fr)', alignItems: 'start', columnGap: '12px' }}>
  <span className="text-xs text-gray-400 leading-5">{item.label || item.type}</span>
  <div className={`text-xs text-black leading-5 break-words ${getFont()}`} dir={getDir()}>
@@ -782,6 +793,14 @@ function PanelHeading({ children, isArabic }) {
 
 // Tiny outline icons used next to Book / Section / Chapter / Hadith rows.
 function RowIcon({ type }) {
+ if (type === 'Collection') {
+   return (
+     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+       <path d="M2 4.66667L8 1.33333L14 4.66667L8 8L2 4.66667Z" stroke="#939393" strokeWidth="1.33333" strokeLinejoin="round" />
+       <path d="M2 8L8 11.3333L14 8M2 11.3333L8 14.6667L14 11.3333" stroke="#939393" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+     </svg>
+   );
+ }
  if (type === 'Book') {
  return (
  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

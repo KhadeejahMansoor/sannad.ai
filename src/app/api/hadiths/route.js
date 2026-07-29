@@ -1,30 +1,61 @@
 // src/app/api/search/route.js
 //
-// Why this exists: supabase.rpc('search_hadiths') goes through PostgREST,
-// which clamps every response to its db_max_rows setting. That setting is
-// stuck at 1000 on this project and the `authenticator` role is reserved, so
-// it can't be raised from SQL. This route calls the same function over the
-// direct pg pool — the connection /api/hadiths already uses — which never
-// touches PostgREST and therefore has no cap.
+// Calls search_hadiths over the direct pg pool instead of supabase.rpc.
+// PostgREST clamps every response to db_max_rows (stuck at 1000 here, and the
+// authenticator role is reserved so it can't be raised from SQL). The pool
+// connection never touches PostgREST, so there's no cap.
 //
-// Returns result.rows untouched. useData already maps the RPC's raw column
-// names onto the card fields, so that mapping keeps working as-is.
+// The column list is explicit and deliberately EXCLUDES the commentary bodies:
+//   commentary_1 / _2 / _3 and their _english translations
+// Those run to thousands of characters each and a full-collection result set
+// blew past Vercel's ~4.5MB response limit, which is why the browser got an
+// empty body and "Unexpected end of JSON input" rather than an error.
+// They're fetched per-hadith when a card expands instead.
 import { pool } from '../../../lib/db';
 import { NextResponse } from 'next/server';
+
+// Everything useData's mapping reads, minus the commentary bodies. If any of
+// these names isn't in the function's return type Postgres will say so by
+// name, and you can drop it from this list.
+const COLUMNS = [
+  'id',
+  'hadith_number',
+  'compiler',
+  'final_grade',
+  'final_grader',
+  'final_grader_description',
+  'intro_clause',
+  'chain_clause',
+  'machine_clause',
+  'post_clause',
+  'post_clause_english',
+  'english_narrator',
+  'book',
+  'book_stripped_english',
+  'chapter',
+  'chapter_stripped_english',
+  'ayat',
+  'matched_hadith',
+  'qasim_number',
+  'shaybani_number',
+  'zuhri_number',
+  'shakir_hadith_number',
+  'sunnah_com_number',
+  'daraqutni_hadith_number',
+  'commentary_person_1',
+  'score',
+].join(', ');
 
 export async function POST(request) {
   try {
     const body = await request.json();
 
-    // Empty arrays must become NULL, not '{}'. The function treats NULL as
-    // "no filter"; an empty array would match nothing.
+    // Empty arrays must become NULL. The function reads NULL as "no filter";
+    // an empty array would match nothing.
     const arr = (v) => (Array.isArray(v) && v.length ? v : null);
 
-    // Named notation rather than positional. These six names are the ones
-    // useData already passes to supabase.rpc successfully, so they're known
-    // good; positional order is not something to guess at.
     const sql = `
-      SELECT * FROM search_hadiths(
+      SELECT ${COLUMNS} FROM search_hadiths(
         q            => $1,
         f_compilers  => $2,
         f_grades     => $3,

@@ -37,6 +37,8 @@ export async function GET(_request, { params }) {
         h.hadith_number,
         h.compiler,
         h.volume,
+        h.red_flag,
+        h.final_hadith,
         h.collection,
         h.collection_english,
         h.book,

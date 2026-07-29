@@ -45,6 +45,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  const [showHadithCollectionMenu, setShowHadithCollectionMenu] = useState(false);
  const [activeTab, setActiveTab] = useState("Contents");
  const [showGradingDetail, setShowGradingDetail] = useState(false);
+ const [showSplit, setShowSplit] = useState(false);
  const [isArabic, setIsArabic] = useState(false);
  // On a dedicated hadith page (/Bukhari1) the details ARE the page, so they
  // open expanded. In a modal over a list of results the default stays
@@ -67,6 +68,13 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  // The isnad. Shown on its own bold line ABOVE the narrator, because the body
  // text is now the post clause alone and no longer carries the chain inline.
  const arabicChain = hadith?.chain_clause || '';
+ // red_flag = 'Yes' means the chain/intro/post split is unreliable for this
+ // row, so it opens on the stored final_hadith and lets the reader opt into
+ // the split. Gated on both halves existing — a toggle that reveals an empty
+ // card is worse than no toggle.
+ const finalHadithAr = hadith?.final_hadith || '';
+ const isRedFlagged = String(hadith?.red_flag ?? '').trim().toLowerCase() === 'yes';
+ const canToggleArabic = isRedFlagged && !!finalHadithAr && !!(arabicText || arabicChain || arabicNarrator);
 
  // Tab labels. The KEY stays English because activeTab is compared against it
  // and the panel bodies below switch on it; only the visible text changes.
@@ -246,6 +254,12 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
      compete with the narrator line directly beneath it — two heavy blocks
      stacked, and the reader's eye had nowhere to land. Smaller, lighter and
      muted, with a rule beneath, it reads as the header it is. */}
+ {canToggleArabic && !showSplit ? (
+ <p className={`${notoSansArabic.className} text-sm font-normal leading-[28px] mb-5 whitespace-pre-line text-black`}>
+ <HadithText text={finalHadithAr} />
+ </p>
+ ) : (
+ <>
  {arabicChain && (
  <p className={`text-right text-[13px] font-normal leading-[26px] text-[#8A7A72] mb-2 pb-2 border-b border-[#EFE9E6] ${notoSansArabic.className}`}>
  <HadithText text={arabicChain} />
@@ -257,6 +271,8 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <p className={`${notoSansArabic.className} text-sm font-normal leading-[28px] mt-2 mb-5 whitespace-pre-line text-black`}>
  <HadithText text={arabicText} />
  </p>
+ </>
+ )}
  <div className="flex items-center gap-3 mt-auto">
  <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap" style={{ color: "#6B5B55" }}>
  {arabicIdLabel}
@@ -268,6 +284,17 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {gradeArabic}
  <BookOpen size={16} />
  </span>
+ {canToggleArabic && (
+   <button
+     type="button"
+     dir="ltr"
+     onClick={() => setShowSplit((v) => !v)}
+     className="h-[32px] px-4 ms-auto inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap cursor-pointer hover:bg-[#DDD2CD] transition-colors"
+     style={{ color: "#6B5B55" }}
+   >
+     {showSplit ? 'Show as transmitted' : 'Show full text'}
+   </button>
+ )}
  </div>
 
  {/* Same state as the English chip, so tapping either opens both — the two
@@ -630,6 +657,14 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {selectedLanguage !== 'ar' && (
  <div className="mb-[23px]">
  <div className="bg-white rounded-[5px] pt-4 px-5 pb-4">
+ {canToggleArabic && !showSplit ? (
+ <div className="text-right" dir="rtl">
+ <p className={`${notoSansArabic.className} text-black text-sm font-normal leading-[26px] whitespace-pre-line`}>
+ <HadithText text={finalHadithAr} />
+ </p>
+ </div>
+ ) : (
+ <>
  {arabicChain && (
  <div className="mb-2 pb-2 border-b border-[#EFE9E6]" dir="rtl">
  <p className={`text-right text-[#8A7A72] text-[13px] font-normal leading-[26px] ${notoSansArabic.className}`}>
@@ -647,6 +682,21 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <HadithText text={arabicText} />
  </p>
  </div>
+ </>
+ )}
+ {canToggleArabic && (
+   <div className="mt-3">
+     <button
+       type="button"
+       dir="ltr"
+       onClick={() => setShowSplit((v) => !v)}
+       className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap cursor-pointer hover:bg-[#DDD2CD] transition-colors"
+       style={{ color: "#6B5B55" }}
+     >
+       {showSplit ? 'Show as transmitted' : 'Show full text'}
+     </button>
+   </div>
+ )}
  </div>
  </div>
  )}

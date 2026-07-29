@@ -275,12 +275,7 @@ export default function HadithCard({
                     <BookOpen size={16} />
                   </div>
                 </div>
-              </div>
 
-              {/* Far end of the footer. The row is justify-between and this
-                  panel is dir="rtl", so the last child lands on the visual
-                  LEFT — opposite the id and grade chips. */}
-              <div className="flex items-center gap-2">
                 {canToggleArabic && (
                   <button
                     type="button"
@@ -292,8 +287,9 @@ export default function HadithCard({
                     {showSplit ? 'Show as transmitted' : 'Show full text'}
                   </button>
                 )}
-                {!showEnglish && handleBookClick && <ExpandBookButton onClick={handleBookClick} />}
               </div>
+
+              {!showEnglish && handleBookClick && <ExpandBookButton onClick={handleBookClick} />}
             </div>
 
             {showGrader && graderInfoAr && (

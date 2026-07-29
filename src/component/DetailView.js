@@ -289,7 +289,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
      type="button"
      dir="ltr"
      onClick={() => setShowSplit((v) => !v)}
-     className="h-[32px] px-4 ms-auto inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap cursor-pointer hover:bg-[#DDD2CD] transition-colors"
+     className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap cursor-pointer hover:bg-[#DDD2CD] transition-colors"
      style={{ color: "#6B5B55" }}
    >
      {showSplit ? 'Show as transmitted' : 'Show full text'}

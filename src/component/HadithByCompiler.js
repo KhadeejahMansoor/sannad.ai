@@ -447,6 +447,21 @@ export default function HadithByCompiler() {
           >
             {compilerFor(compilerArabic, language)}
           </h1>
+
+          {/* The count for the CURRENT selection — it follows the book /
+              chapter / section filters, because pagination.total is computed
+              from the same WHERE clause the rows come from. Reads the API's
+              total rather than hadiths.length, which is only the loaded page. */}
+          {total > 0 && (
+            <span
+              dir={isArabic ? 'rtl' : 'ltr'}
+              className="text-xs text-[#6B5B55]"
+            >
+              {isArabic
+                ? `${total.toLocaleString('ar-EG')} حديث`
+                : `${total.toLocaleString('en-US')} hadith`}
+            </span>
+          )}
           {/* Was a decorative SVG. Now it reveals the current hadith's book in
               the sidebar — expand, highlight, scroll to it — without changing
               the filter, so you keep your place. */}

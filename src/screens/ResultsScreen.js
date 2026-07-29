@@ -113,6 +113,23 @@ export default function ResultsScreen() {
             </div>
           )}
 
+          {/* How many the page is holding.
+
+              Safe to state plainly: useData calls search_hadiths with
+              max_rows: 1_000_000, so the array really is the whole result set
+              rather than a first page. If a cap is ever reintroduced this has to
+              become "showing N of M", or it will quietly under-report. */}
+          {!loading && !error && hadiths.length > 0 && (
+            <div
+              dir={isArabic ? 'rtl' : 'ltr'}
+              className="text-xs text-[#6B5B55] text-start"
+            >
+              {isArabic
+                ? `${hadiths.length.toLocaleString('ar-EG')} حديث`
+                : `${hadiths.length.toLocaleString('en-US')} ${hadiths.length === 1 ? 'hadith' : 'hadith'}`}
+            </div>
+          )}
+
           {/* Mobile list view — inline expand below tapped card */}
           <div className="md:hidden space-y-4">
             {hadiths.map((hadith) => {

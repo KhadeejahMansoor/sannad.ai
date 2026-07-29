@@ -134,7 +134,7 @@ export default function HadithCard({
               card reads as a loading failure; naming the absence is honest
               and stops the panel collapsing to nothing. */}
           {isNotHadith ? (
-            <p className="text-sm font-normal italic leading-[22px] mt-2 mb-4" style={{ color: '#8A7A72' }}>
+            <p className="text-sm text-black font-normal leading-[22px] mt-2 mb-4">
               No translation available
             </p>
           ) : (

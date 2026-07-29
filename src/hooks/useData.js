@@ -380,7 +380,7 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
             // requires the argument, so it gets a number no result set will
             // reach rather than being left unset.
             max_rows: 1000000,
-            candidate_cap: 1000000,,
+            candidate_cap: 1000000,
           });
 
           if (rpcError) throw rpcError;

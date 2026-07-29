@@ -467,4 +467,4 @@ function Row({ label, value }) {
       <div className="flex-1 text-sm text-black">{value || '—'}</div>
     </div>
   );
-}c
+}

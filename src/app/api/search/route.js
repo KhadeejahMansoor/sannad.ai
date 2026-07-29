@@ -10,6 +10,9 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const searchQuery = (searchParams.get('q') || '').trim();
     const language = searchParams.get('lang') || 'en';
+    // Was a hardcoded LIMIT 200 at the foot of the query. Now a parameter,
+    // defaulting high so /results loads the full set rather than a slice.
+    const limit = Math.min(parseInt(searchParams.get('limit'), 10) || 100000, 100000);
 
     const compilerCsv = (searchParams.get('compiler') || '').trim();
     const gradeCsv    = (searchParams.get('grade')    || '').trim();
@@ -121,6 +124,8 @@ export async function GET(request) {
 
     params.push(language);
     const langIdx = params.length;
+    params.push(limit);
+    const limitIdx = params.length;
 
     const result = await pool.query(`
       SELECT
@@ -166,6 +171,14 @@ export async function GET(request) {
         h.chain_clause              AS chain_clause,
         h.post_clause_english       AS hadith_text_english,
         h.machine_clause,
+        h.qasim_number,
+        h.shaybani_number,
+        h.zuhri_number,
+        h.shakir_hadith_number,
+        h.sunnah_com_number,
+        h.daraqutni_hadith_number,
+        h.book_stripped_english,
+        h.chapter_stripped_english,
         h.intro_clause              AS arabic_intro_clause,
         m.english                   AS english_narrator,
         CASE WHEN h.compiler = '${AZAMI}' THEN 'azami' ELSE 'sevenbooks' END AS source,
@@ -176,12 +189,13 @@ export async function GET(request) {
       LEFT JOIN machine_clauses m ON h.machine_clause = m.machine_clause
       WHERE ${where}
       ORDER BY ${orderBy}
-      LIMIT 200
+      LIMIT $${limitIdx}
     `, params);
 
     return NextResponse.json({
       success: true,
       data: result.rows,
+      count: result.rows.length,
     });
   } catch (error) {
     console.error('Search error:', error);

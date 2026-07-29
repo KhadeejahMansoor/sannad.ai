@@ -41,6 +41,7 @@ const TIRMIDHI_DB   = 'الترمذي';
 const IBN_MAJAH_DB  = 'ابن ماجه';
 const ABU_DAWUD_DB  = 'أبو داود';
 const BUKHARI_DB    = 'البخاري';
+const AZAMI_DB      = 'الأعظمي';
 
 // Reused by the four single-numbering collections.
 const DARUSSALAM_ONLY = [
@@ -78,6 +79,17 @@ const RECENSIONS = {
                                   en: 'Daraqutni',  ar: 'الدارقطني' },
   ],
 
+  // Azami was deliberately absent, so every caller fell back to its own
+  // hardcoded string. Four components each held their own copy, which is why
+  // the wording could drift between panels. It lives here now like the rest.
+  //
+  // `suffix` is unique to this entry: the edition is part of the label rather
+  // than a separate numbering, so it trails the number instead of naming it.
+  [AZAMI_DB]: [
+    { columns: ['hadith_number'], en: 'Jami al-Kamil', ar: 'الجامع الكامل',
+      suffix: { en: '(2nd edition)', ar: '(الطبعة الثانية)' } },
+  ],
+
   [NASAI_DB]:     DARUSSALAM_ONLY,
   [TIRMIDHI_DB]:  DARUSSALAM_ONLY,
   [IBN_MAJAH_DB]: DARUSSALAM_ONLY,
@@ -105,9 +117,10 @@ export function buildHadithLabel(hadith, { isArabic = false, fallback = '' } = {
     .map((r) => ({
       name: isArabic ? r.ar : r.en,
       num: firstPresent(...r.columns.map((c) => hadith?.[c])),
+      suffix: r.suffix ? (isArabic ? r.suffix.ar : r.suffix.en) : '',
     }))
     .filter((p) => !isBlank(p.num))
-    .map((p) => `${p.name} ${String(p.num).trim()}`);
+    .map((p) => `${p.name} ${String(p.num).trim()}${p.suffix ? ` ${p.suffix}` : ''}`);
 
   return parts.length ? parts.join(', ') : fallback;
 }

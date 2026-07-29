@@ -56,6 +56,10 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  // ─── Data extraction ──────────────────────────────────────────────────
  const arabicText = hadith?.hadith_text_arabic || '';
  const englishText = hadith?.hadith_text || '';
+ // "not hadith" rows carry Arabic but were never translated and never
+ // graded. Left as-is the English column renders blank, which reads as a
+ // load failure rather than an absence.
+ const isNotHadith = String(hadith?.machine_clause ?? '').trim().toLowerCase() === 'not hadith';
  const englishNarrator = hadith?.english_narrator
  ? `${hadith.english_narrator} reported,`
  : '';
@@ -192,7 +196,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {englishNarrator}
  </h3>
  <p className={`text-sm leading-[22px] mt-2 mb-5 whitespace-pre-line text-black`}>
- <HadithText text={englishText} />
+ {isNotHadith ? 'No translation available' : <HadithText text={englishText} />}
  </p>
  <div className="flex items-center justify-between gap-3 mt-auto">
  <div className="flex items-center gap-3">
@@ -204,7 +208,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium cursor-pointer" style={{ color: "#6B5B55" }}
  >
  <BookOpen size={16} className="mr-2" />
- {grade}
+ {isNotHadith ? 'Not graded' : grade}
  </span>
  </div>
  {/* Mobile-only book toggle. Same expand behavior as desktop's action row. */}
@@ -650,7 +654,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <div className="mb-[23px]">
  <div className="bg-white rounded-[5px] pt-4 pr-7 pb-4 pl-5">
  <h3 className="text-sm font-semibold text-gray-900 mb-3">{englishNarrator}</h3>
- <p className="text-sm text-black leading-[22px] mt-2 mb-4 whitespace-pre-line">{englishText}</p>
+ <p className="text-sm text-black leading-[22px] mt-2 mb-4 whitespace-pre-line">{isNotHadith ? 'No translation available' : englishText}</p>
  <div className="flex items-center justify-between mt-4">
  <div className="flex gap-7">
  <span className="w-[100px] h-[32px] px-4 py-1 bg-[#E6DEDA] rounded-[10px] inline-flex justify-center items-center text-sm font-medium whitespace-nowrap" style={{ color: "#6B5B55" }}>
@@ -661,7 +665,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  className="w-[100px] h-[32px] bg-[#E6DEDA] rounded-[10px] inline-flex items-center justify-center text-sm font-medium cursor-pointer" style={{ color: "#6B5B55" }}
  >
  <BookOpen size={16} className="mr-3" style={{ color: "#6B5B55" }} />
- {grade}
+ {isNotHadith ? 'Not graded' : grade}
  </span>
  </div>
  <div onClick={handleBack} className="w-11 h-12 rounded-[5px] bg-[#523230] flex items-center justify-center cursor-pointer">

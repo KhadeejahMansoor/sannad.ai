@@ -367,23 +367,33 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
         // Everything else — and any lookup the direct query could not answer —
         // goes through the normal relevance search.
         if (filteredRows === null) {
-          const { data: rows, error: rpcError } = await supabase.rpc('search_hadiths', {
-            q: compilerNumberHit ? null : (searchText ? searchText.trim() : null),
-            f_compilers: compilerNumberHit
-              ? [compilerToDb(compilerNumberHit.compiler)]
-              : (compilersArr.length ? compilersArr.map(compilerToDb) : null),
-            f_grades:    gradesArr.length    ? gradesArr.map(gradeToDb)        : null,
-            f_book: null,
-            f_chapter: null,
-            // No cap. Every match comes back and the page scrolls through all
-            // of them. This value is a sentinel, not a real limit — the RPC
-            // requires the argument, so it gets a number no result set will
-            // reach rather than being left unset.
-            max_rows: 1000000,
-            candidate_cap: 1000000,
+          // Routed through our own API rather than supabase.rpc. PostgREST
+          // clamps responses to db_max_rows (stuck at 1000 on this project,
+          // and the authenticator role is reserved so it can't be raised in
+          // SQL). /api/search calls the same function over the pg pool, which
+          // PostgREST never sees. Row shape is identical, so the mapping
+          // below is unchanged.
+          const res = await fetch('/api/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              q: compilerNumberHit ? null : (searchText ? searchText.trim() : null),
+              f_compilers: compilerNumberHit
+                ? [compilerToDb(compilerNumberHit.compiler)]
+                : (compilersArr.length ? compilersArr.map(compilerToDb) : null),
+              f_grades: gradesArr.length ? gradesArr.map(gradeToDb) : null,
+              f_book: null,
+              f_chapter: null,
+              max_rows: 1000000,
+            }),
           });
 
-          if (rpcError) throw rpcError;
+          const payload = await res.json();
+          if (!res.ok || !payload.success) {
+            throw new Error(payload.details || payload.error || 'Search failed');
+          }
+          const rows = payload.data;
+
 
           filteredRows = compilerNumberHit
             ? (rows || []).filter(

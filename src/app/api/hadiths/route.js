@@ -1,103 +1,59 @@
-// src/app/api/hadiths/route.js
+// src/app/api/search/route.js
+//
+// Why this exists: supabase.rpc('search_hadiths') goes through PostgREST,
+// which clamps every response to its db_max_rows setting. That setting is
+// stuck at 1000 on this project and the `authenticator` role is reserved, so
+// it can't be raised from SQL. This route calls the same function over the
+// direct pg pool — the connection /api/hadiths already uses — which never
+// touches PostgREST and therefore has no cap.
+//
+// Returns result.rows untouched. useData already maps the RPC's raw column
+// names onto the card fields, so that mapping keeps working as-is.
 import { pool } from '../../../lib/db';
 import { NextResponse } from 'next/server';
 
-const AZAMI = 'الأعظمي';
-
-export async function GET(request) {
+export async function POST(request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const body = await request.json();
 
-    const language = searchParams.get('lang') || 'en';
-    const compiler = searchParams.get('compiler');
-    const grade    = searchParams.get('grade');
-    const chapter  = searchParams.get('chapter');
-    const section  = searchParams.get('section');
-    const limit    = parseInt(searchParams.get('limit'))  || 20;
-    const offset   = parseInt(searchParams.get('offset')) || 0;
+    // Empty arrays must become NULL, not '{}'. The function treats NULL as
+    // "no filter"; an empty array would match nothing.
+    const arr = (v) => (Array.isArray(v) && v.length ? v : null);
 
-    const textColumn = language === 'ar' ? 'final_hadith' : 'post_clause_english';
+    // Named notation rather than positional. These six names are the ones
+    // useData already passes to supabase.rpc successfully, so they're known
+    // good; positional order is not something to guess at.
+    const sql = `
+      SELECT * FROM search_hadiths(
+        q            => $1,
+        f_compilers  => $2,
+        f_grades     => $3,
+        f_book       => $4,
+        f_chapter    => $5,
+        max_rows     => $6
+      )
+    `;
 
-    // One table. The UNION is gone.
-    //
-    // Column renames from the old schema:
-    //   grade                 -> final_grade
-    //   commentary            -> commentary_1
-    //   commentary_darussalam -> commentary_1
-    //   hadith_sources        -> gone (returned as NULL)
-    const params = [];
-    const conditions = [
-      `h.${textColumn} IS NOT NULL`,
-      `TRIM(h.${textColumn}) != ''`,
+    const params = [
+      body.q ? String(body.q).trim() : null,
+      arr(body.f_compilers),
+      arr(body.f_grades),
+      body.f_book ?? null,
+      body.f_chapter ?? null,
+      Number.isFinite(Number(body.max_rows)) ? Number(body.max_rows) : 1000000,
     ];
 
-    if (compiler) {
-      params.push(compiler);
-      conditions.push(`LOWER(h.compiler) = LOWER($${params.length})`);
-    }
-    if (grade) {
-      params.push(grade);
-      conditions.push(`LOWER(h.final_grade) = LOWER($${params.length})`);
-    }
-    if (chapter) {
-      params.push(`%${chapter}%`);
-      conditions.push(`LOWER(h.chapter) LIKE LOWER($${params.length})`);
-    }
-    if (section) {
-      params.push(`%${section}%`);
-      conditions.push(`LOWER(h.section) LIKE LOWER($${params.length})`);
-    }
-
-    const where = conditions.join(' AND ');
-
-    // Count first, with the same params and no limit/offset.
-    const countResult = await pool.query(
-      `SELECT COUNT(*) AS total FROM hadiths h WHERE ${where}`,
-      params
-    );
-    const total = parseInt(countResult.rows[0].total);
-
-    // hadith_number is TEXT — sort numerically, tiebreak on the raw value
-    // so 7008A / 7008B stay together and in order.
-    params.push(limit, offset);
-
-    const result = await pool.query(`
-      SELECT
-        CASE WHEN h.compiler = '${AZAMI}' THEN 'azami-' ELSE 'sevenbooks-' END || h.id::text AS id,
-        h.hadith_number,
-        h.compiler,
-        h.volume,
-        h.book,
-        h.section,
-        h.chapter,
-        h.final_grade         AS grade,
-        h.commentary_1        AS commentary,
-        NULL::text            AS reference,
-        h.${textColumn}       AS hadith_text,
-        NULL::boolean         AS is_verified,
-        CASE WHEN h.compiler = '${AZAMI}' THEN 'azami' ELSE 'sevenbooks' END AS source
-      FROM hadiths h
-      WHERE ${where}
-      ORDER BY
-        NULLIF(regexp_replace(h.hadith_number, '\\D', '', 'g'), '')::bigint,
-        h.hadith_number
-      LIMIT $${params.length - 1} OFFSET $${params.length}
-    `, params);
+    const result = await pool.query(sql, params);
 
     return NextResponse.json({
       success: true,
       data: result.rows,
-      pagination: {
-        total,
-        limit,
-        offset,
-        hasMore: offset + limit < total,
-      },
+      count: result.rows.length,
     });
   } catch (error) {
-    console.error('Database error:', error);
+    console.error('Search error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch hadiths', details: error.message },
+      { success: false, error: 'Search failed', details: error.message },
       { status: 500 }
     );
   }

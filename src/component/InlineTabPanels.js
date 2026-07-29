@@ -59,6 +59,9 @@ export default function InlineTabPanels({ hadith }) {
   const pick = (stripped, english, raw) =>
     (isArabic ? firstPresent(stripped, raw) : firstPresent(english, stripped, raw)) || '';
 
+  // No _stripped variant exists for collection, so first and third argument
+  // are the same column. pick() still prefers English when the UI is English.
+  const collection = pick(hadith?.collection, hadith?.collection_english, hadith?.collection);
   const book    = pick(hadith?.book_stripped,    hadith?.book_stripped_english,    hadith?.book);
   const chapter = pick(hadith?.chapter_stripped, hadith?.chapter_stripped_english, hadith?.chapter);
   const section = pick(hadith?.section_stripped, hadith?.section_stripped_english, hadith?.section);
@@ -107,6 +110,7 @@ export default function InlineTabPanels({ hadith }) {
               parameter order /api/sections-by-chapter takes. Section was listed
               above Chapter, which reads as though sections contain chapters. */}
           {[
+            { type: 'Collection', label: isArabic ? 'المجموعة' : 'Collection', value: collection },
             { type: 'Book', value: book },
             { type: 'Chapter', value: chapter },
             { type: 'Section', value: section },
@@ -114,7 +118,9 @@ export default function InlineTabPanels({ hadith }) {
               isArabic,
               fallback: `al-Jami al-Kamil ${hadithNumber}`,
             }) },
-          ].filter((item) => (item.type !== 'Section' && item.type !== 'Chapter') || !isBlank(item.value)).map((item, i) => (
+          ].filter((item) =>
+            (item.type !== 'Section' && item.type !== 'Chapter' && item.type !== 'Collection')
+            || !isBlank(item.value)).map((item, i) => (
             <div key={i} className="py-1.5" style={{ display: 'grid', gridTemplateColumns: '16px 76px minmax(0, 1fr)', alignItems: 'start', columnGap: '12px' }}>
               <span className="w-4 h-5 flex items-center justify-center flex-shrink-0 text-gray-400">
                 <RowIcon type={item.type} />
@@ -179,6 +185,12 @@ export default function InlineTabPanels({ hadith }) {
 
 function RowIcon({ type }) {
   const common = { width: 16, height: 16, viewBox: '0 0 16 16', fill: 'none', 'aria-hidden': 'true' };
+  if (type === 'Collection') return (
+    <svg {...common}>
+      <path d="M2 4.66667L8 1.33333L14 4.66667L8 8L2 4.66667Z" stroke="#939393" strokeWidth="1.33333" strokeLinejoin="round" />
+      <path d="M2 8L8 11.3333L14 8M2 11.3333L8 14.6667L14 11.3333" stroke="#939393" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
   if (type === 'Book') return (
     <svg {...common}>
       <path d="M4 14.6663H14V13.333H4.008C3.7 13.325 3.33333 13.203 3.33333 12.6663C3.33333 12.1297 3.7 12.0077 4.008 11.9997H14V2.66634C14 1.93101 13.402 1.33301 12.6667 1.33301H4C3.196 1.33301 2 1.86567 2 3.33301V12.6663C2 14.1337 3.196 14.6663 4 14.6663ZM3.33333 5.33301V3.33301C3.33333 2.79634 3.7 2.67434 4 2.66634H12.6667V10.6663H3.33333V5.33301Z" fill="#939393" />

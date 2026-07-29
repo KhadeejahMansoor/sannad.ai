@@ -694,6 +694,7 @@ export default function HadithByCompiler() {
                         gradeAr={showArabicSide ? hadith.grade : undefined}
                         /* Behavior */
                         hadithLinkId={hadith.hadith_id}
+                        isNotHadith={hadith.machine_clause === 'not hadith'}
                         isExpanded={expanded}
                         onToggleExpand={() => handleToggleExpand(hadith.hadith_id)}
                       />

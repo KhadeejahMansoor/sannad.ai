@@ -273,7 +273,9 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  </p>
  </>
  )}
- <div className="flex items-center gap-3 mt-auto">
+ {/* flex-wrap: three chips plus a long English label overflow the card on
+     narrow screens. Wrapping keeps them inside it. */}
+ <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-auto">
  <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap" style={{ color: "#6B5B55" }}>
  {arabicIdLabel}
  </span>

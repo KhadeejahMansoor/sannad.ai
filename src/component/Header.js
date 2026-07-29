@@ -105,7 +105,12 @@ export default function Header({ onEdit, onMenu }) {
          md:py-13 flex items-center justify-between">
 
          {/* Logo - Positioned to leftmost */}
-          <div className="w-10 h-10 md:w-11 md:h-11 bg-[#F6F4F1] rounded-full flex items-center justify-center overflow-hidden">
+          <button
+            type="button"
+            onClick={() => router.push('/')}
+            aria-label="Go to home page"
+            className="w-10 h-10 md:w-11 md:h-11 bg-[#F6F4F1] rounded-full flex items-center justify-center overflow-hidden cursor-pointer transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#523230]"
+          >
             {/* One logo for every width. Mobile used to render /logo.svg via
                 next/image while desktop drew this inline SVG, so the mark sat
                 differently in its circle depending on the screen. */}
@@ -181,7 +186,7 @@ export default function Header({ onEdit, onMenu }) {
                 </svg>
               </g>
             </svg>
-          </div>
+          </button>
 
           {/* Right side with search bar and buttons */}
           <div className="flex items-center gap-3 md:gap-14  " >

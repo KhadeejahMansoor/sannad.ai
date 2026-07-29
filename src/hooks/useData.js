@@ -315,146 +315,62 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
     setLoading(true);
     setError(null);
 
-    // Was: searchAPI.searchHadiths -> /api/search (a Next.js route).
-    // Now: supabase.rpc('search_hadiths') straight from the browser. No route,
-    // no cost. That function does Arabic+English full-text, fuzzy fallback, and
-    // the metadata filters in one query, returning a relevance `score`.
+    // Back on /api/search rather than supabase.rpc.
     //
-    // The chips carry ENGLISH keys ('Bukhari','Sahih'); the DB stores Arabic
-    // ('البخاري','صحيح'). The old route translated server-side; the hook does it
-    // now, via compilerToDb/gradeToDb, right before the call. URL and chip state
-    // stay English, so shared links keep working.
-    Promise.all([
-      import('../lib/supabaseClient'),
-      import('../lib/i18n'),
-    ])
-      .then(async ([{ supabase }, { compilerToDb, gradeToDb, COMPILER_KEYS }]) => {
-        // ── "Compiler name + hadith number" typed into the search box ──
-        // e.g. "azami 1" or "1 azami". search_hadiths does text/metadata
-        // search only — hadith_number was never part of that, so this
-        // pattern always came back empty. Detect it, fetch by compiler
-        // filter alone, then match hadith_number client-side.
-        let compilerNumberHit = null;
-        const trimmedText = searchText ? searchText.trim() : '';
-        if (trimmedText) {
-          // A "number" may be a single value (7350), a value with a letter
-          // suffix (2926m), or a range (7350-7351 / 7350 - 7351).
-          const NUM = String.raw`\d+[A-Za-z]?(?:\s*[-\u2013]\s*\d+[A-Za-z]?)*`;
-          const m =
-            trimmedText.match(new RegExp(`^(\\D+?)\\s*#?\\s*(${NUM})$`)) ||
-            trimmedText.match(new RegExp(`^(${NUM})\\s*#?\\s*([^\\d-]+)$`));
-          if (m) {
-            const [, part1, part2] = m;
-            const namePart = /^\d/.test(part1) ? part2 : part1;
-            const numberPart = /^\d/.test(part1) ? part1 : part2;
-            const matchedKey = COMPILER_KEYS.find(
-              (k) => k.toLowerCase() === namePart.trim().toLowerCase()
-            );
-            if (matchedKey) {
-              compilerNumberHit = { compiler: matchedKey, number: numberPart.trim() };
-            }
-          }
+    // The RPC goes through PostgREST, which clamps every response to
+    // db_max_rows. That is stuck at 1000 on this project and the `authenticator`
+    // role is reserved, so it cannot be raised from SQL. The route runs the
+    // search over the pg pool instead, which PostgREST never sees, and takes a
+    // `limit` param — so the page gets the whole result set.
+    //
+    // Two things that used to live here are gone because the route already does
+    // them server-side: the "compiler + hadith number" parsing, and the row
+    // mapping. The route returns the field names the cards read directly
+    // (hadith_id, grade, hadith_text_arabic, chain_clause, ...), so re-mapping
+    // would only rename them into fields that no longer exist.
+    const ctrl = new AbortController();
+
+    // Chips carry ENGLISH keys ('Bukhari','Sahih'); the DB stores Arabic
+    // ('البخاري','صحيح'). Translate right before the call so the URL and chip
+    // state stay English and shared links keep working.
+    import('../lib/i18n')
+      .then(async ({ compilerToDb, gradeToDb }) => {
+        const params = new URLSearchParams();
+        if (hasText) params.set('q', searchText.trim());
+        params.set('lang', lang);
+        if (compilersArr.length) {
+          params.set('compiler', compilersArr.map(compilerToDb).join(','));
+        }
+        if (gradesArr.length) {
+          params.set('grade', gradesArr.map(gradeToDb).join(','));
+        }
+        params.set('limit', '100000');
+
+        const res = await fetch('/api/search?' + params.toString(), { signal: ctrl.signal });
+
+        // Read as text first. A crashed or truncated response is not JSON, and
+        // res.json() would throw "Unexpected end of JSON input" with nothing
+        // said about the status that caused it.
+        const raw = await res.text();
+        let payload;
+        try {
+          payload = JSON.parse(raw);
+        } catch {
+          throw new Error('Search failed (HTTP ' + res.status + ', ' + raw.length + ' bytes)');
+        }
+        if (!res.ok || !payload.success) {
+          throw new Error(payload.details || payload.error || 'Search failed');
         }
 
-        let filteredRows = null;
-
-        // Exact compiler+number lookup goes straight to the table. This is not
-        // subject to max_rows, so it works for hadith 7563 as well as hadith 2.
-        if (compilerNumberHit) {
-          filteredRows = await fetchByCompilerAndNumber(supabase, compilerToDb, compilerNumberHit);
-        }
-
-        // Everything else — and any lookup the direct query could not answer —
-        // goes through the normal relevance search.
-        if (filteredRows === null) {
-          // Routed through our own API rather than supabase.rpc. PostgREST
-          // clamps responses to db_max_rows (stuck at 1000 on this project,
-          // and the authenticator role is reserved so it can't be raised in
-          // SQL). /api/search calls the same function over the pg pool, which
-          // PostgREST never sees. Row shape is identical, so the mapping
-          // below is unchanged.
-          const res = await fetch('/api/search', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              q: compilerNumberHit ? null : (searchText ? searchText.trim() : null),
-              f_compilers: compilerNumberHit
-                ? [compilerToDb(compilerNumberHit.compiler)]
-                : (compilersArr.length ? compilersArr.map(compilerToDb) : null),
-              f_grades: gradesArr.length ? gradesArr.map(gradeToDb) : null,
-              f_book: null,
-              f_chapter: null,
-              max_rows: 1000000,
-            }),
-          });
-
-          const payload = await res.json();
-          if (!res.ok || !payload.success) {
-            throw new Error(payload.details || payload.error || 'Search failed');
-          }
-          const rows = payload.data;
-
-
-          filteredRows = compilerNumberHit
-            ? (rows || []).filter(
-                (r) => String(r.hadith_number).trim().toLowerCase() === compilerNumberHit.number.toLowerCase()
-              )
-            : rows;
-        }
-
-        // Shape rows to the fields the cards read — same names /api/search used,
-        // so ResultsScreen needs no changes.
-        const data = (filteredRows || []).map((r) => ({
-          hadith_id: `${r.compiler === AZAMI_DB ? 'azami' : 'sevenbooks'}-${r.id}`,
-          hadith_number: r.hadith_number,
-          // Malik's other recension numberings — the Details panel lists all four.
-          qasim_number: r.qasim_number,
-          shaybani_number: r.shaybani_number,
-          zuhri_number: r.zuhri_number,
-          shakir_hadith_number: r.shakir_hadith_number,
-          sunnah_com_number: r.sunnah_com_number,
-          daraqutni_hadith_number: r.daraqutni_hadith_number,
-          // Ahmad's Shakir numbering (column name varies by import).
-          compiler: r.compiler,
-          grade: r.final_grade,
-          hadith_text: lang === 'ar' ? r.post_clause : r.post_clause_english,
-          hadith_text_arabic: r.post_clause,
-          hadith_text_english: r.post_clause_english,
-          chain_clause: r.chain_clause,
-          arabic_intro_clause: r.intro_clause,
-          english_narrator: r.english_narrator,
-          book: r.book,
-          book_stripped_english: r.book_stripped_english,
-          chapter: r.chapter,
-          chapter_stripped_english: r.chapter_stripped_english,
-          machine_clause: r.machine_clause,
-          ayat: r.ayat,
-          matched_hadith: r.matched_hadith,
-          final_grader: r.final_grader,
-          // Every commentary field, not just slot 1. This object literal is a
-          // whitelist — anything not copied here is dropped before the cards
-          // ever see it, which is why /results showed no commentary while the
-          // API and the RPC were both returning them correctly.
-          //
-          // Slots 2 and 3 arrive under two different names depending on the
-          // path: the RPC aliases them to commentary_2 / commentary_3, while
-          // the direct select('*') returns the raw columns ibn_hajar / hadi.
-          final_grader_description: r.final_grader_description,
-          commentary: r.commentary_1,
-          commentary_1: r.commentary_1,
-          commentary_person_1: r.commentary_person_1,
-          commentary_1_english: r.commentary_1_english,
-          commentary_2: r.commentary_2 ?? r.ibn_hajar,
-          commentary_2_english: r.commentary_2_english,
-          commentary_3: r.commentary_3 ?? r.hadi,
-          commentary_3_english: r.commentary_3_english,
-          score: r.score,
-        }));
-
-        setData({ success: true, data });
+        setData({ success: true, data: payload.data || [] });
       })
-      .catch((err) => setError(err.message || 'Search failed'))
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        setError(err.message || 'Search failed');
+      })
       .finally(() => setLoading(false));
+
+    return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchText, compilersKey, gradesKey, lang]);
 

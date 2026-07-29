@@ -120,13 +120,25 @@ export default function ResultsScreen() {
               rather than a first page. If a cap is ever reintroduced this has to
               become "showing N of M", or it will quietly under-report. */}
           {!loading && !error && hadiths.length > 0 && (
-            <div
-              dir={isArabic ? 'rtl' : 'ltr'}
-              className="text-xs text-[#6B5B55] text-start"
-            >
-              {isArabic
-                ? `${hadiths.length.toLocaleString('ar-EG')} حديث`
-                : `${hadiths.length.toLocaleString('en-US')} ${hadiths.length === 1 ? 'hadith' : 'hadith'}`}
+            <div dir={isArabic ? 'rtl' : 'ltr'} className="text-start">
+              {/* The collection(s) the filter is currently narrowed to, read
+                  from the same URL state that drives the query, so heading and
+                  results can't disagree. Omitted entirely when no compiler is
+                  selected — a bare grade filter spans every collection, and a
+                  heading there would be a lie. Multiple selections are listed. */}
+              {compilers.length > 0 && (
+                <h1 className="text-2xl font-bold text-gray-900">
+                  {compilers
+                    .map((c) => compilerFor(c, language))
+                    .join(isArabic ? '، ' : ', ')}
+                </h1>
+              )}
+
+              <span className="mt-0.5 block text-xs leading-tight text-[#6B5B55] tabular-nums">
+                {isArabic
+                  ? `${hadiths.length.toLocaleString('ar-EG')} حديث`
+                  : `${hadiths.length.toLocaleString('en-US')} hadith`}
+              </span>
             </div>
           )}
 
@@ -455,4 +467,4 @@ function Row({ label, value }) {
       <div className="flex-1 text-sm text-black">{value || '—'}</div>
     </div>
   );
-}
+}c

@@ -108,16 +108,31 @@ function renderInline(text, keyPrefix) {
  *
  * paragraphGap — space between paragraphs. Override per call site if needed.
  */
+// A clause split can leave the separator attached to the front of the text:
+// ", فقال ..." or ": قال ...". It is punctuation belonging to the clause
+// that came before, so it is dropped for display only — the stored value is
+// untouched, and the split itself is still worth fixing at the source.
+//
+// Covers the Arabic comma ، and semicolon ؛ alongside the Latin ones, plus
+// any leading whitespace before or after. Repeats are collapsed, so ",, "
+// goes too. Only the START of the text — punctuation anywhere else is real.
+const LEADING_PUNCT = /^[\s\u200b-\u200f\u202a-\u202e]*(?:[,;:\u060c\u061b][\s\u200b-\u200f\u202a-\u202e]*)+/;
+
+const stripLeadingPunct = (t) => String(t).replace(LEADING_PUNCT, '');
+
 export default function HadithText({ text, className = '', paragraphGap = '0.55em' }) {
   if (!text) return null;
 
-  const blocks = String(text)
+  const cleaned = stripLeadingPunct(text);
+  if (!cleaned) return null;
+
+  const blocks = String(cleaned)
     .split(/\n[ \t]*\n+/)
     .map((b) => b.replace(/^\n+|\n+$/g, ''))
     .filter((b) => b.trim() !== '');
 
   if (blocks.length <= 1) {
-    return <span className={className}>{renderInline(text, 'p0')}</span>;
+    return <span className={className}>{renderInline(cleaned, 'p0')}</span>;
   }
 
   return (

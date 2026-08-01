@@ -101,21 +101,13 @@ export async function GET(request) {
       // NULLIF guards the empty query: plainto_tsquery('') is '', and ''::tsquery
       // matches nothing rather than erroring, but being explicit is cheaper to
       // read than being clever.
-      const orAr = `NULLIF(replace(plainto_tsquery('arabic',  ${q})::text, '&', '|'), '')::tsquery`;
-      const orEn = `NULLIF(replace(plainto_tsquery('english', ${q})::text, '&', '|'), '')::tsquery`;
-
       // machine_clauses.english is the narrator name ("Abu Hurairah"), which
       // lives in a joined table and is in neither search_vector. Matched with
-      // ILIKE: it's one short column, the join is already there for the card
-      // display, and a to_tsvector() per row would cost more than it saves.
+      // ILIKE, which the existing idx_trgm_machine_clause makes cheap.
       conditions.push(`(
         h.search_vector    @@ websearch_to_tsquery('arabic',  ${q})
         OR
         h.search_vector_en @@ websearch_to_tsquery('english', ${q})
-        OR
-        h.search_vector    @@ ${orAr}
-        OR
-        h.search_vector_en @@ ${orEn}
         OR
         m.english ILIKE '%' || ${q} || '%'
         OR
@@ -148,14 +140,23 @@ export async function GET(request) {
     //
     // The narrator match is added rather than GREATEST-ed: a row hitting both
     // the text and the narrator should beat one hitting only the text.
-    const orderBy = hasText && !compilerNumberHit
-      ? `GREATEST(
-           ts_rank(h.search_vector,    NULLIF(replace(plainto_tsquery('arabic',  $1)::text, '&', '|'), '')::tsquery),
-           ts_rank(h.search_vector_en, NULLIF(replace(plainto_tsquery('english', $1)::text, '&', '|'), '')::tsquery)
+    // rankExpr is a function of the tsquery form so the two passes can share
+    // it: pass 1 ranks against the AND query it filtered on, pass 2 against
+    // the OR query. Ranking on the other pass's form would score every row 0.
+    const rankExpr = (arQ, enQ) => `GREATEST(
+           ts_rank(h.search_vector,    ${arQ}),
+           ts_rank(h.search_vector_en, ${enQ})
          )
          + CASE WHEN m.english ILIKE '%' || $1 || '%'
-                  OR h.machine_clause ILIKE '%' || $1 || '%' THEN 0.5 ELSE 0 END
-         DESC,
+                  OR h.machine_clause ILIKE '%' || $1 || '%' THEN 0.5 ELSE 0 END`;
+
+    const strictRank = rankExpr(
+      `websearch_to_tsquery('arabic',  $1)`,
+      `websearch_to_tsquery('english', $1)`,
+    );
+
+    const orderBy = hasText && !compilerNumberHit
+      ? `${strictRank} DESC,
          ${numericOrder},
          h.hadith_number`
       : `h.compiler,
@@ -167,8 +168,10 @@ export async function GET(request) {
     params.push(limit);
     const limitIdx = params.length;
 
-    const result = await pool.query(`
-      SELECT
+    // One template, two passes. The strict pass fills it with the AND query;
+    // the fallback below refills the same string with the OR query, so the
+    // SELECT list and joins can never drift between them.
+    const baseQuery = `      SELECT
         CASE WHEN h.compiler = '${AZAMI}' THEN 'azami-' ELSE 'sevenbooks-' END
           || h.id::text             AS hadith_id,
         h.hadith_number,
@@ -231,15 +234,55 @@ export async function GET(request) {
         CASE WHEN $${langIdx} = 'ar' THEN 'rtl'    ELSE 'ltr'     END AS text_direction
       FROM hadiths h
       LEFT JOIN machine_clauses m ON h.machine_clause = m.machine_clause
-      WHERE ${where}
-      ORDER BY ${orderBy}
+      WHERE __WHERE__
+      ORDER BY __ORDER__
       LIMIT $${limitIdx}
-    `, params);
+    `;
+
+    const result = await pool.query(
+      baseQuery.replace('__WHERE__', where).replace('__ORDER__', orderBy),
+      params
+    );
+
+    // websearch_to_tsquery ANDs every unquoted word, which is right for two or
+    // three terms and fatal for a pasted paragraph: requiring all ~50 words in
+    // one hadith matches nothing.
+    //
+    // The fix is a second pass that ORs the terms (swap plainto_tsquery's & for
+    // |) and ranks by how many matched, so the pasted hadith still lands first.
+    //
+    // Run only when the strict pass found nothing. Running both every time is
+    // what made 'Abu Hurairah' crawl — that query succeeds strictly, but the OR
+    // arm was still dragging in every row containing 'abu' to be ranked and
+    // sorted. Queries that match strictly never pay for this.
+    let rows = result.rows;
+
+    if (rows.length === 0 && hasText && !compilerNumberHit) {
+      const orAr = `NULLIF(replace(plainto_tsquery('arabic',  $1)::text, '&', '|'), '')::tsquery`;
+      const orEn = `NULLIF(replace(plainto_tsquery('english', $1)::text, '&', '|'), '')::tsquery`;
+
+      // Same filters as the strict pass, with the text condition swapped for
+      // the OR form. conditions[] can't be reused directly — its text clause is
+      // baked in — so the query is rebuilt from the parts that don't change.
+      const orConditions = conditions.map((c) =>
+        c.includes('websearch_to_tsquery')
+          ? `(h.search_vector @@ ${orAr} OR h.search_vector_en @@ ${orEn})`
+          : c
+      );
+
+      const orResult = await pool.query(
+        baseQuery
+          .replace('__WHERE__', orConditions.join(' AND '))
+          .replace('__ORDER__', `${rankExpr(orAr, orEn)} DESC, ${numericOrder}, h.hadith_number`),
+        params
+      );
+      rows = orResult.rows;
+    }
 
     return NextResponse.json({
       success: true,
-      data: result.rows,
-      count: result.rows.length,
+      data: rows,
+      count: rows.length,
     });
   } catch (error) {
     console.error('Search error:', error);

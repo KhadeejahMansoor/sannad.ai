@@ -105,7 +105,7 @@ export async function GET(request) {
       // lives in a joined table and is in neither search_vector. Matched with
       // ILIKE, which the existing idx_trgm_machine_clause makes cheap.
       conditions.push(`(
-        h.search_vector    @@ websearch_to_tsquery('arabic',  ${q})
+        h.search_vector    @@ websearch_to_tsquery('arabic',  norm_ar(${q}))
         OR
         h.search_vector_en @@ websearch_to_tsquery('english', ${q})
         OR
@@ -151,7 +151,7 @@ export async function GET(request) {
                   OR h.machine_clause ILIKE '%' || $1 || '%' THEN 0.5 ELSE 0 END`;
 
     const strictRank = rankExpr(
-      `websearch_to_tsquery('arabic',  $1)`,
+      `websearch_to_tsquery('arabic',  norm_ar($1))`,
       `websearch_to_tsquery('english', $1)`,
     );
 
@@ -257,7 +257,7 @@ export async function GET(request) {
     let rows = result.rows;
 
     if (rows.length === 0 && hasText && !compilerNumberHit) {
-      const orAr = `NULLIF(replace(plainto_tsquery('arabic',  $1)::text, '&', '|'), '')::tsquery`;
+      const orAr = `NULLIF(replace(plainto_tsquery('arabic',  norm_ar($1))::text, '&', '|'), '')::tsquery`;
       const orEn = `NULLIF(replace(plainto_tsquery('english', $1)::text, '&', '|'), '')::tsquery`;
 
       // Same filters as the strict pass, with the text condition swapped for

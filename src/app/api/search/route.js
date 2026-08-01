@@ -187,19 +187,18 @@ export async function GET(request) {
         h.final_grade               AS grade,
         COALESCE(NULLIF(TRIM(h.final_grader), ''), 'Unknown') AS final_grader,
         h.final_grader_description AS final_grader_description,
-        -- Up to two attributed commentaries. Slot 1 names its scholar in
-        -- commentary_person_1; slots 2 and 3 were pivoted into named columns on
-        -- import (ibn_hajar / hadi), so their author is implied by the column.
-        -- The _english columns were in the table all along and never selected,
-        -- which is why the panel could only render Arabic.
-        h.commentary_1             AS commentary,
+        -- The six commentary bodies are deliberately NOT selected here.
+        --
+        -- They run to thousands of characters each (one row's is 8,664), so a
+        -- broad search like 'Abu Hurairah' — 5,792 rows — was pushing megabytes
+        -- to the browser before anything could render. None of it is visible
+        -- until the reader expands a card, so the list paid for it on every
+        -- search and used it almost never.
+        --
+        -- commentary_person_1 stays: it's a short name, and the Details panel
+        -- uses it to decide whether a Commentary tab is worth offering at all.
+        -- The bodies themselves come from /api/hadith-by-id when a card opens.
         h.commentary_person_1      AS commentary_person_1,
-        h.commentary_1             AS commentary_1,
-        h.commentary_1_english     AS commentary_1_english,
-        h.ibn_hajar                AS commentary_2,
-        h.commentary_2_english     AS commentary_2_english,
-        h.hadi                     AS commentary_3,
-        h.commentary_3_english     AS commentary_3_english,
         NULL::text                  AS reference,
         h.matched_hadith            AS matched_hadith,
         h.ayat                      AS ayat,

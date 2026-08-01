@@ -67,8 +67,9 @@ function queryTerms(q) {
 //
 // A prefix test alone isn't enough for Arabic, where the definite article is
 // attached: 'صلاه' has to match 'الصلاة', and neither is a prefix of the other
-// once normalised. Containment in either direction covers both that and the
-// English stemming case, with the 3-character floor above keeping it honest.
+// once normalised. So the test is containment — but strictly one-directional:
+// the WORD must contain the TERM, never the reverse. Testing both ways marked
+// every 'a' and 's' on the page, because the term 'salah' contains them.
 function markMatches(text, terms, keyPrefix) {
   if (!terms.length) return text;
 
@@ -87,7 +88,7 @@ function markMatches(text, terms, keyPrefix) {
 
     const word = str.slice(i, j);
     const norm = normAr(word);
-    const hit = terms.some((t) => norm.includes(t) || t.includes(norm));
+    const hit = terms.some((t) => norm.includes(t));
 
     if (hit) {
       flush();

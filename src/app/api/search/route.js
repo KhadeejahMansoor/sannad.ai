@@ -348,7 +348,7 @@ export async function GET(request) {
         // index proposed 1,161 candidates of which 74 survived the recheck; the
         // 1,087 rejects were most of the runtime. 0.7 still catches a dropped or
         // transposed letter, which is what this pass is for.
-        await pool.query("SELECT set_limit(0.7)");
+        await pool.query("SELECT set_limit(0.65)");
 
         // No count query here. It re-runs the identical scan a second time in
         // parallel, doubling the cost of the slowest path in the route to learn

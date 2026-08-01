@@ -166,6 +166,12 @@ export async function GET(request) {
          ${numericOrder},
          h.hadith_number`;
 
+    // Everything pushed so far belongs to the WHERE clause. The count query
+    // below reuses that clause but not the SELECT or LIMIT, so it must be given
+    // exactly these and no more: Postgres rejects a bind with more parameters
+    // than the statement references, rather than ignoring the extras.
+    const whereParams = [...params];
+
     params.push(language);
     const langIdx = params.length;
     params.push(limit);
@@ -259,7 +265,7 @@ export async function GET(request) {
         baseQuery.replace('__WHERE__', where).replace('__ORDER__', orderBy),
         params
       ),
-      pool.query(countQuery.replace('__WHERE__', where), params),
+      pool.query(countQuery.replace('__WHERE__', where), whereParams),
     ]);
 
     // websearch_to_tsquery ANDs every unquoted word, which is right for two or
@@ -298,7 +304,7 @@ export async function GET(request) {
             .replace('__ORDER__', `${rankExpr(orAr, orEn)} DESC, ${numericOrder}, h.hadith_number`),
           params
         ),
-        pool.query(countQuery.replace('__WHERE__', orWhere), params),
+        pool.query(countQuery.replace('__WHERE__', orWhere), whereParams),
       ]);
       rows = orResult.rows;
       total = orCount.rows[0]?.total ?? rows.length;

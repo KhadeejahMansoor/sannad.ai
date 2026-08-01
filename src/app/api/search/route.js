@@ -282,7 +282,18 @@ export async function GET(request) {
     let rows = result.rows;
     let total = countResult.rows[0]?.total ?? rows.length;
 
-    if (rows.length === 0 && hasText && !compilerNumberHit) {
+    // Word count decides whether the OR pass is worth running at all.
+    //
+    // The pass works by swapping plainto_tsquery's & for |. With a single term
+    // there is no & to swap, so the OR query is character-for-character the
+    // strict query that just returned zero — it cannot find anything, and it
+    // runs a count alongside itself while failing to. That was two full scans
+    // burned before the fuzzy pass below even started, which is why a one-word
+    // typo like 'slaugter' timed out while it was really only the third pass
+    // that needed the time.
+    const termCount = searchQuery.split(/\s+/).filter(Boolean).length;
+
+    if (rows.length === 0 && hasText && !compilerNumberHit && termCount > 1) {
       const orAr = `NULLIF(replace(plainto_tsquery('arabic',  norm_ar($1))::text, '&', '|'), '')::tsquery`;
       const orEn = `NULLIF(replace(plainto_tsquery('english', $1)::text, '&', '|'), '')::tsquery`;
 
@@ -348,7 +359,10 @@ export async function GET(request) {
         // index proposed 1,161 candidates of which 74 survived the recheck; the
         // 1,087 rejects were most of the runtime. 0.7 still catches a dropped or
         // transposed letter, which is what this pass is for.
-        await pool.query("SELECT set_limit(0.65)");
+        // set_limit() sets the threshold for the % operator, not %>. Wrong knob:
+        // it left the candidate count untouched at ~1,161. This is the one %>
+        // reads. 0.75 trims to ~951; 0.8 finds nothing at all.
+        await pool.query("SET pg_trgm.word_similarity_threshold = 0.75");
 
         // No count query here. It re-runs the identical scan a second time in
         // parallel, doubling the cost of the slowest path in the route to learn

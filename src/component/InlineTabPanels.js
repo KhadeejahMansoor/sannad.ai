@@ -9,7 +9,7 @@
 // stacked version, so the same card looked different depending on which screen
 // you opened it from. Extracted here so every mobile screen shares one panel.
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import HadithText from './HadithText';
 import AyatChips from './AyatChips';
 import MatchedReferenceChips from './MatchedReferenceChips';
@@ -67,7 +67,38 @@ export default function InlineTabPanels({ hadith }) {
   const section = pick(hadith?.section_stripped, hadith?.section_stripped_english, hadith?.section);
   const reference = hadith?.matched_hadith || '';
   const ayat      = hadith?.ayat || '';
-  const commentaries = buildCommentaries(hadith, isArabic);
+  // /api/search no longer selects the six commentary bodies — they run to
+  // thousands of characters each and were being shipped with every result for
+  // text nobody reads until a card is expanded. Fetched here instead, once,
+  // when the panel mounts (which only happens on expand).
+  const [extra, setExtra] = useState(null);
+  const [loadingExtra, setLoadingExtra] = useState(false);
+
+  useEffect(() => {
+    const id = hadith?.hadith_id;
+    if (!id) return;
+    if (hadith?.commentary_1 !== undefined) return;  // already have them
+
+    let cancelled = false;
+    setLoadingExtra(true);
+
+    fetch(`/api/hadith-by-id/${encodeURIComponent(id)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((payload) => {
+        if (cancelled || !payload?.success) return;
+        setExtra(payload.data || null);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingExtra(false); });
+
+    return () => { cancelled = true; };
+  }, [hadith?.hadith_id, hadith?.commentary_1]);
+
+  // Merged UNDER the list row so a late response can't overwrite fields the
+  // card is already showing.
+  const full = extra ? { ...extra, ...hadith } : hadith;
+
+  const commentaries = buildCommentaries(full, isArabic);
   const hadithNumber = hadith?.hadith_number || '';
 
   return (
@@ -147,7 +178,9 @@ export default function InlineTabPanels({ hadith }) {
         commentaries.length === 0 ? (
           <div className="bg-white border border-[#DDD8D0] rounded-[5px] p-4">
             <div className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-black`} dir={isArabic ? 'rtl' : 'ltr'}>
-              {noCommentaryText(isArabic)}
+              {loadingExtra
+                ? (isArabic ? 'جارٍ التحميل…' : 'Loading…')
+                : noCommentaryText(isArabic)}
             </div>
           </div>
         ) : (

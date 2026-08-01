@@ -67,6 +67,9 @@ export default function HadithCard({
   //                     and let the Arabic run full width.
   isNotHadith = false, // row is a "not hadith" marker: the Arabic exists but
   //                      was never translated and was never graded.
+  highlight = '',    // the active search query. Passed to HadithText, which
+  //                    marks matching words in place — the text itself is
+  //                    unchanged. Empty on browse pages, so nothing is marked.
   redFlag,           // red_flag column. "yes" means the clause split is not
   //                    trustworthy for this row.
   finalHadithAr,     // final_hadith — chain + intro + post as one stored
@@ -152,7 +155,7 @@ export default function HadithCard({
             </p>
           ) : (
             <p className="text-sm text-black font-normal leading-[22px] mt-2 mb-4 whitespace-pre-line">
-              <HadithText text={content} />
+              <HadithText text={content} highlight={highlight} />
             </p>
           )}
 
@@ -238,13 +241,13 @@ export default function HadithCard({
               /* As transmitted: one stored string, no clause boundaries drawn
                  across it, because on these rows those boundaries are wrong. */
               <p className="text-[15px] text-black font-normal leading-[30px] mb-4 whitespace-pre-line">
-                <HadithText text={finalHadithAr} />
+                <HadithText text={finalHadithAr} highlight={highlight} />
               </p>
             ) : (
               <>
                 {chainAr && (
                   <p className="text-[13px] font-normal text-[#8A7A72] leading-[26px] mb-2 pb-2 border-b border-[#EFE9E6]">
-                    <HadithText text={chainAr} />
+                    <HadithText text={chainAr} highlight={highlight} />
                   </p>
                 )}
 
@@ -253,7 +256,7 @@ export default function HadithCard({
                 </p>
 
                 <p className="text-[15px] text-black font-normal leading-[30px] mt-2 mb-4 whitespace-pre-line">
-                  <HadithText text={contentAr} />
+                  <HadithText text={contentAr} highlight={highlight} />
                 </p>
               </>
             )}

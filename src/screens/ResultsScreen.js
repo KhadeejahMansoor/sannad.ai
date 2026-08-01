@@ -167,6 +167,7 @@ export default function ResultsScreen() {
                     hadithIdAr={isArabic ? `${hadith.compiler} ${hadith.hadith_number}` : undefined}
                     gradeAr={isArabic ? hadith.grade : undefined}
                     hadithLinkId={hadith.hadith_id}
+                    highlight={searchText}
                     isNotHadith={hadith.machine_clause === 'not hadith'}
                     redFlag={hadith.red_flag}
                     finalHadithAr={hadith.final_hadith}
@@ -203,6 +204,7 @@ export default function ResultsScreen() {
                     chainAr={hadith.chain_clause}
                     hadithIdAr={`${hadith.compiler} ${hadith.hadith_number}`}
                     gradeAr={hadith.grade}
+                    highlight={searchText}
                     isNotHadith={hadith.machine_clause === 'not hadith'}
                     redFlag={hadith.red_flag}
                     finalHadithAr={hadith.final_hadith}

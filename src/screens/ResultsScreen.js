@@ -299,6 +299,44 @@ function InlinePanels({ hadith }) {
   }, []);
   const openRef = useOpenReference();
 
+  // /api/search stopped selecting the six commentary bodies: they run to
+  // thousands of characters each, and a broad query like 'Abu Hurairah'
+  // (5,792 rows) was pushing megabytes to the browser for text nobody sees
+  // until they expand a card. So the list stays light and the bodies are
+  // fetched here, once, when a card actually opens.
+  //
+  // InlinePanels only mounts on expand, so a plain mount effect is the right
+  // trigger — no need to watch an isExpanded prop.
+  const [extra, setExtra] = useState(null);
+  const [loadingExtra, setLoadingExtra] = useState(false);
+
+  useEffect(() => {
+    const id = hadith?.hadith_id;
+    if (!id) return;
+
+    // Already present (e.g. a route that does select them) — don't refetch.
+    if (hadith?.commentary_1 !== undefined) return;
+
+    let cancelled = false;
+    setLoadingExtra(true);
+
+    fetch(`/api/hadith-by-id/${encodeURIComponent(id)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((payload) => {
+        if (cancelled || !payload?.success) return;
+        setExtra(payload.data || null);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoadingExtra(false); });
+
+    return () => { cancelled = true; };
+  }, [hadith?.hadith_id, hadith?.commentary_1]);
+
+  // The fetched row is merged UNDER the list row, not over it: the list row
+  // carries the fields the card is already displaying, and letting a late
+  // response overwrite them would make text flicker on expand.
+  const full = extra ? { ...extra, ...hadith } : hadith;
+
   // English is the default, so the default label is the English name. Falls back
   // to stripped Arabic, then the raw column — better a name in the wrong
   // language than a blank row.
@@ -316,7 +354,7 @@ function InlinePanels({ hadith }) {
   // Empty is empty. No 'None' literal — it would render the word into the panel
   // and, being truthy, defeat the empty-state check.
   const ayat         = hadith?.ayat || '';
-  const commentaries = buildCommentaries(hadith, isArabic);
+  const commentaries = buildCommentaries(full, isArabic);
   const hadithNumber = hadith?.hadith_number || '';
 
 
@@ -403,7 +441,11 @@ function InlinePanels({ hadith }) {
         <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
         {commentaries.length === 0 ? (
           <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
-            <p className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-start text-black`}>{noCommentaryText(isArabic)}</p>
+            <p className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-start text-black`}>
+              {loadingExtra
+                ? (isArabic ? 'جارٍ التحميل…' : 'Loading…')
+                : noCommentaryText(isArabic)}
+            </p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">

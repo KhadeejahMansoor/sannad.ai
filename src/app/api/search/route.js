@@ -338,7 +338,7 @@ export async function GET(request) {
     // no casing and its ambiguity is in the letter forms, which norm_ar()
     // already collapses — and trigram matching on Arabic returns mostly noise.
     if (rows.length === 0 && hasText && !compilerNumberHit) {
-      // word_similarity(...) >= 0.75 rather than the %> operator.
+      // word_similarity(...) >= 0.70 rather than the %> operator.
       //
       // %> reads its threshold from a GUC, which meant a separate SET on its
       // own pool connection — and on a pooled connection there's no guarantee
@@ -347,10 +347,12 @@ export async function GET(request) {
       //
       // The %> in the first term stays: it's what lets the trigram index
       // propose candidates. The >= then filters them at the default 0.6, and
-      // the explicit 0.75 tightens it without a session variable.
+      // the explicit 0.70 tightens it without a session variable. Measured: real
+      // matches for a one-letter typo land at 0.70-0.72, so 0.75 excluded
+      // everything and 0.6 let through ~1,161 candidates to recheck.
       const fuzzy = `(
-        (h.post_clause_english %> $1 AND word_similarity($1, h.post_clause_english) >= 0.75)
-        OR (m.english %> $1 AND word_similarity($1, m.english) >= 0.75)
+        (h.post_clause_english %> $1 AND word_similarity($1, h.post_clause_english) >= 0.70)
+        OR (m.english %> $1 AND word_similarity($1, m.english) >= 0.70)
       )`;
 
       const fuzzyConditions = conditions.map((c) =>

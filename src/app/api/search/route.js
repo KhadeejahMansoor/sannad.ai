@@ -310,6 +310,66 @@ export async function GET(request) {
       total = orCount.rows[0]?.total ?? rows.length;
     }
 
+    // Third and last pass: typo tolerance. Full-text matches lexemes, so a
+    // misspelling ('slaugter', 'Hurairh') tokenises to a word that simply isn't
+    // in the index and both passes above return nothing.
+    //
+    // pg_trgm compares three-character shingles instead, so a word survives a
+    // dropped or transposed letter. The % operator is index-backed by the
+    // idx_trgm_* indexes already on the table.
+    //
+    // Deliberately last, and only on zero results: trigram similarity across
+    // 80,661 rows of hadith text is the most expensive thing this route can do.
+    // A correctly-spelled query never reaches it.
+    //
+    // English only. Arabic misspelling is a different problem — the script has
+    // no casing and its ambiguity is in the letter forms, which norm_ar()
+    // already collapses — and trigram matching on Arabic returns mostly noise.
+    if (rows.length === 0 && hasText && !compilerNumberHit) {
+      const fuzzy = `(
+        h.post_clause_english %> $1
+        OR m.english %> $1
+      )`;
+
+      const fuzzyConditions = conditions.map((c) =>
+        c.includes('websearch_to_tsquery') ? fuzzy : c
+      );
+      const fuzzyWhere = fuzzyConditions.join(' AND ');
+
+      // Ranked on ONE column, not GREATEST of two. word_similarity is the
+      // expensive part of this pass — the index proposes ~1,200 candidates and
+      // every one is rechecked against the full hadith text — so computing it
+      // twice per row roughly doubled the cost for a tiebreak that rarely
+      // changed the order.
+      const fuzzyRank = `word_similarity($1, h.post_clause_english)`;
+
+      try {
+        // Tighter than the 0.6 default, for this connection only. At 0.6 the
+        // index proposed 1,161 candidates of which 74 survived the recheck; the
+        // 1,087 rejects were most of the runtime. 0.7 still catches a dropped or
+        // transposed letter, which is what this pass is for.
+        await pool.query("SELECT set_limit(0.7)");
+
+        // No count query here. It re-runs the identical scan a second time in
+        // parallel, doubling the cost of the slowest path in the route to learn
+        // a number nobody needs precisely on a misspelled search. The page's own
+        // row count stands in — honest, if capped at the page size.
+        const fzResult = await pool.query(
+          baseQuery
+            .replace('__WHERE__', fuzzyWhere)
+            .replace('__ORDER__', `${fuzzyRank} DESC, ${numericOrder}, h.hadith_number`),
+          params
+        );
+        rows = fzResult.rows;
+        total = rows.length;
+      } catch (fuzzyError) {
+        // %> needs pg_trgm. If it isn't installed this throws rather than
+        // returning nothing, and an empty result is a better outcome than a
+        // 500 on a search that was already going to find nothing.
+        console.warn('fuzzy pass skipped:', fuzzyError.message);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: rows,

@@ -1,5 +1,5 @@
 // hooks/useData.js
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 // Enhanced Hadith hooks - SIMPLE VERSION
 export function useHadiths() {
@@ -298,71 +298,86 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
 
+  // Rows accumulate across pages, so the offset can't be derived from `data` in
+  // a callback that also sets it. A ref keeps the two from racing when someone
+  // scrolls fast enough to trigger a second page before the first lands.
+  const offsetRef = useRef(0);
+  const ctrlRef = useRef(null);
+
+  const PAGE_SIZE = 50;
+
+  // Built once per query so the first page and every later page ask for exactly
+  // the same filters. Drifting between them would silently paginate a different
+  // result set than the one being counted.
+  const buildParams = useCallback(async (offset) => {
+    const { compilerToDb, gradeToDb } = await import('../lib/i18n');
+    const params = new URLSearchParams();
+    if (searchText && searchText.trim()) params.set('q', searchText.trim());
+    params.set('lang', lang);
+    if (compilersArr.length) params.set('compiler', compilersArr.map(compilerToDb).join(','));
+    if (gradesArr.length)    params.set('grade',    gradesArr.map(gradeToDb).join(','));
+    params.set('limit', String(PAGE_SIZE));
+    params.set('offset', String(offset));
+    return params;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchText, compilersKey, gradesKey, lang]);
+
+  const fetchPage = useCallback(async (offset, signal) => {
+    const params = await buildParams(offset);
+    const res = await fetch('/api/search?' + params.toString(), { signal });
+
+    // Read as text first. A crashed or truncated response is not JSON, and
+    // res.json() would throw "Unexpected end of JSON input" while saying
+    // nothing about the status that caused it.
+    const raw = await res.text();
+    let payload;
+    try {
+      payload = JSON.parse(raw);
+    } catch {
+      throw new Error('Search failed (HTTP ' + res.status + ', ' + raw.length + ' bytes)');
+    }
+    if (!res.ok || !payload.success) {
+      throw new Error(payload.details || payload.error || 'Search failed');
+    }
+    return payload;
+  }, [buildParams]);
+
+  // First page. Runs on every query change and resets everything.
   useEffect(() => {
     const hasFilters = compilersArr.length > 0 || gradesArr.length > 0;
     const hasText = !!(searchText && searchText.trim());
 
-    // Need EITHER text OR filters to do a search
     if (!hasText && !hasFilters) {
       setData(null);
       setLoading(false);
       setError(null);
+      setTotal(0);
+      setHasMore(false);
+      offsetRef.current = 0;
       return;
     }
 
+    const ctrl = new AbortController();
+    ctrlRef.current = ctrl;
+
     setLoading(true);
     setError(null);
+    offsetRef.current = 0;
 
-    // Back on /api/search rather than supabase.rpc.
-    //
-    // The RPC goes through PostgREST, which clamps every response to
-    // db_max_rows. That is stuck at 1000 on this project and the `authenticator`
-    // role is reserved, so it cannot be raised from SQL. The route runs the
-    // search over the pg pool instead, which PostgREST never sees, and takes a
-    // `limit` param — so the page gets the whole result set.
-    //
-    // Two things that used to live here are gone because the route already does
-    // them server-side: the "compiler + hadith number" parsing, and the row
-    // mapping. The route returns the field names the cards read directly
-    // (hadith_id, grade, hadith_text_arabic, chain_clause, ...), so re-mapping
-    // would only rename them into fields that no longer exist.
-    const ctrl = new AbortController();
-
-    // Chips carry ENGLISH keys ('Bukhari','Sahih'); the DB stores Arabic
-    // ('البخاري','صحيح'). Translate right before the call so the URL and chip
-    // state stay English and shared links keep working.
-    import('../lib/i18n')
-      .then(async ({ compilerToDb, gradeToDb }) => {
-        const params = new URLSearchParams();
-        if (hasText) params.set('q', searchText.trim());
-        params.set('lang', lang);
-        if (compilersArr.length) {
-          params.set('compiler', compilersArr.map(compilerToDb).join(','));
-        }
-        if (gradesArr.length) {
-          params.set('grade', gradesArr.map(gradeToDb).join(','));
-        }
-        params.set('limit', '100000');
-
-        const res = await fetch('/api/search?' + params.toString(), { signal: ctrl.signal });
-
-        // Read as text first. A crashed or truncated response is not JSON, and
-        // res.json() would throw "Unexpected end of JSON input" with nothing
-        // said about the status that caused it.
-        const raw = await res.text();
-        let payload;
-        try {
-          payload = JSON.parse(raw);
-        } catch {
-          throw new Error('Search failed (HTTP ' + res.status + ', ' + raw.length + ' bytes)');
-        }
-        if (!res.ok || !payload.success) {
-          throw new Error(payload.details || payload.error || 'Search failed');
-        }
-
-        setData({ success: true, data: payload.data || [] });
+    fetchPage(0, ctrl.signal)
+      .then((payload) => {
+        const rows = payload.data || [];
+        offsetRef.current = rows.length;
+        setData({ success: true, data: rows });
+        // The route counts the whole match set, not the page, so the header can
+        // say "2,278 hadith" while 50 cards exist.
+        setTotal(payload.total ?? rows.length);
+        setHasMore(!!payload.hasMore);
       })
       .catch((err) => {
         if (err.name === 'AbortError') return;
@@ -374,7 +389,32 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchText, compilersKey, gradesKey, lang]);
 
-  return { data, loading, error };
+  // Next page, appended. Guarded on loadingMore so a fast scroll past the
+  // sentinel can't fire three overlapping requests for the same offset.
+  const loadMore = useCallback(() => {
+    if (loading || loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    const ctrl = new AbortController();
+
+    fetchPage(offsetRef.current, ctrl.signal)
+      .then((payload) => {
+        const rows = payload.data || [];
+        offsetRef.current += rows.length;
+        setData((prev) => ({ success: true, data: [...(prev?.data || []), ...rows] }));
+        setTotal(payload.total ?? 0);
+        // Trust the row count over hasMore: a page returning nothing means the
+        // end regardless of what the flag says.
+        setHasMore(rows.length > 0 && !!payload.hasMore);
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        setError(err.message || 'Search failed');
+      })
+      .finally(() => setLoadingMore(false));
+  }, [loading, loadingMore, hasMore, fetchPage]);
+
+  return { data, loading, loadingMore, error, total, hasMore, loadMore };
 }
 
 // =================================================================

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/component/Header';
 import HadithCard from '@/component/HadithCard';
@@ -75,9 +75,31 @@ export default function ResultsScreen() {
   const grades    = selectedTags.map(gradeToDb).filter(Boolean);
   const compilers = selectedScholars.map(compilerToDb).filter(Boolean);
 
-  const { data, loading, error } = useSearchHadiths(searchText, compilers, grades);
+  const { data, loading, loadingMore, error, total, hasMore, loadMore } =
+    useSearchHadiths(searchText, compilers, grades);
 
   const hadiths = data && data.success && Array.isArray(data.data) ? data.data : [];
+
+  // Infinite scroll. Rendering every match killed mobile browsers on broad
+  // queries — 'salah' matches thousands, and each one is a card with Arabic,
+  // English and a chip row. Now 50 arrive at a time and the rest follow as the
+  // reader reaches the bottom, so the DOM stays small however large the result.
+  //
+  // rootMargin fires the load 400px early, so the next page is usually there
+  // before the reader hits the end.
+  const sentinelRef = useRef(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasMore) return;
+
+    const io = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) loadMore(); },
+      { rootMargin: '400px' }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasMore, loadMore]);
 
   // A search that lands on exactly one hadith ("azami1", "Bukhari 1") is really
   // a lookup, not a browse — so open its Details/Reference/Commentary panels
@@ -135,9 +157,12 @@ export default function ResultsScreen() {
               )}
 
               <span className="mt-0.5 block text-xs leading-tight text-[#6B5B55] tabular-nums">
+                {/* total, not hadiths.length: the route counts every match while
+                    returning 50 at a time, so this reads 2,278 from the first
+                    page rather than climbing as the reader scrolls. */}
                 {isArabic
-                  ? `${hadiths.length.toLocaleString('ar-EG')} حديث`
-                  : `${hadiths.length.toLocaleString('en-US')} hadith`}
+                  ? `${(total || hadiths.length).toLocaleString('ar-EG')} حديث`
+                  : `${(total || hadiths.length).toLocaleString('en-US')} hadith`}
               </span>
             </div>
           )}
@@ -178,6 +203,14 @@ export default function ResultsScreen() {
                 </div>
               );
             })}
+
+            {hasMore && (
+              <div ref={sentinelRef} className="py-6 text-center">
+                <span className="text-xs text-[#6B5B55]">
+                  {loadingMore ? (isArabic ? 'جارٍ التحميل…' : 'Loading…') : ''}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Desktop — stack ALL results vertically */}
@@ -215,6 +248,14 @@ export default function ResultsScreen() {
                 </div>
               );
             })}
+
+            {hasMore && (
+              <div ref={sentinelRef} className="py-6 text-center">
+                <span className="text-xs text-[#6B5B55]">
+                  {loadingMore ? (isArabic ? 'جارٍ التحميل…' : 'Loading…') : ''}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -301,44 +342,6 @@ function InlinePanels({ hadith }) {
   }, []);
   const openRef = useOpenReference();
 
-  // /api/search stopped selecting the six commentary bodies: they run to
-  // thousands of characters each, and a broad query like 'Abu Hurairah'
-  // (5,792 rows) was pushing megabytes to the browser for text nobody sees
-  // until they expand a card. So the list stays light and the bodies are
-  // fetched here, once, when a card actually opens.
-  //
-  // InlinePanels only mounts on expand, so a plain mount effect is the right
-  // trigger — no need to watch an isExpanded prop.
-  const [extra, setExtra] = useState(null);
-  const [loadingExtra, setLoadingExtra] = useState(false);
-
-  useEffect(() => {
-    const id = hadith?.hadith_id;
-    if (!id) return;
-
-    // Already present (e.g. a route that does select them) — don't refetch.
-    if (hadith?.commentary_1 !== undefined) return;
-
-    let cancelled = false;
-    setLoadingExtra(true);
-
-    fetch(`/api/hadith-by-id/${encodeURIComponent(id)}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((payload) => {
-        if (cancelled || !payload?.success) return;
-        setExtra(payload.data || null);
-      })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setLoadingExtra(false); });
-
-    return () => { cancelled = true; };
-  }, [hadith?.hadith_id, hadith?.commentary_1]);
-
-  // The fetched row is merged UNDER the list row, not over it: the list row
-  // carries the fields the card is already displaying, and letting a late
-  // response overwrite them would make text flicker on expand.
-  const full = extra ? { ...extra, ...hadith } : hadith;
-
   // English is the default, so the default label is the English name. Falls back
   // to stripped Arabic, then the raw column — better a name in the wrong
   // language than a blank row.
@@ -356,7 +359,7 @@ function InlinePanels({ hadith }) {
   // Empty is empty. No 'None' literal — it would render the word into the panel
   // and, being truthy, defeat the empty-state check.
   const ayat         = hadith?.ayat || '';
-  const commentaries = buildCommentaries(full, isArabic);
+  const commentaries = buildCommentaries(hadith, isArabic);
   const hadithNumber = hadith?.hadith_number || '';
 
 
@@ -443,11 +446,7 @@ function InlinePanels({ hadith }) {
         <PanelHeading isArabic={isArabic}>{isArabic ? 'تخريج' : 'Commentary'}</PanelHeading>
         {commentaries.length === 0 ? (
           <div dir={isArabic ? 'rtl' : 'ltr'} className="bg-white rounded-[5px] p-3">
-            <p className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-start text-black`}>
-              {loadingExtra
-                ? (isArabic ? 'جارٍ التحميل…' : 'Loading…')
-                : noCommentaryText(isArabic)}
-            </p>
+            <p className={`${isArabic ? 'text-sm leading-[26px]' : 'text-xs leading-[18px]'} text-start text-black`}>{noCommentaryText(isArabic)}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-2">

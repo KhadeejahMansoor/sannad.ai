@@ -10,9 +10,12 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const searchQuery = (searchParams.get('q') || '').trim();
     const language = searchParams.get('lang') || 'en';
-    // Was a hardcoded LIMIT 200 at the foot of the query. Now a parameter,
-    // defaulting high so /results loads the full set rather than a slice.
-    const limit = Math.min(parseInt(searchParams.get('limit'), 10) || 100000, 100000);
+    // Paged. Returning every match at once killed the phone browser on broad
+    // queries — 'salah' matches thousands of rows, and the page renders a card
+    // for each. The count below is still computed over the WHOLE match set, so
+    // the header can say '2,278 hadith' while only 50 are in the DOM.
+    const limit = Math.min(parseInt(searchParams.get('limit'), 10) || 50, 500);
+    const offset = Math.max(parseInt(searchParams.get('offset'), 10) || 0, 0);
 
     const compilerCsv = (searchParams.get('compiler') || '').trim();
     const gradeCsv    = (searchParams.get('grade')    || '').trim();
@@ -167,6 +170,8 @@ export async function GET(request) {
     const langIdx = params.length;
     params.push(limit);
     const limitIdx = params.length;
+    params.push(offset);
+    const offsetIdx = params.length;
 
     // One template, two passes. The strict pass fills it with the AND query;
     // the fallback below refills the same string with the OR query, so the
@@ -235,13 +240,27 @@ export async function GET(request) {
       LEFT JOIN machine_clauses m ON h.machine_clause = m.machine_clause
       WHERE __WHERE__
       ORDER BY __ORDER__
-      LIMIT $${limitIdx}
+      LIMIT $${limitIdx} OFFSET $${offsetIdx}
     `;
 
-    const result = await pool.query(
-      baseQuery.replace('__WHERE__', where).replace('__ORDER__', orderBy),
-      params
-    );
+    // Count and page in parallel. The count ignores LIMIT/OFFSET, so it reports
+    // the true size of the match set however small a slice is being returned.
+    // It reuses `params` unchanged — the extra limit/offset entries at the end
+    // are simply unreferenced by this SQL, which Postgres allows.
+    const countQuery = `
+      SELECT COUNT(*)::int AS total
+      FROM hadiths h
+      LEFT JOIN machine_clauses m ON h.machine_clause = m.machine_clause
+      WHERE __WHERE__
+    `;
+
+    const [result, countResult] = await Promise.all([
+      pool.query(
+        baseQuery.replace('__WHERE__', where).replace('__ORDER__', orderBy),
+        params
+      ),
+      pool.query(countQuery.replace('__WHERE__', where), params),
+    ]);
 
     // websearch_to_tsquery ANDs every unquoted word, which is right for two or
     // three terms and fatal for a pasted paragraph: requiring all ~50 words in
@@ -255,6 +274,7 @@ export async function GET(request) {
     // arm was still dragging in every row containing 'abu' to be ranked and
     // sorted. Queries that match strictly never pay for this.
     let rows = result.rows;
+    let total = countResult.rows[0]?.total ?? rows.length;
 
     if (rows.length === 0 && hasText && !compilerNumberHit) {
       const orAr = `NULLIF(replace(plainto_tsquery('arabic',  norm_ar($1))::text, '&', '|'), '')::tsquery`;
@@ -269,19 +289,29 @@ export async function GET(request) {
           : c
       );
 
-      const orResult = await pool.query(
-        baseQuery
-          .replace('__WHERE__', orConditions.join(' AND '))
-          .replace('__ORDER__', `${rankExpr(orAr, orEn)} DESC, ${numericOrder}, h.hadith_number`),
-        params
-      );
+      const orWhere = orConditions.join(' AND ');
+
+      const [orResult, orCount] = await Promise.all([
+        pool.query(
+          baseQuery
+            .replace('__WHERE__', orWhere)
+            .replace('__ORDER__', `${rankExpr(orAr, orEn)} DESC, ${numericOrder}, h.hadith_number`),
+          params
+        ),
+        pool.query(countQuery.replace('__WHERE__', orWhere), params),
+      ]);
       rows = orResult.rows;
+      total = orCount.rows[0]?.total ?? rows.length;
     }
 
     return NextResponse.json({
       success: true,
       data: rows,
       count: rows.length,
+      total,
+      offset,
+      limit,
+      hasMore: offset + rows.length < total,
     });
   } catch (error) {
     console.error('Search error:', error);

@@ -260,13 +260,16 @@ export async function GET(request) {
       WHERE __WHERE__
     `;
 
-    const [result, countResult] = await Promise.all([
-      pool.query(
-        baseQuery.replace('__WHERE__', where).replace('__ORDER__', orderBy),
-        params
-      ),
-      pool.query(countQuery.replace('__WHERE__', where), whereParams),
-    ]);
+    // Sequential, not Promise.all. Each parallel pair holds two pool
+    // connections at once, and with the OR pass that was four per request plus
+    // a SET — enough to exhaust the pool under any concurrency and fail with
+    // 'timeout exceeded when trying to connect' rather than a slow response.
+    // One at a time is marginally slower per request and survives load.
+    const result = await pool.query(
+      baseQuery.replace('__WHERE__', where).replace('__ORDER__', orderBy),
+      params
+    );
+    const countResult = await pool.query(countQuery.replace('__WHERE__', where), whereParams);
 
     // websearch_to_tsquery ANDs every unquoted word, which is right for two or
     // three terms and fatal for a pasted paragraph: requiring all ~50 words in
@@ -308,15 +311,13 @@ export async function GET(request) {
 
       const orWhere = orConditions.join(' AND ');
 
-      const [orResult, orCount] = await Promise.all([
-        pool.query(
-          baseQuery
-            .replace('__WHERE__', orWhere)
-            .replace('__ORDER__', `${rankExpr(orAr, orEn)} DESC, ${numericOrder}, h.hadith_number`),
-          params
-        ),
-        pool.query(countQuery.replace('__WHERE__', orWhere), whereParams),
-      ]);
+      const orResult = await pool.query(
+        baseQuery
+          .replace('__WHERE__', orWhere)
+          .replace('__ORDER__', `${rankExpr(orAr, orEn)} DESC, ${numericOrder}, h.hadith_number`),
+        params
+      );
+      const orCount = await pool.query(countQuery.replace('__WHERE__', orWhere), whereParams);
       rows = orResult.rows;
       total = orCount.rows[0]?.total ?? rows.length;
     }
@@ -337,9 +338,19 @@ export async function GET(request) {
     // no casing and its ambiguity is in the letter forms, which norm_ar()
     // already collapses — and trigram matching on Arabic returns mostly noise.
     if (rows.length === 0 && hasText && !compilerNumberHit) {
+      // word_similarity(...) >= 0.75 rather than the %> operator.
+      //
+      // %> reads its threshold from a GUC, which meant a separate SET on its
+      // own pool connection — and on a pooled connection there's no guarantee
+      // the SET and the query even land on the same one, so the threshold might
+      // silently not apply. Spelling the comparison out removes both problems.
+      //
+      // The %> in the first term stays: it's what lets the trigram index
+      // propose candidates. The >= then filters them at the default 0.6, and
+      // the explicit 0.75 tightens it without a session variable.
       const fuzzy = `(
-        h.post_clause_english %> $1
-        OR m.english %> $1
+        (h.post_clause_english %> $1 AND word_similarity($1, h.post_clause_english) >= 0.75)
+        OR (m.english %> $1 AND word_similarity($1, m.english) >= 0.75)
       )`;
 
       const fuzzyConditions = conditions.map((c) =>
@@ -359,11 +370,6 @@ export async function GET(request) {
         // index proposed 1,161 candidates of which 74 survived the recheck; the
         // 1,087 rejects were most of the runtime. 0.7 still catches a dropped or
         // transposed letter, which is what this pass is for.
-        // set_limit() sets the threshold for the % operator, not %>. Wrong knob:
-        // it left the candidate count untouched at ~1,161. This is the one %>
-        // reads. 0.75 trims to ~951; 0.8 finds nothing at all.
-        await pool.query("SET pg_trgm.word_similarity_threshold = 0.75");
-
         // No count query here. It re-runs the identical scan a second time in
         // parallel, doubling the cost of the slowest path in the route to learn
         // a number nobody needs precisely on a misspelled search. The page's own

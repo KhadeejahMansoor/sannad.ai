@@ -86,10 +86,40 @@ export async function GET(request) {
     } else if (hasText) {
       params.push(searchQuery);
       const q = `$${params.length}`;
+
+      // websearch_to_tsquery ANDs every unquoted word. Fine for two or three
+      // terms; fatal for a pasted paragraph, where requiring all ~50 words in
+      // one hadith matches nothing. So: keep the AND form (it honours "quoted
+      // phrases" and -exclusions), and OR in a term-by-term query built by
+      // swapping plainto_tsquery's & for |. A row matching ANY term is a
+      // candidate; ts_rank below sorts by how many it matched, so the pasted
+      // hadith still lands first.
+      //
+      // No rank threshold — a low-scoring tail is the price of finding the
+      // row at all, and cutting it risks cutting a real match.
+      //
+      // NULLIF guards the empty query: plainto_tsquery('') is '', and ''::tsquery
+      // matches nothing rather than erroring, but being explicit is cheaper to
+      // read than being clever.
+      const orAr = `NULLIF(replace(plainto_tsquery('arabic',  ${q})::text, '&', '|'), '')::tsquery`;
+      const orEn = `NULLIF(replace(plainto_tsquery('english', ${q})::text, '&', '|'), '')::tsquery`;
+
+      // machine_clauses.english is the narrator name ("Abu Hurairah"), which
+      // lives in a joined table and is in neither search_vector. Matched with
+      // ILIKE: it's one short column, the join is already there for the card
+      // display, and a to_tsvector() per row would cost more than it saves.
       conditions.push(`(
         h.search_vector    @@ websearch_to_tsquery('arabic',  ${q})
         OR
         h.search_vector_en @@ websearch_to_tsquery('english', ${q})
+        OR
+        h.search_vector    @@ ${orAr}
+        OR
+        h.search_vector_en @@ ${orEn}
+        OR
+        m.english ILIKE '%' || ${q} || '%'
+        OR
+        h.machine_clause ILIKE '%' || ${q} || '%'
       )`);
     }
 
@@ -111,11 +141,21 @@ export async function GET(request) {
     // digits, or the fallback order comes out 1, 10, 100, 2.
     const numericOrder = `NULLIF(regexp_replace(h.hadith_number, '\\D', '', 'g'), '')::bigint`;
 
+    // Rank against the OR forms, not the AND forms. ts_rank scores by how many
+    // query terms a row matched, so the hadith sharing 40 words with a pasted
+    // paragraph outranks one sharing 'the'. Ranking on the AND query instead
+    // would score every OR-matched row at 0 and leave the order arbitrary.
+    //
+    // The narrator match is added rather than GREATEST-ed: a row hitting both
+    // the text and the narrator should beat one hitting only the text.
     const orderBy = hasText && !compilerNumberHit
       ? `GREATEST(
-           ts_rank(h.search_vector,    websearch_to_tsquery('arabic',  $1)),
-           ts_rank(h.search_vector_en, websearch_to_tsquery('english', $1))
-         ) DESC,
+           ts_rank(h.search_vector,    NULLIF(replace(plainto_tsquery('arabic',  $1)::text, '&', '|'), '')::tsquery),
+           ts_rank(h.search_vector_en, NULLIF(replace(plainto_tsquery('english', $1)::text, '&', '|'), '')::tsquery)
+         )
+         + CASE WHEN m.english ILIKE '%' || $1 || '%'
+                  OR h.machine_clause ILIKE '%' || $1 || '%' THEN 0.5 ELSE 0 END
+         DESC,
          ${numericOrder},
          h.hadith_number`
       : `h.compiler,

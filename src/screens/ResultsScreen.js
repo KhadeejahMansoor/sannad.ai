@@ -123,7 +123,12 @@ export default function ResultsScreen() {
     router.push(`/`);
   };
 
-  const hasAnyQuery = !!(searchText || grades.length || compilers.length);
+  // Narrators count as a query like any other filter. Left out, a narrator-only
+  // search fell through to the "type something above" empty state even though
+  // the API had returned rows.
+  const hasAnyQuery = !!(
+    searchText || grades.length || compilers.length || selectedNarrators.length
+  );
 
   return (
     <div className="w-full min-h-screen bg-[#F6F4F1] pb-20 relative">

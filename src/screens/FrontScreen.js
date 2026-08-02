@@ -121,7 +121,10 @@ export default function FrontScreen() {
   }, [showLangBar]);
 
   const handleSearch = () => {
-    if (!searchText.trim()) return;
+    // Filters alone are enough. The search route treats a request with no `q`
+    // but a narrator/compiler/grade filter as a browse, returning rows ordered
+    // by compiler and hadith number rather than by relevance.
+    if (!canSearch) return;
     router.push(
       `/results?search=${encodeURIComponent(searchText)}&tags=${encodeURIComponent(
         JSON.stringify(selectedTags),

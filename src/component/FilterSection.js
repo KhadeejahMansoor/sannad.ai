@@ -53,6 +53,10 @@ export default function FilterSection({
   // nine get chips and the rest are reachable by typing.
   const { data: narratorChips } = useNarrators();
   const [narratorQuery, setNarratorQuery] = useState('');
+  // The type-ahead sits behind an "Other" chip rather than being always
+  // visible. Nine chips already cover 42,900 of 80,661 hadiths, so the long
+  // tail is the exception and shouldn't take up permanent space.
+  const [showNarratorSearch, setShowNarratorSearch] = useState(false);
   const { data: narratorResults } = useNarratorSearch(narratorQuery);
 
   const narratorLabel = (row) =>

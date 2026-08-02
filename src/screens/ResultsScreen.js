@@ -75,7 +75,7 @@ export default function ResultsScreen() {
   const grades    = selectedTags.map(gradeToDb).filter(Boolean);
   const compilers = selectedScholars.map(compilerToDb).filter(Boolean);
 
-  const { data, loading, loadingMore, error, total, estimated, hasMore, loadMore } =
+  const { data, loading, loadingMore, error, total, hasMore, loadMore } =
     useSearchHadiths(searchText, compilers, grades);
 
   const hadiths = data && data.success && Array.isArray(data.data) ? data.data : [];
@@ -160,28 +160,9 @@ export default function ResultsScreen() {
                 {/* total, not hadiths.length: the route counts every match while
                     returning 50 at a time, so this reads 2,278 from the first
                     page rather than climbing as the reader scrolls. */}
-                {(() => {
-                  const n = total || hadiths.length;
-
-                  // An estimate carries no useful precision in its last digits, and
-                  // showing them ('2,278') claims a certainty the number doesn't
-                  // have. Rounded to two significant figures above 1,000 — 2,300,
-                  // 12,000 — which is both honest and easier to read. Small results
-                  // are left alone: the estimate is close there, and '9' rounded is
-                  // still 9.
-                  const round = (v) => {
-                    if (!estimated || v < 1000) return v;
-                    const mag = Math.pow(10, Math.floor(Math.log10(v)) - 1);
-                    return Math.round(v / mag) * mag;
-                  };
-
-                  const shown = round(n);
-                  const approx = estimated && n >= 1000;
-
-                  return isArabic
-                    ? `${approx ? 'نحو ' : ''}${shown.toLocaleString('ar-EG')} حديث`
-                    : `${approx ? 'about ' : ''}${shown.toLocaleString('en-US')} hadith`;
-                })()}
+                {isArabic
+                  ? `${(total || hadiths.length).toLocaleString('ar-EG')} حديث`
+                  : `${(total || hadiths.length).toLocaleString('en-US')} hadith`}
               </span>
             </div>
           )}

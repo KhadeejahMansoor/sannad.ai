@@ -301,9 +301,6 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
-  // True when `total` is the planner's estimate rather than a real count, so
-  // the header can say 'about 2,300' instead of implying 2,278 was counted.
-  const [estimated, setEstimated] = useState(false);
   const [hasMore, setHasMore] = useState(false);
 
   // Rows accumulate across pages, so the offset can't be derived from `data` in
@@ -380,7 +377,6 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
         // The route counts the whole match set, not the page, so the header can
         // say "2,278 hadith" while 50 cards exist.
         setTotal(payload.total ?? rows.length);
-        setEstimated(!!payload.estimated);
         setHasMore(!!payload.hasMore);
       })
       .catch((err) => {
@@ -407,7 +403,6 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
         offsetRef.current += rows.length;
         setData((prev) => ({ success: true, data: [...(prev?.data || []), ...rows] }));
         setTotal(payload.total ?? 0);
-        setEstimated(!!payload.estimated);
         // Trust the row count over hasMore: a page returning nothing means the
         // end regardless of what the flag says.
         setHasMore(rows.length > 0 && !!payload.hasMore);
@@ -419,7 +414,7 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
       .finally(() => setLoadingMore(false));
   }, [loading, loadingMore, hasMore, fetchPage]);
 
-  return { data, loading, loadingMore, error, total, estimated, hasMore, loadMore };
+  return { data, loading, loadingMore, error, total, hasMore, loadMore };
 }
 
 // =================================================================

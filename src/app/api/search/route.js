@@ -370,41 +370,24 @@ export async function GET(request) {
       LIMIT $${limitIdx} OFFSET $${offsetIdx}
     `;
 
-    // The header's total comes from the query planner, not from counting.
+    // An exact COUNT(*), after an attempt at a planner estimate was reverted.
     //
-    // COUNT(*) over a broad match is genuinely expensive here: the index finds
-    // 12,678 rows for 'prayer' in 23ms, then reading them to count takes 3.8
-    // seconds. Paid on every search, for a number the reader glances at.
+    // The estimate was tried because counting 'prayer' — 12,678 matches — takes
+    // 3.8 seconds. It failed on two counts. Accuracy: with the semantic branch's
+    // 200-element id array OR'd into the WHERE, the planner can't know how much
+    // the lexical and semantic sets overlap, so it adds them. For 'salah' it
+    // reported 556 against a true 209. Speed: planning that array cost more than
+    // counting the 209 rows it produced, and the search went from 52ms to 11s.
     //
-    // EXPLAIN gives the planner's own row estimate in about a millisecond. It's
-    // derived from the same statistics the planner uses to choose a plan, so
-    // it's an informed guess rather than a shrug: measured against 'prayer' it
-    // said 12,080 where the true figure was 11,933, off by 1.2%.
-    //
-    // The header rounds it (see the client), so the last digits — which are the
-    // ones that would be wrong — are never shown.
-    const explainQuery = `
-      EXPLAIN (FORMAT JSON)
-      SELECT 1
+    // The 3.8s figure only applies to genuinely broad matches. A hybrid query
+    // capped at 200 semantic neighbours plus a handful of lexical hits is cheap
+    // to count exactly.
+    const countQuery = `
+      SELECT COUNT(*)::int AS total
       FROM hadiths h
       LEFT JOIN machine_clauses m ON h.machine_clause = m.machine_clause
       WHERE __WHERE__
     `;
-
-    async function estimateTotal(whereClause) {
-      try {
-        const res = await pool.query(explainQuery.replace('__WHERE__', whereClause), whereParams);
-        // EXPLAIN returns one row holding the plan tree as JSON. The top node's
-        // 'Plan Rows' is the estimate for the whole query.
-        const plan = res.rows[0]?.['QUERY PLAN'];
-        const tree = Array.isArray(plan) ? plan[0] : plan;
-        const n = tree?.Plan?.['Plan Rows'];
-        return Number.isFinite(n) ? n : null;
-      } catch (e) {
-        console.warn('[search] estimate failed:', e.message);
-        return null;
-      }
-    }
 
     // Sequential, not Promise.all. Each parallel pair holds two pool
     // connections at once, and with the OR pass that was four per request plus
@@ -415,7 +398,7 @@ export async function GET(request) {
       baseQuery.replace('__WHERE__', where).replace('__ORDER__', orderBy),
       params
     );
-    const estimated = await estimateTotal(where);
+    const countResult = await pool.query(countQuery.replace('__WHERE__', where), whereParams);
 
     // websearch_to_tsquery ANDs every unquoted word, which is right for two or
     // three terms and fatal for a pasted paragraph: requiring all ~50 words in
@@ -429,11 +412,7 @@ export async function GET(request) {
     // arm was still dragging in every row containing 'abu' to be ranked and
     // sorted. Queries that match strictly never pay for this.
     let rows = result.rows;
-    // Never report fewer than were actually returned: on a narrow match the
-    // estimate can undershoot, and a header reading '12 hadith' above 50 cards
-    // is obviously wrong in a way a rounded number isn't.
-    let total = Math.max(estimated ?? 0, rows.length + offset);
-    let estimatedFlag = estimated !== null;
+    let total = countResult.rows[0]?.total ?? rows.length;
 
     // Word count decides whether the OR pass is worth running at all.
     //
@@ -467,10 +446,9 @@ export async function GET(request) {
           .replace('__ORDER__', `${hybridRank(rankExpr(orAr, orEn), vecParam)} DESC, ${numericOrder}, h.hadith_number`),
         params
       );
-      const orEstimate = await estimateTotal(orWhere);
+      const orCount = await pool.query(countQuery.replace('__WHERE__', orWhere), whereParams);
       rows = orResult.rows;
-      total = Math.max(orEstimate ?? 0, rows.length + offset);
-      estimatedFlag = orEstimate !== null;
+      total = orCount.rows[0]?.total ?? rows.length;
     }
 
     // Third and last pass: typo tolerance. Full-text matches lexemes, so a
@@ -535,7 +513,6 @@ export async function GET(request) {
         );
         rows = fzResult.rows;
         total = rows.length;
-        estimatedFlag = false;   // this one really is the row count
       } catch (fuzzyError) {
         // %> needs pg_trgm. If it isn't installed this throws rather than
         // returning nothing, and an empty result is a better outcome than a
@@ -549,9 +526,6 @@ export async function GET(request) {
       data: rows,
       count: rows.length,
       total,
-      // So the header can say 'about 2,300' rather than implying 2,278 was
-      // counted. Exact when the fuzzy pass answered, estimated otherwise.
-      estimated: estimatedFlag,
       offset,
       limit,
       hasMore: offset + rows.length < total,

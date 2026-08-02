@@ -296,9 +296,20 @@ export async function GET(request) {
     //
     // The chip sends the canonical name; hadiths.machine_clause stores the same
     // string, so this is an indexed equality with no join.
+    // The chip sends the English name, but hadiths.machine_clause holds the
+    // clause KEY — the name lives in machine_clauses.english. So this resolves
+    // name → key via a subquery rather than comparing directly.
+    //
+    // A subquery, not a join: joining would multiply rows if a name ever mapped
+    // to several keys, and IN de-duplicates for free.
     if (narrators.length > 0) {
       params.push(narrators);
-      conditions.push(`h.machine_clause = ANY($${params.length}::text[])`);
+      conditions.push(
+        `h.machine_clause IN (
+           SELECT machine_clause FROM machine_clauses
+            WHERE english = ANY($${params.length}::text[])
+         )`
+      );
     }
 
     const where = conditions.join(' AND ');

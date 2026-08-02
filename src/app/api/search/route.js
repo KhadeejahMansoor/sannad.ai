@@ -65,11 +65,16 @@ export async function GET(request) {
 
     const compilerCsv = (searchParams.get('compiler') || '').trim();
     const gradeCsv    = (searchParams.get('grade')    || '').trim();
+    // Narrator chips. Sends the canonical name straight through — m.english is
+    // already clean (verified: every narrator has exactly one clause variant),
+    // so there's nothing to normalise and no alias table needed.
+    const narratorCsv = (searchParams.get('narrator') || '').trim();
+    const narrators = narratorCsv ? narratorCsv.split(',').map(s => s.trim()).filter(Boolean) : [];
     const compilers = compilerCsv ? compilerCsv.split(',').map(s => s.trim()).filter(Boolean) : [];
     const grades    = gradeCsv    ? gradeCsv.split(',').map(s => s.trim()).filter(Boolean)    : [];
 
     const hasText = searchQuery.length > 0;
-    const hasFilters = compilers.length > 0 || grades.length > 0;
+    const hasFilters = compilers.length > 0 || grades.length > 0 || narrators.length > 0;
 
     if (!hasText && !hasFilters) {
       return NextResponse.json({ success: true, data: [] });
@@ -110,6 +115,33 @@ export async function GET(request) {
       }
     }
 
+    // Resolve WHICH narrators match, once, before the main query.
+    //
+    // The substring match itself was never the problem — it's 4.6ms against the
+    // trigram index. The problem was that the same ILIKE also sat in the ORDER
+    // BY, powering the +0.5 narrator bonus, where an index cannot help: a
+    // function in a SELECT expression is evaluated per row. 'Abu Hurairah'
+    // matches 11,599 rows, so that was ~23,000 substring scans (two columns)
+    // just to compute a ranking tiebreak.
+    //
+    // machine_clauses is 3,621 short names. Scanning it standalone is instant,
+    // and it turns both the WHERE branch and the rank bonus into equality
+    // against a small text array — index-backed in the first case, a cheap
+    // array membership test in the second.
+    let narratorClauses = [];
+    if (hasText) {
+      try {
+        const nRes = await pool.query(
+          `SELECT machine_clause FROM machine_clauses
+            WHERE english ILIKE '%' || $1 || '%'`,
+          [searchQuery]
+        );
+        narratorClauses = nRes.rows.map((r) => r.machine_clause);
+      } catch (e) {
+        console.warn('[search] narrator lookup failed:', e.message);
+      }
+    }
+
     const isArabic = language === 'ar';
 
     // `lang` still decides which text is DISPLAYED. That part was always right.
@@ -127,6 +159,10 @@ export async function GET(request) {
     // The same bound array the CTE uses, kept so the ranking below can gate on
     // it. Null when the semantic lookup returned nothing.
     let semanticIdsParam = null;
+
+    // Same for the resolved narrator clause names — the CTE branch and the
+    // ranking bonus both bind it.
+    let narratorClausesParam = null;
 
     // ── Search both languages, always ─────────────────────────────────
     //
@@ -223,16 +259,22 @@ export async function GET(request) {
       //
       // This is the same trap already documented above for the vector subquery
       // — it was simply still present for the other three branches.
+      // Narrator branch, now an equality against the clause names resolved
+      // above. No join, no substring scan — machine_clause is indexed, so this
+      // is a straight lookup. Omitted entirely when no narrator matched.
+      let narratorBranch = '';
+      if (narratorClauses.length) {
+        params.push(narratorClauses);
+        narratorClausesParam = `$${params.length}::text[]`;
+        narratorBranch = `
+        UNION
+        SELECT id FROM hadiths WHERE machine_clause = ANY(${narratorClausesParam})`;
+      }
+
       cteText = (arQ, enQ) => `WITH cand AS (
         SELECT id FROM hadiths WHERE search_vector    @@ ${arQ}
         UNION
-        SELECT id FROM hadiths WHERE search_vector_en @@ ${enQ}
-        UNION
-        SELECT h.id FROM hadiths h
-          JOIN machine_clauses m ON h.machine_clause = m.machine_clause
-         WHERE m.english ILIKE '%' || ${q} || '%'
-        UNION
-        SELECT id FROM hadiths WHERE machine_clause ILIKE '%' || ${q} || '%'${semanticBranch}
+        SELECT id FROM hadiths WHERE search_vector_en @@ ${enQ}${narratorBranch}${semanticBranch}
       )
       `;
 
@@ -246,6 +288,17 @@ export async function GET(request) {
     if (grades.length > 0) {
       params.push(grades);
       conditions.push(`h.final_grade = ANY($${params.length}::text[])`);
+    }
+    // Narrator chips. ANDed like any other filter, so a chip stacks with a text
+    // query: 'Abu Hurairah' chip + 'prayer' narrows to his prayer hadiths, and
+    // narrowing BEFORE the ranking runs makes that combination cheaper than the
+    // text query alone, not dearer.
+    //
+    // The chip sends the canonical name; hadiths.machine_clause stores the same
+    // string, so this is an indexed equality with no join.
+    if (narrators.length > 0) {
+      params.push(narrators);
+      conditions.push(`h.machine_clause = ANY($${params.length}::text[])`);
     }
 
     const where = conditions.join(' AND ');
@@ -277,8 +330,9 @@ export async function GET(request) {
            ts_rank(h.search_vector,    ${arQ}),
            ts_rank(h.search_vector_en, ${enQ})
          )
-         + CASE WHEN m.english ILIKE '%' || $1 || '%'
-                  OR h.machine_clause ILIKE '%' || $1 || '%' THEN 0.5 ELSE 0 END`;
+         + CASE WHEN ${narratorClausesParam
+                        ? `h.machine_clause = ANY(${narratorClausesParam})`
+                        : 'false'} THEN 0.5 ELSE 0 END`;
 
     const strictRank = rankExpr(
       `websearch_to_tsquery('arabic',  norm_ar($1))`,

@@ -25,7 +25,7 @@ async function embedQuery(text) {
     // Bounded wait. A slow embedding API must not hold up a search that
     // full-text can already answer.
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 2500);
+    const timer = setTimeout(() => ctrl.abort(), 8000);
 
     const res = await fetch(VOYAGE_URL, {
       method: 'POST',
@@ -84,6 +84,31 @@ export async function GET(request) {
     // 'Tirmidhi 1' style lookup, where the answer is exact and semantic
     // neighbours would be noise.
     const queryVector = hasText ? await embedQuery(searchQuery) : null;
+
+    // Nearest neighbours are fetched HERE, as their own statement, and passed
+    // into the main query as a plain id array.
+    //
+    // The obvious formulation — OR h.id IN (SELECT ... ORDER BY embedding <=> v
+    // LIMIT 200) — is a trap. Postgres cannot use an index for one side of an
+    // OR while using a different index for the other, so it abandoned both and
+    // sequentially scanned all 80,661 rows: 10.9 seconds, of which 10.8 was
+    // discarding 80,454 non-matches. Splitting the two apart lets each use its
+    // own index and brought the same search to 61ms.
+    let semanticIds = [];
+    if (queryVector) {
+      try {
+        const vecRes = await pool.query(
+          `SELECT id FROM hadiths
+           WHERE embedding IS NOT NULL
+           ORDER BY embedding <=> $1::vector
+           LIMIT 200`,
+          [queryVector]
+        );
+        semanticIds = vecRes.rows.map((r) => r.id);
+      } catch (e) {
+        console.warn('[search] vector lookup failed:', e.message);
+      }
+    }
 
     const isArabic = language === 'ar';
 
@@ -163,28 +188,14 @@ export async function GET(request) {
       // machine_clauses.english is the narrator name ("Abu Hurairah"), which
       // lives in a joined table and is in neither search_vector. Matched with
       // ILIKE, which the existing idx_trgm_machine_clause makes cheap.
-      // Semantic branch, added only if the query embedded successfully.
-      //
-      // Bounded by a distance threshold rather than left open: without one,
-      // every row in the table is *some* distance from the query and the WHERE
-      // stops filtering anything. 0.55 cosine distance is roughly 'recognisably
-      // related'; lower is stricter.
-      //
-      // The subquery with its own ORDER BY + LIMIT is what lets the IVFFlat
-      // index do its job. A bare `h.embedding <=> $n < 0.55` in the OR would be
-      // a filter, not an ordering, and Postgres would scan all 80,661 rows
-      // computing distance for each.
+      // A literal id array, resolved above. An = ANY(array) on the primary key
+      // is an index lookup even inside an OR, which the equivalent subquery was
+      // not.
       let semanticBranch = '';
-      if (queryVector) {
-        params.push(queryVector);
-        const v = `$${params.length}::vector`;
+      if (semanticIds.length) {
+        params.push(semanticIds);
         semanticBranch = `
-        OR h.id IN (
-          SELECT id FROM hadiths
-          WHERE embedding IS NOT NULL
-          ORDER BY embedding <=> ${v}
-          LIMIT 200
-        )`;
+        OR h.id = ANY($${params.length}::bigint[])`;
       }
 
       // machine_clauses.english is the narrator name ("Abu Hurairah"), which
@@ -258,7 +269,15 @@ export async function GET(request) {
 
     // The vector param was pushed while building the WHERE, so its index is
     // known only if the semantic branch was actually added.
-    const vecParam = queryVector ? `$${params.indexOf(queryVector) + 1}::vector` : null;
+    // Pushed separately for the ranking expression. The WHERE no longer carries
+    // the vector — it carries the resolved id array — but ranking still needs the
+    // vector itself to score each row by distance. Only bothered with when the
+    // semantic lookup actually returned something.
+    let vecParam = null;
+    if (queryVector && semanticIds.length) {
+      params.push(queryVector);
+      vecParam = `$${params.length}::vector`;
+    }
 
     const orderBy = hasText && !compilerNumberHit
       ? `${hybridRank(strictRank, vecParam)} DESC,

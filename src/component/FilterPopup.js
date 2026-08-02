@@ -38,6 +38,9 @@ export default function FilterPopup({
   // API and the rest are reachable through the search box below them.
   const { data: narratorChips } = useNarrators();
   const [narratorQuery, setNarratorQuery] = useState('');
+  // Behind an "Other" chip rather than always visible — nine chips already
+  // cover most of the corpus, so the tail is the exception.
+  const [showNarratorSearch, setShowNarratorSearch] = useState(false);
   const { data: narratorResults, loading: narratorSearching } = useNarratorSearch(narratorQuery);
 
   // A narrator picked from the search box is still selected once the query is
@@ -143,9 +146,18 @@ export default function FilterPopup({
             onClick={() => onToggleNarrator(name)}
           />
         ))}
+        <Chip
+          label={isArabic ? 'أخرى' : 'Other'}
+          selected={showNarratorSearch}
+          onClick={() => {
+            if (showNarratorSearch) setNarratorQuery('');
+            setShowNarratorSearch((v) => !v);
+          }}
+        />
       </div>
 
       {/* ── The other 3,612 ── */}
+      {showNarratorSearch && (
       <div className="flex items-center gap-2 w-full bg-white border border-[#E4DCD6] rounded-[8px] px-3 py-2 mb-4 focus-within:border-[#523230]">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
           <circle cx="11" cy="11" r="7" stroke="#9A8A85" strokeWidth="2" />
@@ -159,8 +171,9 @@ export default function FilterPopup({
           className="w-full bg-transparent text-sm text-[#523230] outline-none placeholder:text-[#9A8A85]"
         />
       </div>
+      )}
 
-      {narratorQuery.trim() && (
+      {showNarratorSearch && narratorQuery.trim() && (
         <ul className="mb-4 max-h-40 overflow-y-auto space-y-1">
           {narratorSearching ? (
             <li className="text-gray-400 text-sm px-2">…</li>

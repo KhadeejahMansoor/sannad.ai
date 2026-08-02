@@ -85,8 +85,21 @@ export default function FilterSection({
             {name}
           </button>
         ))}
+        {/* Opens the type-ahead over the remaining ~3,612 narrators. Closing it
+            also clears the query, so reopening starts clean rather than showing
+            stale results from a previous search. */}
+        <button
+          onClick={() => {
+            if (showNarratorSearch) setNarratorQuery('');
+            setShowNarratorSearch((v) => !v);
+          }}
+          className={pillClass(showNarratorSearch)}
+        >
+          {isArabic ? 'أخرى' : 'Other'}
+        </button>
       </div>
 
+      {showNarratorSearch && (
       <div className="flex items-center gap-2 w-full bg-white border border-[#E4DCD6] rounded-[13px] px-4 py-3 focus-within:border-[#523230]">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
           <circle cx="11" cy="11" r="7" stroke="#9A8A85" strokeWidth="2" />
@@ -100,8 +113,9 @@ export default function FilterSection({
           className="w-full bg-transparent text-sm text-[#523230] outline-none placeholder:text-[#9A8A85]"
         />
       </div>
+      )}
 
-      {narratorQuery.trim() && (
+      {showNarratorSearch && narratorQuery.trim() && (
         <ul className="mt-2 space-y-1 max-h-32 overflow-y-auto">
           {narratorResults.length > 0 ? (
             narratorResults.map((row) => (

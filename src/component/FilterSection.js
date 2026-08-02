@@ -175,7 +175,7 @@ export default function FilterSection({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="w-full bg-[#ECEAE4] rounded-t-[22px] max-h-[85vh] flex flex-col"
+          className="w-full bg-[#ECEAE4] rounded-t-[22px] flex flex-col"
         >
           {/* Sticky header. Once the narrator row was added the sheet grew past
               the viewport, which pushed the dismissable overlay off-screen —
@@ -193,7 +193,17 @@ export default function FilterSection({
             </button>
           </div>
 
-          <div className="overflow-y-auto px-4 pb-4 flex-1">
+          {/* Fixed height, not max-h-[85vh]. A viewport-relative cap means the
+              sheet ends at a different point on every phone; this ends in the
+              same place — just past the fourth narrator — so the cut is
+              predictable and the compilers above it are always fully visible.
+
+              The number is the sum of what sits above that point at mobile
+              width: grades wrap to 2 rows, compilers to 3, narrators to 2, each
+              chip 38px with an 8px gap, plus the mt-3/mb-3 margins and the two
+              my-2 dividers. Retune it if the chip height or the number of
+              compilers changes — it is not self-adjusting. */}
+          <div className="overflow-y-auto px-4 pb-4 h-[392px]">
           <div className="flex flex-wrap gap-2 mb-3 mt-3 justify-center">
             {gradePills.map((key) => (
               <button

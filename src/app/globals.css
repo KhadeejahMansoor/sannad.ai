@@ -107,3 +107,26 @@ body {
 .arabic {
   font-family: 'Noto Sans Arabic', sans-serif !important;
 }
+/* ── iOS input zoom ────────────────────────────────────────────────────
+   Mobile Safari zooms the whole viewport when an input smaller than 16px
+   receives focus, and does NOT zoom back out on blur — so tapping the search
+   box left the page magnified until the user pinched it back.
+
+   The trigger is font-size alone; 16px is the exact threshold. Every input in
+   the app uses Tailwind's text-sm (14px), which is why it fires everywhere:
+   the hadith search box, the narrator type-ahead, the collection filter.
+
+   Scoped to mobile widths so desktop keeps the smaller, denser type. Applied
+   by element rather than by class so new inputs are covered automatically
+   instead of needing to be found one at a time.
+
+   The alternative fix — maximum-scale=1 in the viewport meta — also stops the
+   zoom, but disables pinch-zoom entirely. On a site rendering Arabic at small
+   sizes that's a real accessibility loss, so it's deliberately not used here. */
+@media (max-width: 767px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}

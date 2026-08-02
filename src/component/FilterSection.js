@@ -71,13 +71,13 @@ export default function FilterSection({
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
     );
 
-  const narratorBlock = (pillClass, gapClass = 'gap-2', capClass = '') => (
+  const narratorBlock = (pillClass, gapClass = 'gap-2') => (
     <>
-      {/* Capped on mobile so the first four narrators are visible and the rest
-          scroll. Nine chips plus 'Other' ran to five rows, which pushed the
-          compilers off-screen and made the sheet feel like a list of narrators
-          with filters attached rather than the other way round. */}
-      <div className={`flex flex-wrap ${gapClass} justify-center mb-4 ${capClass}`}>
+      {/* No inner scroll here. The sheet body already scrolls as one region;
+          nesting a second scrollable area inside it meant a drag starting on a
+          narrator chip moved that block instead of the sheet, which is
+          disorienting on touch. */}
+      <div className={`flex flex-wrap ${gapClass} justify-center mb-4`}>
         {narratorChips.map((row) => (
           <button
             key={row.narrator}
@@ -230,7 +230,7 @@ export default function FilterSection({
 
           <hr className="my-2 border-[#DDD8D0] w-[350px] mx-auto" />
 
-          <div className="mb-3 mt-3">{narratorBlock(mobilePill, 'gap-2', 'max-h-[104px] overflow-y-auto')}</div>
+          <div className="mb-3 mt-3">{narratorBlock(mobilePill)}</div>
 
           {loading && <LoaderOverlay />}
           </div>

@@ -118,6 +118,12 @@ export async function GET(request) {
     const params = [];
     const conditions = [];
 
+    // Built by the text branch below, as a function of the tsquery form so each
+    // pass can bind its own (strict AND, then OR, then fuzzy). Stays null for a
+    // bare filter query and for a 'Tirmidhi 1' lookup, both of which need no
+    // candidate set — the WHERE addresses rows directly.
+    let cteText = null;
+
     // ── Search both languages, always ─────────────────────────────────
     //
     // The previous version picked ONE vector from the `lang` param:
@@ -195,22 +201,37 @@ export async function GET(request) {
       if (semanticIds.length) {
         params.push(semanticIds);
         semanticBranch = `
-        OR h.id = ANY($${params.length}::bigint[])`;
+        UNION
+        SELECT unnest($${params.length}::bigint[])`;
       }
 
-      // machine_clauses.english is the narrator name ("Abu Hurairah"), which
-      // lives in a joined table and is in neither search_vector. Matched with
-      // ILIKE, which the existing idx_trgm_machine_clause makes cheap.
-      conditions.push(`(
-        h.search_vector    @@ websearch_to_tsquery('arabic',  norm_ar(${q}))
-        OR
-        h.search_vector_en @@ websearch_to_tsquery('english', ${q})
-        OR
-        m.english ILIKE '%' || ${q} || '%'
-        OR
-        h.machine_clause ILIKE '%' || ${q} || '%'
-        ${semanticBranch}
-      )`);
+      // UNION, not OR. These four branches each have a perfectly good index —
+      // two GIN, one trigram on the joined narrator table, one primary key —
+      // and OR'ing them made Postgres abandon all four and sequentially scan.
+      // Measured on 'salah': 1ms for the tsvectors alone, 4.6ms for the
+      // narrator match alone, 6.4s for the two of them OR'd, 27s with the
+      // semantic ids added. As a UNION of the same four branches: 119ms.
+      //
+      // The rule is that OR forces ONE plan to satisfy every branch. A UNION
+      // lets each branch pick its own index and merges the id sets afterwards.
+      // Same rows, same semantics, two orders of magnitude apart.
+      //
+      // This is the same trap already documented above for the vector subquery
+      // — it was simply still present for the other three branches.
+      cteText = (arQ, enQ) => `WITH cand AS (
+        SELECT id FROM hadiths WHERE search_vector    @@ ${arQ}
+        UNION
+        SELECT id FROM hadiths WHERE search_vector_en @@ ${enQ}
+        UNION
+        SELECT h.id FROM hadiths h
+          JOIN machine_clauses m ON h.machine_clause = m.machine_clause
+         WHERE m.english ILIKE '%' || ${q} || '%'
+        UNION
+        SELECT id FROM hadiths WHERE machine_clause ILIKE '%' || ${q} || '%'${semanticBranch}
+      )
+      `;
+
+      conditions.push(`h.id IN (SELECT id FROM cand)`);
     }
 
     if (compilers.length > 0) {
@@ -303,7 +324,7 @@ export async function GET(request) {
     // One template, two passes. The strict pass fills it with the AND query;
     // the fallback below refills the same string with the OR query, so the
     // SELECT list and joins can never drift between them.
-    const baseQuery = `      SELECT
+    const baseQuery = `__CTE__SELECT
         CASE WHEN h.compiler = '${AZAMI}' THEN 'azami-' ELSE 'sevenbooks-' END
           || h.id::text             AS hadith_id,
         h.hadith_number,
@@ -382,7 +403,7 @@ export async function GET(request) {
     // The 3.8s figure only applies to genuinely broad matches. A hybrid query
     // capped at 200 semantic neighbours plus a handful of lexical hits is cheap
     // to count exactly.
-    const countQuery = `
+    const countQuery = `__CTE__
       SELECT COUNT(*)::int AS total
       FROM hadiths h
       LEFT JOIN machine_clauses m ON h.machine_clause = m.machine_clause
@@ -394,11 +415,21 @@ export async function GET(request) {
     // a SET — enough to exhaust the pool under any concurrency and fail with
     // 'timeout exceeded when trying to connect' rather than a slow response.
     // One at a time is marginally slower per request and survives load.
+    // The strict pass binds the AND form of the tsquery. Empty string when
+    // there's no text branch, which leaves the templates exactly as they were.
+    const strictCte = cteText
+      ? cteText(`websearch_to_tsquery('arabic',  norm_ar($1))`,
+                `websearch_to_tsquery('english', $1)`)
+      : '';
+
     const result = await pool.query(
-      baseQuery.replace('__WHERE__', where).replace('__ORDER__', orderBy),
+      baseQuery.replace('__CTE__', strictCte).replace('__WHERE__', where).replace('__ORDER__', orderBy),
       params
     );
-    const countResult = await pool.query(countQuery.replace('__WHERE__', where), whereParams);
+    const countResult = await pool.query(
+      countQuery.replace('__CTE__', strictCte).replace('__WHERE__', where),
+      whereParams
+    );
 
     // websearch_to_tsquery ANDs every unquoted word, which is right for two or
     // three terms and fatal for a pasted paragraph: requiring all ~50 words in
@@ -429,24 +460,24 @@ export async function GET(request) {
       const orAr = `NULLIF(replace(plainto_tsquery('arabic',  norm_ar($1))::text, '&', '|'), '')::tsquery`;
       const orEn = `NULLIF(replace(plainto_tsquery('english', $1)::text, '&', '|'), '')::tsquery`;
 
-      // Same filters as the strict pass, with the text condition swapped for
-      // the OR form. conditions[] can't be reused directly — its text clause is
-      // baked in — so the query is rebuilt from the parts that don't change.
-      const orConditions = conditions.map((c) =>
-        c.includes('websearch_to_tsquery')
-          ? `(h.search_vector @@ ${orAr} OR h.search_vector_en @@ ${orEn})`
-          : c
-      );
-
-      const orWhere = orConditions.join(' AND ');
+      // The WHERE is now identical between passes — it says only 'id is in the
+      // candidate set'. What differs is how that set is BUILT, so the swap
+      // happens in the CTE: same four UNION branches, OR-form tsqueries.
+      // Filters (compiler, grade) sit outside the CTE and carry over untouched.
+      const orWhere = where;
+      const orCte = cteText ? cteText(orAr, orEn) : '';
 
       const orResult = await pool.query(
         baseQuery
+          .replace('__CTE__', orCte)
           .replace('__WHERE__', orWhere)
           .replace('__ORDER__', `${hybridRank(rankExpr(orAr, orEn), vecParam)} DESC, ${numericOrder}, h.hadith_number`),
         params
       );
-      const orCount = await pool.query(countQuery.replace('__WHERE__', orWhere), whereParams);
+      const orCount = await pool.query(
+        countQuery.replace('__CTE__', orCte).replace('__WHERE__', orWhere),
+        whereParams
+      );
       rows = orResult.rows;
       total = orCount.rows[0]?.total ?? rows.length;
     }
@@ -484,8 +515,12 @@ export async function GET(request) {
         OR (m.english %> $1 AND word_similarity($1, m.english) >= 0.70)
       )`;
 
+      // The candidate CTE is dropped entirely here — the whole point of this
+      // pass is that the query matched nothing lexically or semantically, so
+      // that set is empty by definition. Trigram matching goes straight at the
+      // text, and the filters carry over unchanged.
       const fuzzyConditions = conditions.map((c) =>
-        c.includes('websearch_to_tsquery') ? fuzzy : c
+        c.includes('SELECT id FROM cand') ? fuzzy : c
       );
       const fuzzyWhere = fuzzyConditions.join(' AND ');
 
@@ -507,6 +542,7 @@ export async function GET(request) {
         // row count stands in — honest, if capped at the page size.
         const fzResult = await pool.query(
           baseQuery
+            .replace('__CTE__', '')
             .replace('__WHERE__', fuzzyWhere)
             .replace('__ORDER__', `${fuzzyRank} DESC, ${numericOrder}, h.hadith_number`),
           params

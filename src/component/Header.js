@@ -23,6 +23,10 @@ export default function Header({ onEdit, onMenu }) {
   const [searchText, setSearchText] = useState('');
   const [selectedGrades, setSelectedGrades] = useState([]);
   const [selectedCompilers, setSelectedCompilers] = useState([]);
+  // Narrators need no English→Arabic mapping: machine_clauses.english is
+  // already one canonical name per narrator, so the chip value, the URL value
+  // and the API param are all the same string.
+  const [selectedNarrators, setSelectedNarrators] = useState([]);
   const barRef = useRef(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -45,6 +49,12 @@ export default function Header({ onEdit, onMenu }) {
     } catch {
       setSelectedCompilers([]);
     }
+    try {
+      const narrators = JSON.parse(searchParams.get('narrators') || '[]');
+      setSelectedNarrators(Array.isArray(narrators) ? narrators : []);
+    } catch {
+      setSelectedNarrators([]);
+    }
   }, [searchParams]);
 
   // ─── Submit search → navigate to /results with all params ──
@@ -53,6 +63,7 @@ export default function Header({ onEdit, onMenu }) {
     if (searchText.trim()) params.set('search', searchText.trim());
     if (selectedGrades.length) params.set('tags', JSON.stringify(selectedGrades));
     if (selectedCompilers.length) params.set('scholars', JSON.stringify(selectedCompilers));
+    if (selectedNarrators.length) params.set('narrators', JSON.stringify(selectedNarrators));
     router.push(`/results?${params.toString()}`);
     setShowFilter(false); // close popup on submit
   };
@@ -71,9 +82,13 @@ export default function Header({ onEdit, onMenu }) {
   const toggleCompiler = (c) => {
     setSelectedCompilers(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
   };
+  const toggleNarrator = (n) => {
+    setSelectedNarrators(prev => prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n]);
+  };
   const clearFilters = () => {
     setSelectedGrades([]);
     setSelectedCompilers([]);
+    setSelectedNarrators([]);
   };
 
   // Check if current page is timeline
@@ -96,7 +111,8 @@ export default function Header({ onEdit, onMenu }) {
     return () => window.removeEventListener('mousedown', handle);
   }, [showLangBar]);
 
-  const activeFilterCount = selectedGrades.length + selectedCompilers.length;
+  const activeFilterCount =
+    selectedGrades.length + selectedCompilers.length + selectedNarrators.length;
 
   return (
     <>
@@ -258,6 +274,8 @@ export default function Header({ onEdit, onMenu }) {
                     selectedCompilers={selectedCompilers}
                     onToggleGrade={toggleGrade}
                     onToggleCompiler={toggleCompiler}
+                    selectedNarrators={selectedNarrators}
+                    onToggleNarrator={toggleNarrator}
                     onClear={clearFilters}
                     onSubmit={submitSearch}
                     onClose={() => setShowFilter(false)}

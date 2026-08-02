@@ -15,7 +15,10 @@ import { gradeLabel, compilerLabel } from '../lib/i18n';
 import { stripArabicDiacritics } from '../lib/arabic';
 
 /* ───── Desktop‑only search box ───── */
-const DesktopSearchBox = ({ searchText, setSearchText, onSearchClick, onFilterClick, placeholder = 'Search hadith...' }) => (
+// canSearch is passed in rather than derived from searchText here: a
+// filter-only query ("everything narrated by Abu Saeed Khudri") is valid with
+// an empty box, and this component can't see the filter state.
+const DesktopSearchBox = ({ searchText, setSearchText, onSearchClick, onFilterClick, canSearch = false, placeholder = 'Search hadith...' }) => (
   <div className="relative w-[850px] h-[180px] bg-white rounded-2xl shadow-md">
     {!searchText && (
       <span className="absolute left-6 top-5 text-neutral-900/50 text-xl font-medium pointer-events-none">
@@ -29,7 +32,7 @@ const DesktopSearchBox = ({ searchText, setSearchText, onSearchClick, onFilterCl
         // Plain Enter submits; Shift+Enter still inserts a newline.
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
-          if (searchText.trim()) onSearchClick();
+          if (canSearch) onSearchClick();
         }
       }}
       rows={4}
@@ -43,11 +46,11 @@ const DesktopSearchBox = ({ searchText, setSearchText, onSearchClick, onFilterCl
     </button>
     <button
       onClick={onSearchClick}
-      disabled={!searchText.trim()}
+      disabled={!canSearch}
       className="absolute bottom-4 right-4 w-[42px] h-[41px] p-0 disabled:cursor-not-allowed"
     >
       <svg width="42" height="41" viewBox="0 0 42 41" className="rounded-[5px]">
-        <rect width="42" height="41" rx="5" fill={searchText.trim() ? '#523230' : '#C0C0C0'} />
+        <rect width="42" height="41" rx="5" fill={canSearch ? '#523230' : '#C0C0C0'} />
         <path d="M21 27V14M21 14L16 19M21 14L26 19" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
       </svg>
     </button>
@@ -130,6 +133,11 @@ export default function FrontScreen() {
   // Check if we have any selections
   const hasSelections =
     selectedTags.length > 0 || selectedScholars.length > 0 || selectedNarrators.length > 0;
+
+  // Text OR filters. Picking "Abu Saeed Khudri" and pressing search is a
+  // complete query — it browses his 2,287 hadiths — so the button shouldn't
+  // stay greyed out waiting for words that aren't needed.
+  const canSearch = !!searchText.trim() || hasSelections;
 
   // Handle filter button click
   const handleFilterClick = () => {
@@ -220,7 +228,7 @@ export default function FrontScreen() {
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                if (searchText.trim()) handleSearch();
+                if (canSearch) handleSearch();
               }
             }}
             className="w-full h-full resize-none outline-none bg-transparent text-sm"
@@ -232,11 +240,11 @@ export default function FrontScreen() {
           </button>
           <button
             onClick={handleSearch}
-            disabled={!searchText.trim()}
+            disabled={!canSearch}
             className="absolute bottom-4 right-4 w-[42px] h-[41px]"
           >
             <svg width="42" height="41" viewBox="0 0 42 41" className="rounded-[5px]">
-              <rect width="42" height="41" rx="5" fill={searchText.trim() ? '#523230' : '#C0C0C0'} />
+              <rect width="42" height="41" rx="5" fill={canSearch ? '#523230' : '#C0C0C0'} />
               <path d="M21 28V12M21 12L15 18M21 12L27 18" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
@@ -249,6 +257,7 @@ export default function FrontScreen() {
             setSearchText={setSearchText}
             onSearchClick={handleSearch}
             onFilterClick={handleFilterClick}
+            canSearch={canSearch}
             placeholder={isArabic ? '...ابحث عن حديث' : 'Search hadith...'}
           />
         </div>

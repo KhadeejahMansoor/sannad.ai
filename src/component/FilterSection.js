@@ -72,9 +72,9 @@ export default function FilterSection({
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
     );
 
-  const narratorBlock = (pillClass) => (
+  const narratorBlock = (pillClass, gapClass = 'gap-2') => (
     <>
-      <div className="flex flex-wrap gap-2 justify-center mb-4">
+      <div className={`flex flex-wrap ${gapClass} justify-center mb-4`}>
         {narratorChips.map((row) => (
           <button
             key={row.narrator}
@@ -104,7 +104,7 @@ export default function FilterSection({
       </div>
 
       {showNarratorSearch && (
-      <div className="flex items-center gap-2 w-full bg-white border border-[#E4DCD6] rounded-[13px] px-4 py-3 focus-within:border-[#523230]">
+      <div className="flex items-center gap-2 w-full max-w-[420px] mx-auto bg-white border border-[#E4DCD6] rounded-[13px] px-4 py-3 focus-within:border-[#523230]">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
           <circle cx="11" cy="11" r="7" stroke="#9A8A85" strokeWidth="2" />
           <path d="M20 20l-3.5-3.5" stroke="#9A8A85" strokeWidth="2" strokeLinecap="round" />
@@ -120,7 +120,7 @@ export default function FilterSection({
       )}
 
       {showNarratorSearch && narratorQuery.trim() && (
-        <ul className="mt-2 space-y-1 max-h-32 overflow-y-auto">
+        <ul className="mt-2 space-y-1 max-h-32 overflow-y-auto max-w-[420px] mx-auto">
           {narratorResults.length > 0 ? (
             narratorResults.map((row) => (
               <li
@@ -299,7 +299,7 @@ export default function FilterSection({
           <hr className="border-t border-gray-300 max-w-[280px] mx-auto" />
         )}
 
-        <div className="max-w-[520px] mx-auto">{narratorBlock(desktopPill)}</div>
+        <div>{narratorBlock(desktopPill, 'gap-3')}</div>
 
         {loading && <LoaderOverlay />}
       </div>

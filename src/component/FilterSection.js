@@ -46,7 +46,6 @@ export default function FilterSection({
     apiScholars.some((c) => norm(c.compiler ?? c) === norm(compilerToDb(key)))
   );
 
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Narrator chips come from the API, not a constant. There are 3,621
   // narrators; nine of them account for 42,900 of the 80,661 hadiths, so those
@@ -72,9 +71,13 @@ export default function FilterSection({
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
     );
 
-  const narratorBlock = (pillClass, gapClass = 'gap-2') => (
+  const narratorBlock = (pillClass, gapClass = 'gap-2', capClass = '') => (
     <>
-      <div className={`flex flex-wrap ${gapClass} justify-center mb-4`}>
+      {/* Capped on mobile so the first four narrators are visible and the rest
+          scroll. Nine chips plus 'Other' ran to five rows, which pushed the
+          compilers off-screen and made the sheet feel like a list of narrators
+          with filters attached rather than the other way round. */}
+      <div className={`flex flex-wrap ${gapClass} justify-center mb-4 ${capClass}`}>
         {narratorChips.map((row) => (
           <button
             key={row.narrator}
@@ -155,13 +158,6 @@ export default function FilterSection({
       active ? 'bg-[#523230] text-white' : 'bg-[#D9D9D9] text-gray-800 hover:bg-[#CFCFCF]'
     }`;
 
-  // Match against what the user can SEE, not the internal key.
-  const filteredScholarResults = scholarPills.filter(
-    (key) =>
-      compilerLabel(key, language).toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !selectedScholars.includes(key)
-  );
-
   const handlePillSelect = (item, currentSelected, setter) => {
     toggleItem(item, currentSelected, setter);
   };
@@ -234,41 +230,7 @@ export default function FilterSection({
 
           <hr className="my-2 border-[#DDD8D0] w-[350px] mx-auto" />
 
-          <div className="mb-3 mt-3">{narratorBlock(mobilePill)}</div>
-
-          <hr className="my-2 border-[#DDD8D0] w-[350px] mx-auto" />
-
-          <div className="flex items-center gap-2 w-full bg-white border border-[#E4DCD6] rounded-[13px] px-4 py-3 focus-within:border-[#523230]">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" stroke="#9A8A85" strokeWidth="2" />
-              <path d="M20 20l-3.5-3.5" stroke="#9A8A85" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={isArabic ? '…ابحث في المجموعات' : 'Search hadith collections…'}
-              className="w-full bg-transparent text-sm text-[#523230] outline-none placeholder:text-[#9A8A85]"
-            />
-          </div>
-
-          {searchQuery && (
-            <ul className="mt-2 space-y-1 max-h-32 overflow-y-auto">
-              {filteredScholarResults.length > 0 ? (
-                filteredScholarResults.map((key) => (
-                  <li
-                    key={key}
-                    onClick={() => toggleItem(key, selectedScholars, setSelectedScholars)}
-                    className="text-gray-700 text-sm font-medium px-3 py-1 cursor-pointer hover:bg-[#EDEDED] hover:text-black rounded-md"
-                  >
-                    {compilerLabel(key, language)}
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-400 text-sm px-2">{isArabic ? 'لا توجد نتائج' : 'No matches'}</li>
-              )}
-            </ul>
-          )}
+          <div className="mb-3 mt-3">{narratorBlock(mobilePill, 'gap-2', 'max-h-[104px] overflow-y-auto')}</div>
 
           {loading && <LoaderOverlay />}
           </div>

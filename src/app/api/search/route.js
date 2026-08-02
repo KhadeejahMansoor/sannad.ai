@@ -25,7 +25,7 @@ async function embedQuery(text) {
     // Bounded wait. A slow embedding API must not hold up a search that
     // full-text can already answer.
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const timer = setTimeout(() => ctrl.abort(), 2500);
 
     const res = await fetch(VOYAGE_URL, {
       method: 'POST',

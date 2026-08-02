@@ -5,6 +5,44 @@ import { compilerToDb, COMPILER_KEYS } from '../../../lib/i18n';
 
 const AZAMI = 'الأعظمي';
 
+// Semantic half of the search. Full-text matches words; this matches meaning,
+// which is the only way 'salah' finds الصلاة or 'charity' finds زكاة — no
+// amount of stemming or normalisation crosses scripts.
+//
+// input_type MUST be 'query' here. The corpus was embedded with 'document';
+// Voyage places the two in deliberately different regions, and mismatching
+// them degrades results without producing any error.
+const VOYAGE_URL = 'https://api.voyageai.com/v1/embeddings';
+
+async function embedQuery(text) {
+  const key = process.env.VOYAGE_API_KEY;
+  if (!key) return null;          // not configured — fall back to full-text alone
+
+  try {
+    // Bounded wait. A slow embedding API must not hold up a search that
+    // full-text can already answer.
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3000);
+
+    const res = await fetch(VOYAGE_URL, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: [text], model: 'voyage-3', input_type: 'query' }),
+      signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+
+    if (!res.ok) return null;
+    const json = await res.json();
+    const vec = json?.data?.[0]?.embedding;
+    return Array.isArray(vec) ? `[${vec.join(',')}]` : null;
+  } catch {
+    // Every failure path returns null rather than throwing: semantic search is
+    // an enhancement, and losing it should degrade the results, not the page.
+    return null;
+  }
+}
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -28,6 +66,16 @@ export async function GET(request) {
     if (!hasText && !hasFilters) {
       return NextResponse.json({ success: true, data: [] });
     }
+
+    // Embedded up front because the WHERE clause below needs the vector.
+    // Costs one API round trip (~100-300ms) on every text search; returns null
+    // on failure or timeout, in which case everything downstream behaves
+    // exactly as it did before semantic search existed.
+    //
+    // Skipped for a bare filter query, which has no text to embed, and for a
+    // 'Tirmidhi 1' style lookup, where the answer is exact and semantic
+    // neighbours would be noise.
+    const queryVector = hasText ? await embedQuery(searchQuery) : null;
 
     const isArabic = language === 'ar';
 
@@ -107,6 +155,33 @@ export async function GET(request) {
       // machine_clauses.english is the narrator name ("Abu Hurairah"), which
       // lives in a joined table and is in neither search_vector. Matched with
       // ILIKE, which the existing idx_trgm_machine_clause makes cheap.
+      // Semantic branch, added only if the query embedded successfully.
+      //
+      // Bounded by a distance threshold rather than left open: without one,
+      // every row in the table is *some* distance from the query and the WHERE
+      // stops filtering anything. 0.55 cosine distance is roughly 'recognisably
+      // related'; lower is stricter.
+      //
+      // The subquery with its own ORDER BY + LIMIT is what lets the IVFFlat
+      // index do its job. A bare `h.embedding <=> $n < 0.55` in the OR would be
+      // a filter, not an ordering, and Postgres would scan all 80,661 rows
+      // computing distance for each.
+      let semanticBranch = '';
+      if (queryVector) {
+        params.push(queryVector);
+        const v = `$${params.length}::vector`;
+        semanticBranch = `
+        OR h.id IN (
+          SELECT id FROM hadiths
+          WHERE embedding IS NOT NULL
+          ORDER BY embedding <=> ${v}
+          LIMIT 200
+        )`;
+      }
+
+      // machine_clauses.english is the narrator name ("Abu Hurairah"), which
+      // lives in a joined table and is in neither search_vector. Matched with
+      // ILIKE, which the existing idx_trgm_machine_clause makes cheap.
       conditions.push(`(
         h.search_vector    @@ websearch_to_tsquery('arabic',  norm_ar(${q}))
         OR
@@ -115,6 +190,7 @@ export async function GET(request) {
         m.english ILIKE '%' || ${q} || '%'
         OR
         h.machine_clause ILIKE '%' || ${q} || '%'
+        ${semanticBranch}
       )`);
     }
 
@@ -158,8 +234,26 @@ export async function GET(request) {
       `websearch_to_tsquery('english', $1)`,
     );
 
+    // Blend, rather than choosing one or the other. ts_rank scores 0 for a row
+    // found only semantically, and cosine distance says nothing about how many
+    // query words a row contains — so each is blind where the other sees.
+    //
+    // Weighted toward lexical (1.0 vs 0.6): an exact word match is a stronger
+    // signal of intent than semantic proximity, and someone typing 'knife'
+    // should get hadiths containing 'knife' before hadiths merely about
+    // slaughtering.
+    //
+    // 1 - distance so both terms point the same way: higher is better.
+    const hybridRank = (baseRank, vecParam) => vecParam
+      ? `(${baseRank}) + 0.6 * (1 - (h.embedding <=> ${vecParam}))`
+      : baseRank;
+
+    // The vector param was pushed while building the WHERE, so its index is
+    // known only if the semantic branch was actually added.
+    const vecParam = queryVector ? `$${params.indexOf(queryVector) + 1}::vector` : null;
+
     const orderBy = hasText && !compilerNumberHit
-      ? `${strictRank} DESC,
+      ? `${hybridRank(strictRank, vecParam)} DESC,
          ${numericOrder},
          h.hadith_number`
       : `h.compiler,
@@ -314,7 +408,7 @@ export async function GET(request) {
       const orResult = await pool.query(
         baseQuery
           .replace('__WHERE__', orWhere)
-          .replace('__ORDER__', `${rankExpr(orAr, orEn)} DESC, ${numericOrder}, h.hadith_number`),
+          .replace('__ORDER__', `${hybridRank(rankExpr(orAr, orEn), vecParam)} DESC, ${numericOrder}, h.hadith_number`),
         params
       );
       const orCount = await pool.query(countQuery.replace('__WHERE__', orWhere), whereParams);

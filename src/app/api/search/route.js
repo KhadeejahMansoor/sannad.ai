@@ -224,6 +224,12 @@ export async function GET(request) {
 
     const where = conditions.join(' AND ');
 
+    // Snapshot HERE, the moment the WHERE stops changing. The count query below
+    // reuses this clause but not the SELECT, ranking or LIMIT, so it must be
+    // bound to exactly the parameters the clause references — Postgres rejects
+    // a bind carrying more than the statement uses rather than ignoring them.
+    const whereParams = [...params];
+
     // Rank across both vectors. GREATEST takes whichever language actually
     // matched — a hit in one and a miss in the other scores on the hit.
     //
@@ -286,12 +292,6 @@ export async function GET(request) {
       : `h.compiler,
          ${numericOrder},
          h.hadith_number`;
-
-    // Everything pushed so far belongs to the WHERE clause. The count query
-    // below reuses that clause but not the SELECT or LIMIT, so it must be given
-    // exactly these and no more: Postgres rejects a bind with more parameters
-    // than the statement references, rather than ignoring the extras.
-    const whereParams = [...params];
 
     params.push(language);
     const langIdx = params.length;

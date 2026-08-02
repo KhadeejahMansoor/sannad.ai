@@ -179,8 +179,28 @@ export default function FilterSection({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="w-full bg-[#ECEAE4] rounded-t-[22px] p-4"
+          className="w-full bg-[#ECEAE4] rounded-t-[22px] max-h-[85vh] flex flex-col"
         >
+          {/* Sticky header. Once the narrator row was added the sheet grew past
+              the viewport, which pushed the dismissable overlay off-screen —
+              there was no way back to the search. The bar stays put while the
+              body scrolls. */}
+          <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-[#DDD8D0] flex-shrink-0">
+            <span className="text-sm font-medium text-[#523230]">
+              {isArabic ? 'تصفية' : 'Filters'}
+            </span>
+            <button
+              onClick={onClose}
+              aria-label={isArabic ? 'إغلاق' : 'Close'}
+              className="w-8 h-8 flex items-center justify-center rounded-full text-[#523230] hover:bg-[#DDD8D0]"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="overflow-y-auto px-4 pb-4 flex-1">
           <div className="flex flex-wrap gap-2 mb-9 mt-4 justify-center">
             {gradePills.map((key) => (
               <button
@@ -254,6 +274,19 @@ export default function FilterSection({
           )}
 
           {loading && <LoaderOverlay />}
+          </div>
+
+          {/* Applying is just closing — selections are already lifted to the
+              parent as they're tapped, and the sticky pills plus the search
+              button below reflect them immediately. */}
+          <div className="px-4 py-3 border-t border-[#DDD8D0] flex-shrink-0">
+            <button
+              onClick={onClose}
+              className="w-full h-11 rounded-full bg-[#523230] text-white text-sm font-medium"
+            >
+              {isArabic ? 'تم' : 'Done'}
+            </button>
+          </div>
         </motion.div>
       </div>
 

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCompilers, useGrades } from '../hooks/useData';
+import { useCompilers, useGrades, useNarrators, useNarratorSearch } from '../hooks/useData';
 import { useLanguage } from '../lib/LanguageContext';
 import { GRADE_KEYS, COMPILER_KEYS, gradeLabel, compilerLabel, gradeToDb, compilerToDb } from '../lib/i18n';
 
@@ -21,6 +21,8 @@ export default function FilterSection({
   toggleItem,
   setSelectedTags,
   setSelectedScholars,
+  selectedNarrators = [],
+  setSelectedNarrators = () => {},
 }) {
   const { language, isArabic } = useLanguage();
   const { data: comp, loading: loadC } = useCompilers();
@@ -45,6 +47,95 @@ export default function FilterSection({
   );
 
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Narrator chips come from the API, not a constant. There are 3,621
+  // narrators; nine of them account for 42,900 of the 80,661 hadiths, so those
+  // nine get chips and the rest are reachable by typing.
+  const { data: narratorChips } = useNarrators();
+  const [narratorQuery, setNarratorQuery] = useState('');
+  const { data: narratorResults } = useNarratorSearch(narratorQuery);
+
+  const narratorLabel = (row) =>
+    isArabic && row.narrator_ar ? row.narrator_ar : row.narrator;
+
+  // A narrator chosen from the search box keeps its chip after the query is
+  // cleared — otherwise it would be selected with no way to unselect it.
+  const chipNames = narratorChips.map((n) => n.narrator);
+  const extraSelected = selectedNarrators.filter((n) => !chipNames.includes(n));
+
+  const toggleNarrator = (name) =>
+    setSelectedNarrators((prev) =>
+      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
+    );
+
+  const narratorBlock = (pillClass) => (
+    <>
+      <div className="flex flex-wrap gap-2 justify-center mb-4">
+        {narratorChips.map((row) => (
+          <button
+            key={row.narrator}
+            onClick={() => toggleNarrator(row.narrator)}
+            className={pillClass(selectedNarrators.includes(row.narrator))}
+          >
+            {narratorLabel(row)}
+          </button>
+        ))}
+        {extraSelected.map((name) => (
+          <button key={name} onClick={() => toggleNarrator(name)} className={pillClass(true)}>
+            {name}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2 w-full bg-white border border-[#E4DCD6] rounded-[13px] px-4 py-3 focus-within:border-[#523230]">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="#9A8A85" strokeWidth="2" />
+          <path d="M20 20l-3.5-3.5" stroke="#9A8A85" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <input
+          type="text"
+          value={narratorQuery}
+          onChange={(e) => setNarratorQuery(e.target.value)}
+          placeholder={isArabic ? '…ابحث عن راوٍ' : 'Search other narrators…'}
+          className="w-full bg-transparent text-sm text-[#523230] outline-none placeholder:text-[#9A8A85]"
+        />
+      </div>
+
+      {narratorQuery.trim() && (
+        <ul className="mt-2 space-y-1 max-h-32 overflow-y-auto">
+          {narratorResults.length > 0 ? (
+            narratorResults.map((row) => (
+              <li
+                key={row.narrator}
+                onClick={() => toggleNarrator(row.narrator)}
+                className={`text-sm font-medium px-3 py-1 cursor-pointer rounded-md ${
+                  selectedNarrators.includes(row.narrator)
+                    ? 'bg-[#523230] text-white'
+                    : 'text-gray-700 hover:bg-[#EDEDED] hover:text-black'
+                }`}
+              >
+                {narratorLabel(row)}
+              </li>
+            ))
+          ) : (
+            <li className="text-gray-400 text-sm px-2">{isArabic ? 'لا توجد نتائج' : 'No matches'}</li>
+          )}
+        </ul>
+      )}
+    </>
+  );
+
+  const mobilePill = (active) =>
+    `h-[38px] px-5 rounded-full text-sm font-medium transition-all duration-200 flex items-center justify-center border ${
+      active
+        ? 'bg-[#523230] border-[#523230] text-white'
+        : 'bg-white border-[#E4DCD6] text-[#523230] hover:bg-[#FAF5F3]'
+    }`;
+
+  const desktopPill = (active) =>
+    `h-[32px] px-6 rounded-full text-sm font-medium transition ${
+      active ? 'bg-[#523230] text-white' : 'bg-[#D9D9D9] text-gray-800 hover:bg-[#CFCFCF]'
+    }`;
 
   // Match against what the user can SEE, not the internal key.
   const filteredScholarResults = scholarPills.filter(
@@ -105,6 +196,12 @@ export default function FilterSection({
               </button>
             ))}
           </div>
+
+          <hr className="my-4 border-[#DDD8D0] w-[350px] mx-auto" />
+
+          <div className="mb-8 mt-8">{narratorBlock(mobilePill)}</div>
+
+          <hr className="my-4 border-[#DDD8D0] w-[350px] mx-auto" />
 
           <div className="flex items-center gap-2 w-full bg-white border border-[#E4DCD6] rounded-[13px] px-4 py-3 focus-within:border-[#523230]">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
@@ -179,6 +276,12 @@ export default function FilterSection({
             ))}
           </div>
         )}
+
+        {(gradePills.length > 0 || scholarPills.length > 0) && (
+          <hr className="border-t border-gray-300 max-w-[280px] mx-auto" />
+        )}
+
+        <div className="max-w-[520px] mx-auto">{narratorBlock(desktopPill)}</div>
 
         {loading && <LoaderOverlay />}
       </div>

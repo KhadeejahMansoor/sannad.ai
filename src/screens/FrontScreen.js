@@ -97,6 +97,11 @@ export default function FrontScreen() {
   const [searchText, setSearchText] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedScholars, setSelectedScholars] = useState([]);
+  // Narrator chips. No i18n mapping: machine_clauses.english is already one
+  // canonical name per narrator, so the value here, in the URL and in the API
+  // param are the same string. Compare selectedScholars, which holds an English
+  // key that gets translated to Arabic on the way to the database.
+  const [selectedNarrators, setSelectedNarrators] = useState([]);
 
   const router = useRouter();
 
@@ -117,12 +122,14 @@ export default function FrontScreen() {
     router.push(
       `/results?search=${encodeURIComponent(searchText)}&tags=${encodeURIComponent(
         JSON.stringify(selectedTags),
-      )}&scholars=${encodeURIComponent(JSON.stringify(selectedScholars))}`,
+      )}&scholars=${encodeURIComponent(JSON.stringify(selectedScholars))}` +
+        `&narrators=${encodeURIComponent(JSON.stringify(selectedNarrators))}`,
     );
   };
 
   // Check if we have any selections
-  const hasSelections = selectedTags.length > 0 || selectedScholars.length > 0;
+  const hasSelections =
+    selectedTags.length > 0 || selectedScholars.length > 0 || selectedNarrators.length > 0;
 
   // Handle filter button click
   const handleFilterClick = () => {
@@ -130,6 +137,7 @@ export default function FrontScreen() {
       // If filters are closed and we have selections, clear them first
       setSelectedTags([]);
       setSelectedScholars([]);
+      setSelectedNarrators([]);
     }
     setShowFilters(!showFilters);
   };
@@ -286,6 +294,24 @@ export default function FrontScreen() {
                     ))}
                   </div>
                 )}
+
+                {/* Third Row - Narrators. Labelled with the stored value
+                    directly: the name is already canonical, and FilterSection
+                    is where the Arabic label gets substituted for display. */}
+                {selectedNarrators.length > 0 && (
+                  <div className="flex flex-wrap gap-5">
+                    {selectedNarrators.map((narrator) => (
+                      <StickyPill
+                        key={`narrator-${narrator}`}
+                        label={narrator}
+                        onRemove={() =>
+                          setSelectedNarrators((prev) => prev.filter((n) => n !== narrator))
+                        }
+                        type="narrator"
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
@@ -348,6 +374,8 @@ export default function FrontScreen() {
               }
               setSelectedTags={setSelectedTags}
               setSelectedScholars={setSelectedScholars}
+              selectedNarrators={selectedNarrators}
+              setSelectedNarrators={setSelectedNarrators}
             />
           )}
         </AnimatePresence>

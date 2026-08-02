@@ -287,6 +287,66 @@ async function fetchByCompilerAndNumber(supabase, compilerToDb, hit) {
   }
 }
 
+
+// ── Narrators ────────────────────────────────────────────────────────
+//
+// Unlike GRADE_KEYS and COMPILER_KEYS, which are hard-coded lists in
+// lib/i18n.js, narrators come from the database: there are 3,621 of them, and
+// nine carry 42,900 of the 80,661 hadiths. So the chips are fetched rather
+// than declared, and the long tail lives behind a search box.
+export function useNarrators() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/narrators')
+      .then((r) => r.json())
+      .then((json) => {
+        if (!cancelled && json?.success) setData(json.data || []);
+      })
+      .catch(() => { if (!cancelled) setData([]); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  return { data, loading };
+}
+
+// Type-ahead over the ~3,612 narrators that don't have a chip.
+//
+// Debounced, because this fires per keystroke. 250ms is short enough to feel
+// immediate and long enough that typing a full name is one request, not eight.
+// The query hits machine_clauses alone — 3,621 short strings, no hadith text —
+// so it stays fast without an index change.
+export function useNarratorSearch(query) {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const q = (query || '').trim();
+    if (!q) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => {
+      fetch('/api/narrators?q=' + encodeURIComponent(q), { signal: ctrl.signal })
+        .then((r) => r.json())
+        .then((json) => { if (json?.success) setData(json.data || []); })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }, 250);
+
+    return () => { clearTimeout(timer); ctrl.abort(); };
+  }, [query]);
+
+  return { data, loading };
+}
+
 export function useSearchHadiths(searchText, compilers, grades, narrators, lang = 'en') {
   // Normalize to arrays for stable dependency comparison
   const compilersArr = Array.isArray(compilers) ? compilers : (compilers ? [compilers] : []);

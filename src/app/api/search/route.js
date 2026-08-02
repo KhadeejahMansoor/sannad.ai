@@ -16,13 +16,16 @@ const VOYAGE_URL = 'https://api.voyageai.com/v1/embeddings';
 
 async function embedQuery(text) {
   const key = process.env.VOYAGE_API_KEY;
-  if (!key) return null;          // not configured — fall back to full-text alone
+  if (!key) {
+    console.warn('[search] VOYAGE_API_KEY not set — semantic search disabled');
+    return null;
+  }
 
   try {
     // Bounded wait. A slow embedding API must not hold up a search that
     // full-text can already answer.
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 3000);
+    const timer = setTimeout(() => ctrl.abort(), 8000);
 
     const res = await fetch(VOYAGE_URL, {
       method: 'POST',
@@ -32,13 +35,18 @@ async function embedQuery(text) {
     });
     clearTimeout(timer);
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn('[search] voyage', res.status, (await res.text()).slice(0, 200));
+      return null;
+    }
     const json = await res.json();
     const vec = json?.data?.[0]?.embedding;
     return Array.isArray(vec) ? `[${vec.join(',')}]` : null;
-  } catch {
+  } catch (e) {
     // Every failure path returns null rather than throwing: semantic search is
     // an enhancement, and losing it should degrade the results, not the page.
+    // Logged, though — a silent null is indistinguishable from a missing key.
+    console.warn('[search] embed failed:', e.name, e.message);
     return null;
   }
 }

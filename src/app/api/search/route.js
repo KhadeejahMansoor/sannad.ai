@@ -52,6 +52,8 @@ async function embedQuery(text) {
 }
 
 export async function GET(request) {
+  const T0 = Date.now();
+  const mark = (label, since) => console.log(`[timing] ${label}: ${Date.now() - since}ms`);
   try {
     const { searchParams } = new URL(request.url);
     const searchQuery = (searchParams.get('q') || '').trim();
@@ -88,7 +90,9 @@ export async function GET(request) {
     // Skipped for a bare filter query, which has no text to embed, and for a
     // 'Tirmidhi 1' style lookup, where the answer is exact and semantic
     // neighbours would be noise.
+    const tEmbed = Date.now();
     const queryVector = hasText ? await embedQuery(searchQuery) : null;
+    mark('embed', tEmbed);
 
     // Nearest neighbours are fetched HERE, as their own statement, and passed
     // into the main query as a plain id array.
@@ -101,6 +105,7 @@ export async function GET(request) {
     // own index and brought the same search to 61ms.
     let semanticIds = [];
     if (queryVector) {
+      const tKnn = Date.now();
       try {
         const vecRes = await pool.query(
           `SELECT id FROM hadiths
@@ -110,6 +115,7 @@ export async function GET(request) {
           [queryVector]
         );
         semanticIds = vecRes.rows.map((r) => r.id);
+        mark('knn', tKnn);
       } catch (e) {
         console.warn('[search] vector lookup failed:', e.message);
       }
@@ -130,6 +136,7 @@ export async function GET(request) {
     // array membership test in the second.
     let narratorClauses = [];
     if (hasText) {
+      const tNar = Date.now();
       try {
         const nRes = await pool.query(
           `SELECT machine_clause FROM machine_clauses
@@ -137,6 +144,7 @@ export async function GET(request) {
           [searchQuery]
         );
         narratorClauses = nRes.rows.map((r) => r.machine_clause);
+        mark('narrator-lookup', tNar);
       } catch (e) {
         console.warn('[search] narrator lookup failed:', e.message);
       }
@@ -527,14 +535,20 @@ export async function GET(request) {
                 `websearch_to_tsquery('english', $1)`)
       : '';
 
+    const tMain = Date.now();
     const result = await pool.query(
       baseQuery.replace('__CTE__', strictCte).replace('__WHERE__', where).replace('__ORDER__', orderBy),
       params
     );
+    mark('main-query', tMain);
+    const tCount = Date.now();
     const countResult = await pool.query(
       countQuery.replace('__CTE__', strictCte).replace('__WHERE__', where),
       whereParams
     );
+
+    mark('count-query', tCount);
+    mark('TOTAL', T0);
 
     // websearch_to_tsquery ANDs every unquoted word, which is right for two or
     // three terms and fatal for a pasted paragraph: requiring all ~50 words in

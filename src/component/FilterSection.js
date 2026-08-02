@@ -185,10 +185,7 @@ export default function FilterSection({
               the viewport, which pushed the dismissable overlay off-screen —
               there was no way back to the search. The bar stays put while the
               body scrolls. */}
-          <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-[#DDD8D0] flex-shrink-0">
-            <span className="text-sm font-medium text-[#523230]">
-              {isArabic ? 'تصفية' : 'Filters'}
-            </span>
+          <div className={`flex items-center px-4 pt-3 pb-2 border-b border-[#DDD8D0] flex-shrink-0 ${isArabic ? 'justify-start' : 'justify-end'}`}>
             <button
               onClick={onClose}
               aria-label={isArabic ? 'إغلاق' : 'Close'}
@@ -201,7 +198,7 @@ export default function FilterSection({
           </div>
 
           <div className="overflow-y-auto px-4 pb-4 flex-1">
-          <div className="flex flex-wrap gap-2 mb-9 mt-4 justify-center">
+          <div className="flex flex-wrap gap-2 mb-3 mt-3 justify-center">
             {gradePills.map((key) => (
               <button
                 key={key}
@@ -217,9 +214,9 @@ export default function FilterSection({
             ))}
           </div>
 
-          <hr className="my-4 border-[#DDD8D0] w-[350px] mx-auto" />
+          <hr className="my-2 border-[#DDD8D0] w-[350px] mx-auto" />
 
-          <div className="flex flex-wrap gap-2 mb-8 mt-8 justify-center">
+          <div className="flex flex-wrap gap-2 mb-3 mt-3 justify-center">
             {scholarPills.map((key) => (
               <button
                 key={key}
@@ -235,11 +232,11 @@ export default function FilterSection({
             ))}
           </div>
 
-          <hr className="my-4 border-[#DDD8D0] w-[350px] mx-auto" />
+          <hr className="my-2 border-[#DDD8D0] w-[350px] mx-auto" />
 
-          <div className="mb-8 mt-8">{narratorBlock(mobilePill)}</div>
+          <div className="mb-3 mt-3">{narratorBlock(mobilePill)}</div>
 
-          <hr className="my-4 border-[#DDD8D0] w-[350px] mx-auto" />
+          <hr className="my-2 border-[#DDD8D0] w-[350px] mx-auto" />
 
           <div className="flex items-center gap-2 w-full bg-white border border-[#E4DCD6] rounded-[13px] px-4 py-3 focus-within:border-[#523230]">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">

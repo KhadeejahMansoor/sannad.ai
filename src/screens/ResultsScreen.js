@@ -69,14 +69,22 @@ export default function ResultsScreen() {
   try {
     selectedScholars = JSON.parse(searchParams.get('scholars')) || [];
   } catch { }
+  // Narrator chips. Same JSON-array-in-the-URL shape as tags and scholars, so
+  // the back button and a shared link both restore the full filter state.
+  let selectedNarrators = [];
+  try {
+    selectedNarrators = JSON.parse(searchParams.get('narrators')) || [];
+  } catch { }
 
   // English keys from the URL → Arabic values for the database.
   // The URL keeps carrying English; only the outgoing API call gets Arabic.
   const grades    = selectedTags.map(gradeToDb).filter(Boolean);
   const compilers = selectedScholars.map(compilerToDb).filter(Boolean);
 
+  // Narrators pass through unmapped — machine_clauses.english is already the
+  // canonical name, so there's no English-key-to-Arabic-value step here.
   const { data, loading, loadingMore, error, total, hasMore, loadMore } =
-    useSearchHadiths(searchText, compilers, grades);
+    useSearchHadiths(searchText, compilers, grades, selectedNarrators);
 
   const hadiths = data && data.success && Array.isArray(data.data) ? data.data : [];
 

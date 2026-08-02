@@ -287,14 +287,21 @@ async function fetchByCompilerAndNumber(supabase, compilerToDb, hit) {
   }
 }
 
-export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
+export function useSearchHadiths(searchText, compilers, grades, narrators, lang = 'en') {
   // Normalize to arrays for stable dependency comparison
   const compilersArr = Array.isArray(compilers) ? compilers : (compilers ? [compilers] : []);
   const gradesArr    = Array.isArray(grades)    ? grades    : (grades    ? [grades]    : []);
+  // Narrators need no i18n mapping. machine_clauses.english already holds one
+  // canonical name per narrator (verified: every one has exactly a single
+  // clause variant), so the chip label, the URL value and the API param are all
+  // the same string. Compare with compilers, which round-trip English key →
+  // Arabic DB value.
+  const narratorsArr = Array.isArray(narrators) ? narrators : (narrators ? [narrators] : []);
 
   // Stable string keys so useEffect fires only on actual content change
   const compilersKey = compilersArr.join(',');
   const gradesKey    = gradesArr.join(',');
+  const narratorsKey = narratorsArr.join(',');
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -321,11 +328,12 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
     params.set('lang', lang);
     if (compilersArr.length) params.set('compiler', compilersArr.map(compilerToDb).join(','));
     if (gradesArr.length)    params.set('grade',    gradesArr.map(gradeToDb).join(','));
+    if (narratorsArr.length) params.set('narrator', narratorsArr.join(','));
     params.set('limit', String(PAGE_SIZE));
     params.set('offset', String(offset));
     return params;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchText, compilersKey, gradesKey, lang]);
+  }, [searchText, compilersKey, gradesKey, narratorsKey, lang]);
 
   const fetchPage = useCallback(async (offset, signal) => {
     const params = await buildParams(offset);
@@ -349,7 +357,7 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
 
   // First page. Runs on every query change and resets everything.
   useEffect(() => {
-    const hasFilters = compilersArr.length > 0 || gradesArr.length > 0;
+    const hasFilters = compilersArr.length > 0 || gradesArr.length > 0 || narratorsArr.length > 0;
     const hasText = !!(searchText && searchText.trim());
 
     if (!hasText && !hasFilters) {
@@ -387,7 +395,7 @@ export function useSearchHadiths(searchText, compilers, grades, lang = 'en') {
 
     return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchText, compilersKey, gradesKey, lang]);
+  }, [searchText, compilersKey, gradesKey, narratorsKey, lang]);
 
   // Next page, appended. Guarded on loadingMore so a fast scroll past the
   // sentinel can't fire three overlapping requests for the same offset.

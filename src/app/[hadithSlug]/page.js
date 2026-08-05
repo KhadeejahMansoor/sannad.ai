@@ -234,10 +234,29 @@ export async function generateMetadata({ params }) {
   // The description is the hadith itself where possible — it is what a reader
   // searching a phrase is actually looking for, and it is what Google shows
   // under the link.
+  // The description is what Google prints under the link — and, unlike the
+  // title, it appears nowhere in the browser. So the chapter goes here: it is
+  // the only wording on the page that names the hadith's subject, and without
+  // it a search for "hadith about seeking privacy" has nothing to match.
+  //
+  // Chapter first, then the hadith itself, because the chapter is the part a
+  // reader scanning results is deciding on. Around 155 characters is what
+  // Google shows before cutting.
   const body = hadith.hadith_text || hadith.hadith_text_arabic || '';
-  const description = body
-    ? truncate(body, 155)
-    : `Read ${label} in Arabic and English on Sannad, with chain of narration and grading.`;
+  const topic = String(hadith.chapter_stripped_english || '').trim();
+
+  let description;
+  if (topic && body) {
+    // Reserve room for the chapter and the separator so the hadith is what
+    // gets trimmed, never the topic.
+    description = `${topic} — ${truncate(body, Math.max(40, 155 - topic.length - 3))}`;
+  } else if (body) {
+    description = truncate(body, 155);
+  } else if (topic) {
+    description = `${topic} — ${label} on Sannad, in Arabic and English.`;
+  } else {
+    description = `Read ${label} in Arabic and English on Sannad, with chain of narration and grading.`;
+  }
 
   const canonical = `${SITE}/${encodeURIComponent(slug)}`;
 

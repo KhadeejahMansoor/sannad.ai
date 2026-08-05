@@ -23,7 +23,7 @@
 import { notFound } from 'next/navigation';
 import { parseHadithSlug, isCompositeId } from '@/lib/hadithUrl';
 import { fetchHadithBySlug } from '@/lib/hadithServer';
-import { isCompilerSlug, resolveCompiler } from '@/lib/collections';
+import { isCompilerSlug, COMPILER_SLUGS } from '@/lib/compilerSlug';
 import HadithDetailClient from '../hadith/[hadithId]/HadithDetailClient';
 import HadithByCompiler from '@/component/HadithByCompiler';
 
@@ -49,26 +49,30 @@ export async function generateMetadata({ params }) {
   const { hadithSlug } = await params;
   const slug = decodeURIComponent(hadithSlug || '');
 
-  // /AbuDawud — a collection index rather than a single hadith. Told apart by
-  // the absence of a trailing number.
+  // /AbuDawud — a collection rather than a single hadith. Told apart by the
+  // absence of a trailing number.
+  //
+  // No database call here. This used to count the collection's rows to build
+  // the description, which meant a GROUP BY across all 81,000 hadiths on every
+  // page load — slow enough that Ahmad timed out and returned a server error,
+  // and slow enough that the metadata never resolved, leaving the tab showing
+  // the bare URL. The compiler list is a fixed set in lib/i18n; the slug is
+  // either in it or it isn't.
   if (isCompilerSlug(slug)) {
-    const collection = await resolveCompiler(slug);
-    if (!collection) return { title: 'Not found' };
+    const match = COMPILER_SLUGS.find(
+      (entry) => entry.slug.toLowerCase() === slug.toLowerCase()
+    );
+    if (!match) return { title: 'Not found' };
 
-    // The compiler's name as it is cited and searched — "Tirmidhi", not
-    // "Jami Tirmidhi". collection_english carries the work's formal title,
-    // which is not what anyone types.
-    const name = DISPLAY_NAME[collection.display] || collection.display;
+    const name = DISPLAY_NAME[match.key] || match.key;
 
     return {
       title: name,
-      description:
-        `Browse all ${collection.total.toLocaleString('en-US')} hadith of ` +
-        `${collection.collectionEnglish}, in Arabic and English.`,
-      alternates: { canonical: `${SITE}/${encodeURIComponent(slug)}` },
+      description: `Read the hadith of ${name} in Arabic and English on Sannad.`,
+      alternates: { canonical: `${SITE}/${match.slug}` },
       openGraph: {
         title: name,
-        url: `${SITE}/${encodeURIComponent(slug)}`,
+        url: `${SITE}/${match.slug}`,
         siteName: 'Sannad',
         type: 'website',
       },
@@ -152,15 +156,17 @@ export default async function Page({ params }) {
   const slug = decodeURIComponent(hadithSlug || '');
 
   // /AbuDawud — the collection reader. Renders exactly what
-  // /desktopcompiler?compiler=Abu+Dawud renders; the compiler comes in as a
-  // prop rather than a query param, and nothing about the UI changes.
+  // /desktopcompiler?compiler=Abu+Dawud renders; the compiler arrives as a
+  // prop instead of a query param, and nothing about the UI changes.
   if (isCompilerSlug(slug)) {
-    const collection = await resolveCompiler(slug);
-    if (!collection) notFound();
+    const match = COMPILER_SLUGS.find(
+      (entry) => entry.slug.toLowerCase() === slug.toLowerCase()
+    );
+    if (!match) notFound();
 
     return (
       <div className="min-h-screen w-full bg-[#F6F4F1] ">
-        <HadithByCompiler compiler={collection.display} />
+        <HadithByCompiler compiler={match.key} />
       </div>
     );
   }

@@ -21,11 +21,11 @@
 // the initial response.
 
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { parseHadithSlug, isCompositeId } from '@/lib/hadithUrl';
 import { fetchHadithBySlug } from '@/lib/hadithServer';
-import { isCompilerSlug, resolveCompiler, getBooks } from '@/lib/collections';
+import { isCompilerSlug, resolveCompiler } from '@/lib/collections';
 import HadithDetailClient from '../hadith/[hadithId]/HadithDetailClient';
+import HadithByCompiler from '@/component/HadithByCompiler';
 
 const SITE = 'https://sannad.ai';
 
@@ -147,41 +147,16 @@ export default async function Page({ params }) {
   const { hadithSlug } = await params;
   const slug = decodeURIComponent(hadithSlug || '');
 
-  // /AbuDawud — the collection index. A plain list of books, each linking to
-  // its own page. Nothing interactive: the reader at /desktopcompiler is where
-  // people browse; this is the path a crawler follows to reach every hadith.
+  // /AbuDawud — the collection reader. Renders exactly what
+  // /desktopcompiler?compiler=Abu+Dawud renders; the compiler comes in as a
+  // prop rather than a query param, and nothing about the UI changes.
   if (isCompilerSlug(slug)) {
     const collection = await resolveCompiler(slug);
     if (!collection) notFound();
 
-    const books = await getBooks(collection.dbValue);
-
     return (
-      <div className="min-h-screen w-full bg-[#F6F4F1]">
-        <div className="max-w-[900px] mx-auto px-4 md:px-8 py-10">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            {collection.collectionEnglish}
-          </h1>
-          <p className="text-sm text-gray-600 mb-8">
-            {collection.total.toLocaleString('en-US')} hadith across {books.length} books
-          </p>
-
-          <ul className="flex flex-col gap-2">
-            {books.map((book) => (
-              <li key={book.slug}>
-                <Link
-                  href={`/${encodeURIComponent(slug)}/${book.slug}`}
-                  className="flex items-baseline justify-between gap-4 bg-white rounded-[5px] px-4 py-3 hover:bg-[#EFE7E4] transition-colors"
-                >
-                  <span className="text-sm text-[#523230] font-medium">{book.name}</span>
-                  <span className="text-xs text-gray-500 whitespace-nowrap">
-                    {book.total.toLocaleString('en-US')}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="min-h-screen w-full bg-[#F6F4F1] ">
+        <HadithByCompiler compiler={collection.display} />
       </div>
     );
   }

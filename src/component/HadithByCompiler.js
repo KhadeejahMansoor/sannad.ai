@@ -47,7 +47,7 @@ const firstPresent = (...vals) => vals.find((v) => !isBlank(v));
 
 const PAGE_SIZE = 50;
 
-export default function HadithByCompiler() {
+export default function HadithByCompiler({ compiler: compilerProp = null }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -56,7 +56,10 @@ export default function HadithByCompiler() {
   const { language, isArabic } = useLanguage();
 
   // Read compiler from URL (English label) and translate to DB Arabic value.
-  const compilerLabel = searchParams.get('compiler') || 'Azami';
+  // The compiler can arrive two ways: as a query param on /desktopcompiler,
+  // or as a prop when this is mounted at a collection URL like /AbuDawud.
+  // The prop wins, since that route has no query string to read.
+  const compilerLabel = compilerProp || searchParams.get('compiler') || 'Azami';
   const compilerArabic = compilerToDb(compilerLabel);   // now from lib/i18n.js
 
   // Optional pre-selection from URL — when the user arrives via the MenuModal

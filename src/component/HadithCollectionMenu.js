@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../lib/LanguageContext';
 import { COMPILER_KEYS, compilerLabel } from '../lib/i18n';
+import { compilerSlug } from '../lib/collections';
 
 // The list moved to lib/i18n.js (COMPILER_KEYS) so it can't drift away from
 // the copies that used to live in FilterPopup and ResultsScreen.
@@ -36,8 +37,10 @@ export default function HadithCollectionMenu({ onClose }) {
   // Each item is a real <Link>, so the browser owns the navigation. That is what
   // makes right-click > "Open link in new tab", middle-click, and ctrl/cmd-click
   // work — a div with onClick has no href for the context menu to offer.
-  const compilerHref = (scholar) =>
-    `/desktopcompiler?compiler=${encodeURIComponent(scholar)}`;
+  // Points straight at the collection's own address (/Bukhari). It used to
+  // link to /desktopcompiler?compiler=Bukhari, which still resolves — but only
+  // by redirecting, so the reader watched the old page appear and then jump.
+  const compilerHref = (scholar) => `/${encodeURIComponent(compilerSlug(scholar))}`;
 
   const handleScholarClick = (scholar) => {
     setSelectedScholar(scholar);

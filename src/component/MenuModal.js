@@ -1,5 +1,6 @@
 'use client';
 
+import { compilerSlug } from '../lib/collections';
 import { useEffect, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -302,12 +303,15 @@ export default function MenuModal({
       onClose();
       return;
     }
-    // Always carry the compiler label since /desktopcompiler reads it from the URL.
-    const params = new URLSearchParams({ compiler: compilerLabel || '' });
+    const params = new URLSearchParams();
     if (sel.book)    params.set('book', sel.book);
     if (sel.chapter) params.set('chapter', sel.chapter);
     if (sel.section) params.set('section', sel.section);
-    router.push(`/desktopcompiler?${params.toString()}`);
+    // The compiler is the path now (/Bukhari); book, chapter and section stay
+    // as params, since they narrow the view rather than identify the page.
+    const query = params.toString();
+    const slug = compilerSlug(compilerLabel || '');
+    router.push(`/${encodeURIComponent(slug)}${query ? `?${query}` : ''}`);
     onClose();
   };
 

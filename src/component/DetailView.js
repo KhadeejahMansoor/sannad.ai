@@ -1,4 +1,5 @@
 "use client";
+import Link from 'next/link';
 import Header from "./Header";
 import BottomPopupMenu from "./BottomPopupMenu";
 import LanguageMenu from "./LanguageMenu";
@@ -39,7 +40,7 @@ const notoSansArabic = Noto_Sans_Arabic({
  weight: ["400", "700"],
 });
 
-export default function DetailView({ hadith, onClose, selectedLanguage, resultsQueryString, asPage = false, defaultExpanded, onPrev, onNext, hasPrev = false, hasNext = false }) {
+export default function DetailView({ hadith, onClose, selectedLanguage, resultsQueryString, asPage = false, defaultExpanded, onPrev, onNext, hasPrev = false, hasNext = false, prevHref = null, nextHref = null }) {
  const [showBottomMenu, setShowBottomMenu] = useState(false);
  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
  const [showHadithCollectionMenu, setShowHadithCollectionMenu] = useState(false);
@@ -360,6 +361,23 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
      to Bukhari 7563, the compiler's last. So prev/next are effectively always
      available; the disabled state only survives for a compiler with a single
      hadith, where wrapping would land you back where you started. */}
+ {/* Rendered as a real <a> when the neighbour's address is known. It behaved
+     as a button before, and a button is invisible to a crawler: every hadith
+     page was an island with nothing linking into it. Same handler, same
+     classes, same appearance — the difference is that the href exists in the
+     HTML. */}
+ {prevHref ? (
+ <Link
+ aria-label="Previous"
+ href={prevHref}
+ onClick={(e) => { if (onPrev) { e.preventDefault(); onPrev(); } }}
+ className="w-8 h-8 bg-[#523230] rounded-[5px] flex items-center justify-center transition-colors hover:bg-[#412725] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#523230]"
+ >
+ <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+ <path d="M5.83398 9.99667H17.5007M10.834 15L5.83398 10L10.834 5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+ </svg>
+ </Link>
+ ) : (
  <button
  aria-label="Previous"
  onClick={onPrev}
@@ -370,6 +388,19 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <path d="M5.83398 9.99667H17.5007M10.834 15L5.83398 10L10.834 5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
  </svg>
  </button>
+  )}
+ {nextHref ? (
+ <Link
+ aria-label="Next"
+ href={nextHref}
+ onClick={(e) => { if (onNext) { e.preventDefault(); onNext(); } }}
+ className="w-8 h-8 bg-[#523230] rounded-[5px] flex items-center justify-center transition-colors hover:bg-[#412725] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#523230]"
+ >
+ <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+ <path d="M14.166 9.99667H2.49935M9.16602 15L14.166 10L9.16602 5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+ </svg>
+ </Link>
+ ) : (
  <button
  aria-label="Next"
  onClick={onNext}
@@ -380,6 +411,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <path d="M14.166 9.99667H2.49935M9.16602 15L14.166 10L9.16602 5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
  </svg>
  </button>
+ )}
  </div>
  </div>
 

@@ -115,6 +115,16 @@ export default function HadithDetailClient({ hadithId, initialHadith = null, ini
   const handlePrev = () => goTo(neighbors.prev);
   const handleNext = () => goTo(neighbors.next);
 
+  // The same address goTo would navigate to, handed to DetailView so the
+  // arrows can render as real links. Without an href they were buttons, and a
+  // button leaves no trail for a crawler to follow — every hadith page sat
+  // unlinked from every other.
+  const hrefFor = (neighbor) => {
+    if (!neighbor?.hadith_id) return null;
+    const slug = hadithSlug(neighbor.compiler, neighbor.hadith_number) || neighbor.hadith_id;
+    return `/${encodeURIComponent(slug)}`;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen w-full bg-[#F6F4F1] flex items-center justify-center">
@@ -147,6 +157,8 @@ export default function HadithDetailClient({ hadithId, initialHadith = null, ini
       onNext={handleNext}
       hasPrev={!!neighbors.prev}
       hasNext={!!neighbors.next}
+      prevHref={hrefFor(neighbors.prev)}
+      nextHref={hrefFor(neighbors.next)}
     />
   );
 }

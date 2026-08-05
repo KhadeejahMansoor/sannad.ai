@@ -44,7 +44,17 @@ export async function generateMetadata({ params }) {
   }
 
   const { hadith } = result;
-  const compiler = hadith.compiler || 'Hadith';
+  // `compiler` holds the Arabic name (أبو داود). The title has to be the name
+  // people actually type into a search box, so the English collection wins
+  // where it exists — "Sunan Abu Dawud" trimmed down to "Abu Dawud", which is
+  // how the reference is written and searched.
+  const englishName = String(hadith.collection_english || '')
+    .replace(/^(Sunan|Sahih|Jami['`’]?|Muwatta|Musnad)\s+/i, '')
+    // "al-Bukhari" / "at-Tirmidhi" / "an-Nasai" — the article is part of the
+    // formal name but nobody searches for it, so it goes.
+    .replace(/^(al|at|an|as|ash)-/i, '')
+    .trim();
+  const compiler = englishName || hadith.compiler || 'Hadith';
   const number = hadith.hadith_number ?? '';
   const label = `${compiler} ${number}`.trim();
 

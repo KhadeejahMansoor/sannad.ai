@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
 
   const result = await fetchHadithBySlug(slug);
   if (!result) {
-    return { title: 'Sannad, hadith not found' };
+    return { title: 'Hadith not found' };
   }
 
   const { hadith } = result;
@@ -58,10 +58,10 @@ export async function generateMetadata({ params }) {
   const number = hadith.hadith_number ?? '';
   const label = `${compiler} ${number}`.trim();
 
-  // Brand plus reference, nothing else. The chapter name was tried here and
-  // read as clutter — the citation is what identifies the page, and the
-  // description below already carries the searchable wording.
-  const title = `Sannad, ${label}`;
+  // The reference alone. The brand was tried as a prefix and pushed the part
+  // that identifies the page off the end of a narrow tab; Google shows the
+  // domain beside the title anyway, so repeating it here buys nothing.
+  const title = label;
 
   // The description is the hadith itself where possible — it is what a reader
   // searching a phrase is actually looking for, and it is what Google shows

@@ -55,15 +55,19 @@ export async function generateMetadata({ params }) {
     const collection = await resolveCompiler(slug);
     if (!collection) return { title: 'Not found' };
 
+    // The compiler's name as it is cited and searched — "Tirmidhi", not
+    // "Jami Tirmidhi". collection_english carries the work's formal title,
+    // which is not what anyone types.
     const name = DISPLAY_NAME[collection.display] || collection.display;
+
     return {
-      title: collection.collectionEnglish,
+      title: name,
       description:
         `Browse all ${collection.total.toLocaleString('en-US')} hadith of ` +
-        `${collection.collectionEnglish}, book by book, in Arabic and English.`,
+        `${collection.collectionEnglish}, in Arabic and English.`,
       alternates: { canonical: `${SITE}/${encodeURIComponent(slug)}` },
       openGraph: {
-        title: collection.collectionEnglish,
+        title: name,
         url: `${SITE}/${encodeURIComponent(slug)}`,
         siteName: 'Sannad',
         type: 'website',

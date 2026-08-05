@@ -58,6 +58,15 @@ export async function generateMetadata({ params }) {
   const number = hadith.hadith_number ?? '';
   const label = `${compiler} ${number}`.trim();
 
+  // The reference alone ("Abu Dawud 1") tells a reader nothing and matches no
+  // search but the exact citation. The chapter is the subject line the hadith
+  // was filed under, so it carries the words someone actually types — "seeking
+  // privacy", "relieving oneself". Capped so the tab and the search result
+  // don't truncate mid-phrase.
+  const topic = String(hadith.chapter_stripped_english || '').trim();
+  const heading = topic && topic.length <= 55 ? `${label}: ${topic}` : label;
+  const title = `${heading} — Sannad`;
+
   // The description is the hadith itself where possible — it is what a reader
   // searching a phrase is actually looking for, and it is what Google shows
   // under the link.
@@ -69,11 +78,11 @@ export async function generateMetadata({ params }) {
   const canonical = `${SITE}/${encodeURIComponent(slug)}`;
 
   return {
-    title: `${label} — Sannad`,
+    title,
     description,
     alternates: { canonical },
     openGraph: {
-      title: `${label} — Sannad`,
+      title,
       description,
       url: canonical,
       siteName: 'Sannad',
@@ -81,7 +90,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: 'summary',
-      title: `${label} — Sannad`,
+      title,
       description,
     },
   };

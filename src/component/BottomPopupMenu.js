@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import LanguageMenu from './LanguageMenu';
 import { useLanguage } from '../lib/LanguageContext';
 import { COMPILER_KEYS, compilerLabel } from '../lib/i18n';
+import { compilerSlug } from '../lib/compilerSlug';
 
 export default function BottomPopupMenu({
   onClose,
@@ -46,8 +47,10 @@ export default function BottomPopupMenu({
   // browser owns the navigation: right-click > "Open link in new tab",
   // middle-click, and ctrl/cmd-click all work. A button has no href, so the
   // context menu has nothing to offer.
-  const compilerHref = (scholar) =>
-    `/desktopcompiler?compiler=${encodeURIComponent(scholar)}`;
+  // Each collection has its own address now (/Bukhari, /IbnMajah). This used
+  // to point at /desktopcompiler?compiler=Bukhari, which still resolves — but
+  // by redirect, so the reader saw the old page load and then jump.
+  const compilerHref = (scholar) => `/${encodeURIComponent(compilerSlug(scholar))}`;
 
   // ✅ NEW: Handle About Hadith click to navigate to Timeline
   const handleAboutHadithClick = () => {

@@ -201,17 +201,24 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
      its chips floating partway up while the other sat lower. Pinning both chip
      rows to the bottom of their card lines them up at any text length. */}
  <div className={`bg-white rounded-[5px] p-6 flex flex-col`}>
- <h3 className={`text-sm font-semibold mb-3 text-gray-900`}>
+{/* h2, not h3. Tailwind's preflight zeroes heading margins and sizes, so
+     the tag change is invisible — but the page had no heading structure at
+     all, and a crawler reads headings to work out what a page is about. */}
+ <h2 className={`text-sm font-semibold mb-3 text-gray-900`}>
  {englishNarrator}
- </h3>
+ </h2>
  <p className={`text-sm leading-[22px] mt-2 mb-5 whitespace-pre-line text-black`}>
  {isNotHadith ? 'No translation available' : <HadithText text={englishText} />}
  </p>
  <div className="flex items-center justify-between gap-3 mt-auto">
  <div className="flex items-center gap-3">
- <span className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap" style={{ color: "#6B5B55" }}>
+{/* The page's h1. It was a span, which left the page with no h1 at all —
+     the single heading a search engine weighs most. The reference is what
+     identifies this page, so it is the honest choice. Classes unchanged;
+     inline-flex keeps it laid out exactly as the chip it already was. */}
+ <h1 className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium whitespace-nowrap" style={{ color: "#6B5B55" }}>
  {hadithIdLabel}
- </span>
+ </h1>
  <span
  onClick={() => setShowGradingDetail(p => !p)}
  className="h-[32px] px-4 inline-flex items-center justify-center bg-[#E6DEDA] rounded-[10px] text-sm font-medium cursor-pointer" style={{ color: "#6B5B55" }}

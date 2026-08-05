@@ -7,14 +7,26 @@ import DetailView from '@/component/DetailView';
 import { parseHadithSlug, hadithSlug } from '@/lib/hadithUrl';
 import { compilerToDb } from '@/lib/i18n';
 
-export default function HadithDetailClient({ hadithId }) {
+// initialHadith / initialNeighbors are supplied by the server component at
+// /[hadithSlug]. When they are present this component renders the hadith on
+// the first paint and never fetches — the browser-side load below is kept only
+// for the callers that still mount this without server data (/hadith/<id>).
+export default function HadithDetailClient({ hadithId, initialHadith = null, initialNeighbors = null }) {
   const router = useRouter();
-  const [hadith, setHadith] = useState(null);
-  const [neighbors, setNeighbors] = useState({ prev: null, next: null });
-  const [loading, setLoading] = useState(true);
+  const [hadith, setHadith] = useState(initialHadith);
+  const [neighbors, setNeighbors] = useState(initialNeighbors || { prev: null, next: null });
+  const [loading, setLoading] = useState(!initialHadith);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Already rendered from the server payload for this slug — nothing to do.
+    if (initialHadith) {
+      setHadith(initialHadith);
+      setNeighbors(initialNeighbors || { prev: null, next: null });
+      setLoading(false);
+      return;
+    }
+
     let cancelled = false;
     async function load() {
       try {
@@ -87,7 +99,7 @@ export default function HadithDetailClient({ hadithId }) {
     }
     load();
     return () => { cancelled = true; };
-  }, [hadithId]);
+  }, [hadithId, initialHadith, initialNeighbors]);
 
   const handleClose = () => router.back();
 

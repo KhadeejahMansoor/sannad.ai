@@ -12,7 +12,7 @@
 // a link into a specific chapter still lands on that chapter.
 
 import { permanentRedirect } from 'next/navigation';
-import { COMPILER_SLUGS, compilerSlug } from '@/lib/collections';
+import { COMPILER_SLUGS, compilerSlug } from '@/lib/compilerSlug';
 
 export default async function DesktopCompilerPage({ searchParams }) {
   const params = await searchParams;

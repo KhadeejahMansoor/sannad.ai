@@ -10,54 +10,13 @@
 // links, server-rendered, giving every hadith page a path in.
 
 import { pool } from '@/lib/db';
-import { compilerToDb, COMPILER_KEYS } from '@/lib/i18n';
+import { compilerToDb } from '@/lib/i18n';
+// Slug naming lives in its own module because the menus import it from the
+// browser, and anything in this file drags `pg` along with it.
+import { compilerNameFromSlug } from '@/lib/compilerSlug';
+export { compilerSlug, COMPILER_SLUGS, compilerNameFromSlug, isCompilerSlug } from '@/lib/compilerSlug';
 
 const AZAMI = 'الأعظمي';
-
-// The canonical slug for each compiler: the key with its spaces removed.
-// "Ibn Majah" -> "IbnMajah", "Abu Dawud" -> "AbuDawud". Same shape as the
-// hadith slugs sitting one level down (/AbuDawud, /AbuDawud1).
-export function compilerSlug(key) {
-  return String(key || '').replace(/\s+/g, '');
-}
-
-// Every collection URL the site answers on. "Other" is excluded — it is a
-// filter bucket, not a compiler, and matches nothing in the database.
-export const COMPILER_SLUGS = COMPILER_KEYS
-  .filter((key) => key !== 'Other')
-  .map((key) => ({ key, slug: compilerSlug(key) }));
-
-// Names that reach us in a form i18n doesn't recognise. The hadith slugs use
-// "NasaiSughra" where the compiler key is plain "Nasai", so /NasaiSughra has
-// to resolve rather than 404.
-const NAME_ALIASES = {
-  'Nasai Sughra': 'Nasai',
-  'Nasai Kubra': 'Nasai',
-};
-
-// "AbuDawud" -> "Abu Dawud". Collection slugs are CamelCase, matching the
-// hadith slugs they sit above (/AbuDawud, /AbuDawud1).
-export function compilerNameFromSlug(slug) {
-  const spaced = String(slug || '')
-    .replace(/[-_]+/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .trim();
-  return NAME_ALIASES[spaced] || spaced;
-}
-
-// A collection slug is a name with no trailing digits — /AbuDawud, not
-// /AbuDawud1. That single rule is what lets both live at the root.
-export function isCompilerSlug(slug) {
-  return /^[A-Za-z][A-Za-z-]*$/.test(String(slug || ''));
-}
-
-// "Prayer (Kitab Al-Salat)" -> "prayer-kitab-al-salat"
-export function slugifyBook(name) {
-  return String(name || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
 
 // Resolve a URL slug to the Arabic value stored in the compiler column, and
 // confirm the collection actually exists. Returns null for a slug that names

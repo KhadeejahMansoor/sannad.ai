@@ -1,0 +1,48 @@
+// src/lib/compilerSlug.js
+//
+// Slug naming for collections, kept apart from lib/collections.js.
+//
+// These three functions are needed in the browser — the menus build hrefs with
+// them — while everything else in lib/collections.js talks to Postgres. Sharing
+// one file meant importing it from a client component pulled `pg` into the
+// browser bundle, which does not build.
+//
+// Nothing here touches the database. Pure string work.
+
+import { COMPILER_KEYS } from '@/lib/i18n';
+
+// The canonical slug for each compiler: the key with its spaces removed.
+// "Ibn Majah" -> "IbnMajah", "Abu Dawud" -> "AbuDawud". Same shape as the
+// hadith slugs sitting one level down (/AbuDawud, /AbuDawud1).
+export function compilerSlug(key) {
+  return String(key || '').replace(/\s+/g, '');
+}
+
+// Every collection URL the site answers on. "Other" is excluded — it is a
+// filter bucket, not a compiler, and matches nothing in the database.
+export const COMPILER_SLUGS = COMPILER_KEYS
+  .filter((key) => key !== 'Other')
+  .map((key) => ({ key, slug: compilerSlug(key) }));
+
+// Names that reach us in a form i18n doesn't recognise. The hadith slugs use
+// "NasaiSughra" where the compiler key is plain "Nasai", so /NasaiSughra has
+// to resolve rather than 404.
+const NAME_ALIASES = {
+  'Nasai Sughra': 'Nasai',
+  'Nasai Kubra': 'Nasai',
+};
+
+// "AbuDawud" -> "Abu Dawud".
+export function compilerNameFromSlug(slug) {
+  const spaced = String(slug || '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .trim();
+  return NAME_ALIASES[spaced] || spaced;
+}
+
+// A collection slug is a name with no trailing digits — /AbuDawud, not
+// /AbuDawud1. That single rule is what lets both live at the root.
+export function isCompilerSlug(slug) {
+  return /^[A-Za-z][A-Za-z-]*$/.test(String(slug || ''));
+}

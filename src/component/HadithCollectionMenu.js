@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '../lib/LanguageContext';
 import { COMPILER_KEYS, compilerLabel } from '../lib/i18n';
-import { compilerSlug } from '../lib/collections';
+import { compilerSlug } from '../lib/compilerSlug';
 
 // The list moved to lib/i18n.js (COMPILER_KEYS) so it can't drift away from
 // the copies that used to live in FilterPopup and ResultsScreen.

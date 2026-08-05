@@ -1,6 +1,6 @@
 'use client';
 
-import { compilerSlug } from '../lib/collections';
+import { compilerSlug } from '../lib/compilerSlug';
 import { useEffect, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';

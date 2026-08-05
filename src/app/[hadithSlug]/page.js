@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
 
   const result = await fetchHadithBySlug(slug);
   if (!result) {
-    return { title: 'Hadith not found — Sannad' };
+    return { title: 'Sannad, hadith not found' };
   }
 
   const { hadith } = result;
@@ -58,14 +58,10 @@ export async function generateMetadata({ params }) {
   const number = hadith.hadith_number ?? '';
   const label = `${compiler} ${number}`.trim();
 
-  // The reference alone ("Abu Dawud 1") tells a reader nothing and matches no
-  // search but the exact citation. The chapter is the subject line the hadith
-  // was filed under, so it carries the words someone actually types — "seeking
-  // privacy", "relieving oneself". Capped so the tab and the search result
-  // don't truncate mid-phrase.
-  const topic = String(hadith.chapter_stripped_english || '').trim();
-  const heading = topic && topic.length <= 55 ? `${label}: ${topic}` : label;
-  const title = `${heading} — Sannad`;
+  // Brand plus reference, nothing else. The chapter name was tried here and
+  // read as clutter — the citation is what identifies the page, and the
+  // description below already carries the searchable wording.
+  const title = `Sannad, ${label}`;
 
   // The description is the hadith itself where possible — it is what a reader
   // searching a phrase is actually looking for, and it is what Google shows

@@ -44,17 +44,31 @@ export async function generateMetadata({ params }) {
   }
 
   const { hadith } = result;
-  // `compiler` holds the Arabic name (أبو داود). The title has to be the name
-  // people actually type into a search box, so the English collection wins
-  // where it exists — "Sunan Abu Dawud" trimmed down to "Abu Dawud", which is
-  // how the reference is written and searched.
-  const englishName = String(hadith.collection_english || '')
+
+  // The compiler name comes from the slug the reader is already looking at, so
+  // /Azami1 is titled "Azami 1" and /AbuDawud1 is titled "Abu Dawud 1".
+  //
+  // collection_english was tried first and is wrong for at least one source:
+  // for Azami it holds the book's title (Kamil), not the compiler's name, so
+  // /Azami1 came out as "Kamil 1". The database `compiler` column is no better
+  // on its own — it is Arabic (أبو داود).
+  const parsed = parseHadithSlug(slug);
+
+  // Slugs are written CamelCase (AbuDawud, IbnMajah); split the words back out.
+  const fromSlug = parsed?.compiler
+    ? String(parsed.compiler).replace(/([a-z])([A-Z])/g, '$1 $2').trim()
+    : '';
+
+  // Only for old composite-id links (sevenbooks-59726), which carry no
+  // compiler in the URL to read.
+  const fromCollection = String(hadith.collection_english || '')
     .replace(/^(Sunan|Sahih|Jami['`’]?|Muwatta|Musnad)\s+/i, '')
     // "al-Bukhari" / "at-Tirmidhi" / "an-Nasai" — the article is part of the
     // formal name but nobody searches for it, so it goes.
     .replace(/^(al|at|an|as|ash)-/i, '')
     .trim();
-  const compiler = englishName || hadith.compiler || 'Hadith';
+
+  const compiler = fromSlug || fromCollection || hadith.compiler || 'Hadith';
   const number = hadith.hadith_number ?? '';
   const label = `${compiler} ${number}`.trim();
 

@@ -34,6 +34,15 @@ function truncate(text, max) {
   return t.slice(0, t.lastIndexOf(' ', max) || max).trim() + '…';
 }
 
+// Some slugs carry a qualifier that distinguishes one work from another but
+// isn't how the reference is written or searched. "Nasai Sughra 1" is filed,
+// cited and typed as "Nasai 1".
+//
+// Keyed on the split form, so add entries as "Two Words", not "TwoWords".
+const DISPLAY_NAME = {
+  'Nasai Sughra': 'Nasai',
+};
+
 export async function generateMetadata({ params }) {
   const { hadithSlug } = await params;
   const slug = decodeURIComponent(hadithSlug || '');
@@ -45,22 +54,25 @@ export async function generateMetadata({ params }) {
 
   const { hadith } = result;
 
-  // The compiler name comes from the slug the reader is already looking at, so
-  // /Azami1 is titled "Azami 1" and /AbuDawud1 is titled "Abu Dawud 1".
+  // The compiler name is read off the slug the reader is already looking at,
+  // so /Azami1 is titled "Azami 1" and /AbuDawud1 is "Abu Dawud 1".
   //
-  // collection_english was tried first and is wrong for at least one source:
-  // for Azami it holds the book's title (Kamil), not the compiler's name, so
-  // /Azami1 came out as "Kamil 1". The database `compiler` column is no better
-  // on its own — it is Arabic (أبو داود).
-  const parsed = parseHadithSlug(slug);
+  // Taken from the raw slug text rather than parseHadithSlug: the parser
+  // returns nothing for some shapes, and every fallback below is wrong in at
+  // least one case. collection_english holds the book's title, not the
+  // compiler's — Azami's is "Jami al-Kamil", which titled /Azami1 as
+  // "Kamil 1". The database `compiler` column is Arabic (أبو داود).
+  //
+  // Composite ids (sevenbooks-59726) carry no compiler, so they fall through.
+  const fromSlug = isCompositeId(slug)
+    ? ''
+    : slug
+        .replace(/\d+$/, '')            // drop the trailing hadith number
+        .replace(/[-_]+/g, ' ')          // Abu-Dawud → Abu Dawud
+        .replace(/([a-z])([A-Z])/g, '$1 $2') // AbuDawud → Abu Dawud
+        .trim();
 
-  // Slugs are written CamelCase (AbuDawud, IbnMajah); split the words back out.
-  const fromSlug = parsed?.compiler
-    ? String(parsed.compiler).replace(/([a-z])([A-Z])/g, '$1 $2').trim()
-    : '';
-
-  // Only for old composite-id links (sevenbooks-59726), which carry no
-  // compiler in the URL to read.
+  // Only reached by those composite-id links.
   const fromCollection = String(hadith.collection_english || '')
     .replace(/^(Sunan|Sahih|Jami['`’]?|Muwatta|Musnad)\s+/i, '')
     // "al-Bukhari" / "at-Tirmidhi" / "an-Nasai" — the article is part of the
@@ -68,7 +80,8 @@ export async function generateMetadata({ params }) {
     .replace(/^(al|at|an|as|ash)-/i, '')
     .trim();
 
-  const compiler = fromSlug || fromCollection || hadith.compiler || 'Hadith';
+  const rawCompiler = fromSlug || fromCollection || hadith.compiler || 'Hadith';
+  const compiler = DISPLAY_NAME[rawCompiler] || rawCompiler;
   const number = hadith.hadith_number ?? '';
   const label = `${compiler} ${number}`.trim();
 

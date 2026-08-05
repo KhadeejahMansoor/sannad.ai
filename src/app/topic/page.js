@@ -6,6 +6,7 @@
 // every topic page a link from somewhere: a page nothing links to is a page a
 // crawler reaches only through the sitemap, and treats accordingly.
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import Header from '@/component/Header';
 import { getTopics } from '@/lib/topics';
@@ -33,7 +34,9 @@ export default async function TopicIndexPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#F6F4F1]">
-      <Header />
+      <Suspense fallback={<div className="w-full h-[64px] bg-[#523230]" />}>
+        <Header />
+      </Suspense>
 
       <div className="max-w-[900px] mx-auto px-4 md:px-8 py-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Topics</h1>

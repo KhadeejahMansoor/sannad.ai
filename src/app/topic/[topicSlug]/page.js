@@ -7,10 +7,11 @@
 // crawler that reads the HTML once. This page is the opposite: everything in
 // the first response, no scrolling required.
 
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/component/Header';
-import { getTopic, getTopics } from '@/lib/topics';
+import { getTopic } from '@/lib/topics';
 import { hadithSlug as buildHadithSlug } from '@/lib/hadithUrl';
 import { translateGrade } from '@/lib/i18n';
 
@@ -20,12 +21,10 @@ const SITE = 'https://sannad.ai';
 // is no reason to query on every request.
 export const revalidate = 86400;
 
-// Pre-render all ~100 at build time. There are few enough that the cost is
-// trivial, and it means a crawler is never the one waiting on a cold query.
-export async function generateStaticParams() {
-  const topics = await getTopics();
-  return topics.map((t) => ({ topicSlug: t.slug }));
-}
+// Deliberately not pre-rendered with generateStaticParams. That runs during
+// the build, so a build that cannot reach the database fails outright — the
+// sitemap was written that way first and did exactly that. The daily revalidate
+// above means the query runs at most once a day per topic anyway.
 
 export async function generateMetadata({ params }) {
   const { topicSlug } = await params;
@@ -65,7 +64,11 @@ export default async function TopicPage({ params }) {
 
   return (
     <div className="min-h-screen w-full bg-[#F6F4F1]">
-      <Header />
+      {/* Header reads useSearchParams, which Next requires be wrapped when the
+          page is statically rendered. */}
+      <Suspense fallback={<div className="w-full h-[64px] bg-[#523230]" />}>
+        <Header />
+      </Suspense>
 
       <div className="max-w-[900px] mx-auto px-4 md:px-8 py-8">
         {/* The h1 is the whole point of the page. Without a heading naming the

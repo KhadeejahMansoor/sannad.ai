@@ -9,6 +9,13 @@ export const metadata = {
   icons: {
     icon: '/favicon.svg',
   },
+  // Proves ownership of the domain to Google Search Console. Next renders this
+  // as <meta name="google-site-verification"> in the head of every page.
+  // Removing it un-verifies the property, so it stays even after the check
+  // passes.
+  verification: {
+    google: 'GVo_JDbw9GyOkk0g5BtegBuynELVzAgdGBKfIpjKmx4',
+  },
 };
 
 export default function RootLayout({ children }) {

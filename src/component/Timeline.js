@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import Header from './Header';
 import { useRouter } from 'next/navigation';
 import BottomPopupMenu from './BottomPopupMenu';
@@ -27,7 +27,6 @@ import { AnimatePresence } from 'framer-motion';
 const TIMELINES = {
   Companions: {
     startYear: 632,
-    pxPerYear: 16,
     tickInterval: 10,
     people: [
       { year: 632, name: 'Prophet ﷺ' },
@@ -49,7 +48,6 @@ const TIMELINES = {
 
   'After the Companions': {
     startYear: 702,
-    pxPerYear: 16,
     tickInterval: 10,
     people: [
       { year: 702, name: 'Abban bin Uthman bin Affan' },
@@ -66,7 +64,6 @@ const TIMELINES = {
 
   'Hadith compilers': {
     startYear: 796,
-    pxPerYear: 9,
     tickInterval: 25,
     people: [
       { year: 796, name: 'Malik' },
@@ -94,7 +91,6 @@ const TIMELINES = {
 
   'Classical scholars': {
     startYear: 1064,
-    pxPerYear: 4,
     tickInterval: 100,
     people: [
       { year: 1064, name: 'Ibn Hazm' },
@@ -118,7 +114,6 @@ const TIMELINES = {
 
   'Contemporary scholars': {
     startYear: 1943,
-    pxPerYear: 16,
     tickInterval: 10,
     people: [
       { year: 1943, name: 'Thanvi' },
@@ -145,28 +140,28 @@ const CATEGORIES = Object.keys(TIMELINES);
 const AXIS_X = 68;
 const NAME_X = AXIS_X + 26;
 const NAME_LINE = 24;
-/* Gap between consecutive rows is clamped. MIN keeps names from
-   colliding; MAX stops a long empty century from stretching the page.
-   Distance still tracks elapsed time between neighbours, it just stops
-   growing past MAX — which is what lets every era fit one screen. */
+/* Floor on the gap between consecutive rows — below this, names touch.
+   There is no ceiling: whatever height the viewport gives us above the
+   floor is shared out in proportion to elapsed time, so the timeline
+   fills the page instead of stopping short. */
 const MIN_GAP = 22;
-const MAX_GAP = 38;
+const BOTTOM_PAD = 28;
 
-/* Compressed proportional axis.
+/* Viewport-filling proportional axis.
  *
- * A true axis (y = (year - startYear) * pxPerYear) made Classical
- * scholars 3088px tall — 772 years, most of them empty, all rendered at
- * full scale. You scrolled past the timeline instead of seeing it.
+ * Earlier versions picked a fixed pxPerYear. A true scale made Classical
+ * scholars 3088px tall, so you scrolled; clamping the gaps fixed the
+ * scrolling but then short eras stopped halfway down the page and left
+ * the rest empty.
  *
- * So the gap between consecutive rows is proportional but clamped
- * between MIN_GAP and MAX_GAP. Neighbours a few years apart still sit
- * closer than neighbours decades apart; a 120-year void just stops
- * costing 480px of blank spine. Tick years are interpolated into
- * whatever span their interval landed in, so the ruler still reads
- * correctly against the names.
+ * So the scale is derived from the space available instead of chosen in
+ * advance. Every row gets MIN_GAP, and whatever height is left over is
+ * shared out in proportion to the years between neighbours. A dense era
+ * squeezes toward the floor; a sparse one stretches to the bottom of the
+ * viewport. Either way it ends where the page ends.
  *
  * People sharing a year share one dot, names stacked beneath it. */
-function buildLayout(people, startYear, pxPerYear, tickInterval, lastYear) {
+function buildLayout(people, tickInterval, lastYear, startYear, available) {
   const byYear = new Map();
   for (const p of [...people].sort((a, b) => a.year - b.year)) {
     if (!byYear.has(p.year)) byYear.set(p.year, []);
@@ -174,22 +169,31 @@ function buildLayout(people, startYear, pxPerYear, tickInterval, lastYear) {
   }
 
   const anchorYears = [...byYear.keys()];
+  const stacks = anchorYears.map((y) => (byYear.get(y).length - 1) * NAME_LINE);
+  const deltas = anchorYears.slice(0, -1).map((y, i) => anchorYears[i + 1] - y);
+
+  const stackTotal = stacks.slice(0, -1).reduce((a, b) => a + b, 0);
+  const floorTotal = stackTotal + deltas.length * MIN_GAP;
+  const yearTotal = deltas.reduce((a, b) => a + b, 0) || 1;
+
+  /* Surplus is whatever the viewport offers beyond the floor. Zero when
+     the era is too dense to fit — then every gap is MIN_GAP and the page
+     scrolls, which is the only honest outcome for 20 names on a short
+     screen. */
+  const surplus = Math.max(0, (available || 0) - floorTotal - NAME_LINE);
+
   const groups = [];
   let y = 0;
 
   anchorYears.forEach((year, i) => {
-    const names = byYear.get(year);
-    groups.push({ year, names, y });
-
-    if (i < anchorYears.length - 1) {
-      const stack = (names.length - 1) * NAME_LINE;
-      const span = (anchorYears[i + 1] - year) * pxPerYear;
-      y += stack + Math.min(MAX_GAP, Math.max(MIN_GAP, span));
+    groups.push({ year, names: byYear.get(year), y });
+    if (i < deltas.length) {
+      y += stacks[i] + MIN_GAP + (surplus * deltas[i]) / yearTotal;
     }
   });
 
-  /* Map any year onto the compressed scale by interpolating inside the
-     segment it falls in, so a tick never contradicts the names around it. */
+  /* Map any year onto this scale by interpolating inside its segment, so
+     a tick never contradicts the names around it. */
   const yFor = (year) => {
     if (year <= groups[0].year) return groups[0].y;
     for (let i = 0; i < groups.length - 1; i++) {
@@ -226,12 +230,30 @@ const Timeline = () => {
 
   const config = TIMELINES[activeCategory];
   const lastYear = Math.max(...config.people.map((p) => p.year));
+
+  /* How much vertical room the spine actually has: everything from its
+     own top edge to the bottom of the window. Measured rather than
+     assumed, because the header, tabs and caption above it all vary. */
+  const spineRef = useRef(null);
+  const [available, setAvailable] = useState(0);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!spineRef.current) return;
+      const top = spineRef.current.getBoundingClientRect().top;
+      setAvailable(Math.max(0, window.innerHeight - top - BOTTOM_PAD));
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [activeCategory]);
+
   const { groups, ticks, height: spineHeight } = buildLayout(
     config.people,
-    config.startYear,
-    config.pxPerYear,
     config.tickInterval,
-    lastYear
+    lastYear,
+    config.startYear,
+    available
   );
 
   const handleCategoryClick = (name) => {
@@ -247,7 +269,7 @@ const Timeline = () => {
   // Height is the last row's baseline plus one line — no trailing padding.
   // It used to add 48px, which left the spine dangling below the last name.
   const renderSpine = () => (
-    <div className="relative" style={{ height: spineHeight + NAME_LINE }}>
+    <div ref={spineRef} className="relative" style={{ height: spineHeight + NAME_LINE }}>
       {/* vertical rule */}
       <div
         className="absolute top-0 bg-[#E2DBD6]"

@@ -244,12 +244,14 @@ const Timeline = () => {
   /* ---------------------------------------------------------------- *
    * The spine. One node per person, plus one dot per year-group.
    * ---------------------------------------------------------------- */
+  // Height is the last row's baseline plus one line — no trailing padding.
+  // It used to add 48px, which left the spine dangling below the last name.
   const renderSpine = () => (
-    <div className="relative" style={{ height: spineHeight + 48 }}>
+    <div className="relative" style={{ height: spineHeight + NAME_LINE }}>
       {/* vertical rule */}
       <div
         className="absolute top-0 bg-[#E2DBD6]"
-        style={{ left: AXIS_X, width: 1, height: spineHeight + 8 }}
+        style={{ left: AXIS_X, width: 1, height: spineHeight }}
       />
 
       {/* tick years, positioned by the shared pass so a tick can never

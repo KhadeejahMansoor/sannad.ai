@@ -623,7 +623,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  <MatchedReferenceChips
    value={hadith?.matched_hadith}
    onSelect={openRef} isArabic={isArabic}
-   emptyText={'No references are available.'}
+   emptyText={isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No references are available.'}
  />
  </div>
 
@@ -815,7 +815,7 @@ export default function DetailView({ hadith, onClose, selectedLanguage, resultsQ
  {activeTab === "Reference" && (
  <div className="bg-white p-4 rounded-[5px]">
  <div className={`text-black text-xs ${getFont()}`} dir={getDir()}>
- <MatchedReferenceChips value={hadith?.matched_hadith} onSelect={openRef} isArabic={isArabic} emptyText={'No references are available.'} />
+ <MatchedReferenceChips value={hadith?.matched_hadith} onSelect={openRef} isArabic={isArabic} emptyText={isArabic ? 'لا توجد مراجع خارجية لهذا الحديث.' : 'No references are available.'} />
  </div>
  </div>
  )}

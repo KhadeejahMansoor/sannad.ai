@@ -142,9 +142,16 @@ export default function MatchedReferenceChips({ value, onSelect, emptyText, isAr
     .filter(Boolean);
 
   if (chips.length === 0) {
+    // The fallback is bilingual, not an English literal. isArabic is already
+    // resolved above, so a caller that omits emptyText still gets the right
+    // language — previously three DetailView call sites passed a hardcoded
+    // English string and this default silently agreed with them.
     return (
       <p className={`text-black text-start ${isArabic ? "text-sm" : "text-xs"}`}>
-        {emptyText || "No references are available."}
+        {emptyText ||
+          (isArabic
+            ? "لا توجد مراجع خارجية لهذا الحديث."
+            : "No references are available.")}
       </p>
     );
   }

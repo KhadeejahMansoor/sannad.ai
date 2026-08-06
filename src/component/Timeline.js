@@ -372,9 +372,11 @@ const Timeline = () => {
             {/* Era nav. On mobile this is a horizontal scrolling row of
                 chips rather than a stacked list — five stacked rows ate
                 ~230px of a phone screen and pushed the timeline below
-                the fold before it started. From md up it's the sidebar. */}
+                the fold before it started. They wrap onto two or three
+                lines rather than scrolling sideways, so every era stays
+                visible at once. From md up it's the sidebar. */}
             <div className="w-full md:w-[190px] lg:w-[220px] flex-shrink-0 mb-6 md:mb-0">
-              <div className="flex flex-row gap-2 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:flex-col md:gap-0 md:overflow-visible">
+              <div className="flex flex-row flex-wrap gap-2 md:flex-col md:flex-nowrap md:gap-0">
                 {CATEGORIES.map((name) => {
                   const isActive = activeCategory === name;
                   return (

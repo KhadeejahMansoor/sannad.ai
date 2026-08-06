@@ -35,12 +35,22 @@ export async function GET() {
 
   const lastmod = new Date().toISOString();
 
+  const entries = [
+    // Hadith pages, split by the 50,000-URL ceiling.
+    ...Array.from({ length: chunks }, (_, i) => `${SITE}/sitemaps/${i}.xml`),
+    // Topic and collection pages. Far fewer, and listed separately so their
+    // crawl isn't queued behind 81,000 hadiths — these are the pages with a
+    // real chance of ranking for a subject search, and the ones a crawler
+    // should see first.
+    `${SITE}/sitemaps/topics.xml`,
+  ];
+
   const body =
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-    Array.from({ length: chunks }, (_, i) =>
+    entries.map((loc) =>
       `  <sitemap>\n` +
-      `    <loc>${SITE}/sitemaps/${i}.xml</loc>\n` +
+      `    <loc>${loc}</loc>\n` +
       `    <lastmod>${lastmod}</lastmod>\n` +
       `  </sitemap>\n`
     ).join('') +

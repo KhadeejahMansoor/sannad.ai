@@ -68,38 +68,89 @@ const pool = new pg.Pool({
   ssl: { rejectUnauthorized: false },
 });
 
-// Voyage accepts a batch per call. 100 topics is one or two requests, so the
-// whole embedding step costs a fraction of a cent.
+// Query vectors are cached to disk, and 429s are waited out rather than
+// thrown on.
+//
+// Voyage's free tier allows 3 requests per minute. At 64 topics per request
+// that is not actually slow — 1,138 topics is eighteen requests, so six
+// minutes — but the first version of this treated any non-200 as fatal and
+// died on request four, having paid for three. Now each batch is written to
+// the cache as it lands, so a run that is interrupted, rate-limited or killed
+// resumes instead of restarting.
+//
+// Keyed on the query string, so rewording a topic re-embeds only that one.
+const CACHE = path.join(__dirname, '.query-vectors.json');
+
+function loadCache() {
+  try {
+    return JSON.parse(fs.readFileSync(CACHE, 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
 async function embedTopics(list) {
-  const out = [];
+  const cache = loadCache();
+  const out = new Array(list.length);
+
+  const missing = [];
+  list.forEach((topic, i) => {
+    if (cache[topic.query]) out[i] = cache[topic.query];
+    else missing.push({ topic, i });
+  });
+
+  const cached = list.length - missing.length;
+  if (cached) console.log(`  ${cached} from cache, ${missing.length} to fetch`);
+  if (missing.length === 0) return out;
+
   const BATCH = 64;
 
-  for (let i = 0; i < list.length; i += BATCH) {
-    const chunk = list.slice(i, i + BATCH);
-    const res = await fetch(VOYAGE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${VOYAGE_KEY}`,
-      },
-      body: JSON.stringify({
-        input: chunk.map((t) => t.query),
-        model: 'voyage-3',
-        input_type: 'query',
-      }),
-    });
+  for (let i = 0; i < missing.length; i += BATCH) {
+    const group = missing.slice(i, i + BATCH);
 
-    if (!res.ok) {
-      throw new Error(`Voyage ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    let attempt = 0;
+    for (;;) {
+      const res = await fetch(VOYAGE_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${VOYAGE_KEY}`,
+        },
+        body: JSON.stringify({
+          input: group.map((m) => m.topic.query),
+          model: 'voyage-3',
+          input_type: 'query',
+        }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        // Voyage returns an index per item; trusting array order would be a
+        // quiet way to attach the wrong label to 300 hadiths.
+        for (const item of json.data) {
+          const target = group[item.index];
+          cache[target.topic.query] = item.embedding;
+          out[target.i] = item.embedding;
+        }
+        fs.writeFileSync(CACHE, JSON.stringify(cache), 'utf8');
+        break;
+      }
+
+      if (res.status !== 429 || attempt >= 8) {
+        throw new Error(`Voyage ${res.status}: ${(await res.text()).slice(0, 300)}`);
+      }
+
+      // The free tier is 3 requests per minute, so a short retry is pointless
+      // — the wait has to clear the window.
+      const wait = Math.min(90, 20 * (attempt + 1));
+      console.log(`  rate limited — waiting ${wait}s (attempt ${attempt + 1})`);
+      await new Promise((r) => setTimeout(r, wait * 1000));
+      attempt++;
     }
 
-    const json = await res.json();
-    // Voyage returns an index per item; trusting array order would be a quiet
-    // way to attach the wrong label to 300 hadiths.
-    for (const item of json.data) {
-      out[i + item.index] = item.embedding;
-    }
-    console.log(`  embedded ${Math.min(i + BATCH, list.length)}/${list.length}`);
+    console.log(`  embedded ${Math.min(i + BATCH, missing.length)}/${missing.length}`);
+    // Pace the next request rather than walking into the limit again.
+    await new Promise((r) => setTimeout(r, 21000));
   }
 
   return out;

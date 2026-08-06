@@ -5,6 +5,8 @@
 
 import { pool } from '@/lib/db';
 import { hadithSlug } from '@/lib/hadithUrl';
+import { getTopics } from '@/lib/topics';
+import { COMPILER_SLUGS } from '@/lib/compilerSlug';
 
 const SITE = 'https://sannad.ai';
 const AZAMI = 'الأعظمي';
@@ -24,11 +26,57 @@ function xmlEscape(str) {
     .replace(/'/g, '&apos;');
 }
 
+function xmlUrl(loc, changefreq, priority) {
+  return `  <url>\n` +
+         `    <loc>${xmlEscape(loc)}</loc>\n` +
+         `    <changefreq>${changefreq}</changefreq>\n` +
+         `    <priority>${priority}</priority>\n` +
+         `  </url>\n`;
+}
+
+async function topicsSitemap() {
+  let topics = [];
+  try {
+    topics = await getTopics();
+  } catch (error) {
+    console.error('topic sitemap query failed:', error);
+    return new Response('Temporarily unavailable', { status: 503 });
+  }
+
+  const urls = [
+    // Higher priority than an individual hadith: these are the entry points a
+    // reader arrives on, and the pages the rest link out from.
+    xmlUrl(`${SITE}/topic`, 'weekly', '0.9'),
+    ...topics.map((t) => xmlUrl(`${SITE}/topic/${t.slug}`, 'monthly', '0.8')),
+    ...COMPILER_SLUGS.map((c) => xmlUrl(`${SITE}/${c.slug}`, 'weekly', '0.9')),
+  ];
+
+  const body =
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    urls.join('') +
+    `</urlset>\n`;
+
+  return new Response(body, {
+    headers: {
+      'Content-Type': 'application/xml',
+      'Cache-Control': 'public, max-age=0, s-maxage=86400',
+    },
+  });
+}
+
 export async function GET(_request, { params }) {
   const { chunk } = await params;
+  const name = String(chunk).replace(/\.xml$/, '');
 
-  // The route matches "0.xml", "1.xml" — strip the extension before parsing.
-  const index = parseInt(String(chunk).replace(/\.xml$/, ''), 10);
+  // /sitemaps/topics.xml — the topic and collection pages, listed apart from
+  // the hadiths. There are ~1,150 of them against 81,000 hadith pages, and
+  // they are the ones that can rank for a subject search rather than an exact
+  // reference; burying them in chunk three means they are crawled last.
+  if (name === 'topics') return topicsSitemap();
+
+  // The rest match "0.xml", "1.xml".
+  const index = parseInt(name, 10);
   if (Number.isNaN(index) || index < 0) {
     return new Response('Not found', { status: 404 });
   }

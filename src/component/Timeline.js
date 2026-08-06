@@ -220,7 +220,7 @@ const Timeline = () => {
         return (
           <React.Fragment key={`tick-${year}`}>
             <div
-              className="absolute text-sm text-[#A8A29E] text-right"
+              className="absolute text-sm text-[#57534E] text-right"
               style={{ left: 0, top: y - 9, width: AXIS_X - 22 }}
             >
               {year}
@@ -279,18 +279,11 @@ const Timeline = () => {
               <button
                 type="button"
                 className={`text-[15px] text-start px-2 py-1 -mx-2 rounded transition-colors cursor-pointer ${
-                  isOpen
-                    ? 'bg-[#523230] text-white'
-                    : 'text-[#1C1917] hover:bg-[#523230] hover:text-white'
+                  isOpen ? 'bg-[#523230] text-white' : 'text-[#1C1917]'
                 }`}
                 onClick={() => setSelectedPerson(isOpen ? null : person.name)}
               >
                 {person.name}
-                <span
-                  className={`ms-2 text-[13px] ${isOpen ? 'text-white/70' : 'text-[#A8A29E]'}`}
-                >
-                  {person.year}
-                </span>
               </button>
 
               {/* Detail card floats rather than pushing the timeline.
@@ -409,7 +402,7 @@ const Timeline = () => {
                 scrolled inside the page's own scrollbar, so the view had
                 two competing scroll contexts. */}
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-[#A8A29E] mb-6">Year of death (CE)</div>
+              <div className="text-xs text-[#57534E] mb-6">Year of death (CE)</div>
               {renderSpine()}
             </div>
           </div>

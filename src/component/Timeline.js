@@ -369,19 +369,23 @@ const Timeline = () => {
       <div className="flex-1 px-4 sm:px-8 pb-16 pt-8">
         {activeTab === 'Timelines' && (
           <div className="md:flex md:gap-8 lg:gap-10">
-            {/* Era nav */}
-            <div className="w-full md:w-[190px] lg:w-[220px] flex-shrink-0 mb-8 md:mb-0">
-              <div className="flex flex-col">
+            {/* Era nav. On mobile this is a horizontal scrolling row of
+                chips rather than a stacked list — five stacked rows ate
+                ~230px of a phone screen and pushed the timeline below
+                the fold before it started. From md up it's the sidebar. */}
+            <div className="w-full md:w-[190px] lg:w-[220px] flex-shrink-0 mb-6 md:mb-0">
+              <div className="flex flex-row gap-2 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:flex-col md:gap-0 md:overflow-visible">
                 {CATEGORIES.map((name) => {
                   const isActive = activeCategory === name;
                   return (
                     <button
                       key={name}
-                      className={`text-start text-[15px] py-3 ps-4 border-s-2 transition-colors ${
-                        isActive
-                          ? 'border-[#523230] bg-white text-[#1C1917]'
-                          : 'border-transparent text-[#78716C] hover:text-[#1C1917]'
-                      }`}
+                      className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors
+                        md:whitespace-normal md:text-start md:text-[15px] md:rounded-none md:border-0 md:border-s-2 md:px-0 md:ps-4 md:py-3 ${
+                          isActive
+                            ? 'bg-white border-[#523230] text-[#1C1917] md:bg-white md:border-[#523230]'
+                            : 'bg-transparent border-[#E2DBD6] text-[#78716C] md:border-transparent md:hover:text-[#1C1917]'
+                        }`}
                       onClick={() => handleCategoryClick(name)}
                     >
                       {name}

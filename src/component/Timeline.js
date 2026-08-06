@@ -24,9 +24,6 @@ import { AnimatePresence } from 'framer-motion';
  * years but they were never in your data, so I supplied them.
  * ------------------------------------------------------------------ */
 
-const PLACEHOLDER_BIO =
-  'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.';
-
 const TIMELINES = {
   Companions: {
     startYear: 632,
@@ -178,7 +175,6 @@ const Timeline = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Timelines');
   const [activeCategory, setActiveCategory] = useState('Companions');
-  const [selectedPerson, setSelectedPerson] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [showBottomMenu, setShowBottomMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
@@ -195,7 +191,6 @@ const Timeline = () => {
 
   const handleCategoryClick = (name) => {
     setActiveCategory(name);
-    setSelectedPerson(null);
   };
 
   const handleEditClick = () => router.push('/');
@@ -243,7 +238,6 @@ const Timeline = () => {
 
       {/* people */}
       {laidOut.map((person) => {
-        const isOpen = selectedPerson === person.name;
         const isFirst = person.year === config.startYear;
 
         return (
@@ -261,42 +255,23 @@ const Timeline = () => {
               />
             )}
 
-            <button
-              type="button"
-              aria-label={`${person.name}, died ${person.year}`}
-              className="absolute rounded-full transition-colors cursor-pointer"
+            <div
+              aria-hidden="true"
+              className="absolute rounded-full"
               style={{
                 left: AXIS_X - (isFirst ? 5 : 4),
                 top: person.dotY - (isFirst ? 5 : 4),
                 width: isFirst ? 11 : 9,
                 height: isFirst ? 11 : 9,
-                backgroundColor: isOpen || isFirst ? '#523230' : '#C9C1BC',
+                backgroundColor: isFirst ? '#523230' : '#C9C1BC',
               }}
-              onClick={() => setSelectedPerson(isOpen ? null : person.name)}
             />
 
-            <div className="absolute" style={{ left: NAME_X, top: person.labelY - 11 }}>
-              <button
-                type="button"
-                className={`text-[15px] text-start px-2 py-1 -mx-2 rounded transition-colors cursor-pointer ${
-                  isOpen ? 'bg-[#523230] text-white' : 'text-[#1C1917]'
-                }`}
-                onClick={() => setSelectedPerson(isOpen ? null : person.name)}
-              >
-                {person.name}
-              </button>
-
-              {/* Detail card floats rather than pushing the timeline.
-                  The old version added ~194px to the top offset of every
-                  item below the open one, which is where most of the
-                  magic numbers in this file came from. */}
-              {isOpen && (
-                <div className="absolute top-full mt-2 w-[280px] bg-white border border-[#E7E1DC] rounded-[8px] p-3 z-20">
-                  <div className="text-[13px] leading-relaxed text-[#44403C]">
-                    {person.bio || PLACEHOLDER_BIO}
-                  </div>
-                </div>
-              )}
+            <div
+              className="absolute text-[15px] text-[#1C1917]"
+              style={{ left: NAME_X, top: person.labelY - 11 }}
+            >
+              {person.name}
             </div>
           </React.Fragment>
         );

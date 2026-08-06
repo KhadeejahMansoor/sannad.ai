@@ -278,7 +278,7 @@ const Timeline = () => {
                 top: group.y - (isFirst ? 5 : 4),
                 width: isFirst ? 11 : 9,
                 height: isFirst ? 11 : 9,
-                backgroundColor: isFirst ? '#523230' : '#C9C1BC',
+                backgroundColor: '#523230',
               }}
             />
 

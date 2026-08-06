@@ -368,9 +368,9 @@ const Timeline = () => {
 
       <div className="flex-1 px-4 sm:px-8 pb-16 pt-8">
         {activeTab === 'Timelines' && (
-          <div className="lg:flex lg:gap-10">
+          <div className="md:flex md:gap-8 lg:gap-10">
             {/* Era nav */}
-            <div className="w-full lg:w-[220px] flex-shrink-0 mb-8 lg:mb-0">
+            <div className="w-full md:w-[190px] lg:w-[220px] flex-shrink-0 mb-8 md:mb-0">
               <div className="flex flex-col">
                 {CATEGORIES.map((name) => {
                   const isActive = activeCategory === name;

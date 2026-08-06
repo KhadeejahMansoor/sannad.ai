@@ -27,6 +27,8 @@ import { AnimatePresence } from 'framer-motion';
 const TIMELINES = {
   Companions: {
     startYear: 632,
+    pxPerYear: 16,
+    tickInterval: 10,
     people: [
       { year: 632, name: 'Prophet ﷺ' },
       { year: 634, name: 'Abu Bakr' },
@@ -47,6 +49,8 @@ const TIMELINES = {
 
   'After the Companions': {
     startYear: 702,
+    pxPerYear: 16,
+    tickInterval: 10,
     people: [
       { year: 702, name: 'Abban bin Uthman bin Affan' },
       { year: 713, name: 'Urwah bin Zubayr' },
@@ -62,6 +66,8 @@ const TIMELINES = {
 
   'Hadith compilers': {
     startYear: 796,
+    pxPerYear: 9,
+    tickInterval: 25,
     people: [
       { year: 796, name: 'Malik' },
       { year: 805, name: 'Shaybani' },
@@ -88,6 +94,8 @@ const TIMELINES = {
 
   'Classical scholars': {
     startYear: 1064,
+    pxPerYear: 4,
+    tickInterval: 100,
     people: [
       { year: 1064, name: 'Ibn Hazm' },
       { year: 1111, name: 'Ghazali' },
@@ -110,6 +118,8 @@ const TIMELINES = {
 
   'Contemporary scholars': {
     startYear: 1943,
+    pxPerYear: 16,
+    tickInterval: 10,
     people: [
       { year: 1943, name: 'Thanvi' },
       { year: 1958, name: 'Shakir' },
@@ -132,58 +142,76 @@ const CATEGORIES = Object.keys(TIMELINES);
 
 /* Axis geometry. AXIS_X is where the vertical rule sits inside the panel;
    years label to its left, names to its right. */
-const AXIS_X = 8;
+const AXIS_X = 68;
 const NAME_X = AXIS_X + 26;
 const NAME_LINE = 26;
-const ROW_GAP = 30;
+const PERSON_GAP = 30;
+const TICK_GAP = 22;
 
-/* Even spacing, one row per year-group.
+/* Proportional axis: y = (year - startYear) * pxPerYear, with tick
+ * years down the side. Distance on the spine means elapsed time.
  *
- * This used to be a proportional axis: y = (year - startYear) * pxPerYear,
- * with decade ticks down the side. It was honest about elapsed time but
- * it made every era 1200–3100px tall, so you scrolled past the timeline
- * instead of seeing it. It also wasn't as honest as it looked — names
- * that collided had to be shoved down, up to ~6 years off true in the
- * dense eras.
+ * People and ticks are laid out in ONE chronological pass. When only
+ * labels moved to avoid collisions, a tick could end up ABOVE a name
+ * from an earlier year — the 2000 gridline drew between the two 1999
+ * entries, which makes the axis contradict itself. Walking both
+ * together and pushing each row only as far as it must keeps every
+ * element in order.
  *
- * Rows are evenly spaced now, so each era fits one screen. Elapsed time
- * is no longer readable from the spacing; the exact year is on the name
- * instead, revealed on click. People who share a year still share a dot.
- */
-function buildLayout(people) {
+ * People sharing a year share one dot, names stacked beneath it. */
+function buildLayout(people, startYear, pxPerYear, tickInterval, lastYear) {
   const byYear = new Map();
   for (const p of [...people].sort((a, b) => a.year - b.year)) {
     if (!byYear.has(p.year)) byYear.set(p.year, []);
     byYear.get(p.year).push(p.name);
   }
 
-  const groups = [];
-  let y = 0;
+  const firstTick = Math.ceil(startYear / tickInterval) * tickInterval;
+  const tickYears = new Set();
+  for (let y = firstTick; y <= lastYear; y += tickInterval) tickYears.add(y);
 
-  for (const [year, names] of byYear) {
-    groups.push({ year, names, y });
-    y += (names.length - 1) * NAME_LINE + ROW_GAP;
+  const years = [...new Set([...byYear.keys(), ...tickYears])].sort((a, b) => a - b);
+
+  const groups = [];
+  const ticks = [];
+  let cursor = -Infinity;
+
+  for (const year of years) {
+    const names = byYear.get(year);
+    const y = Math.max((year - startYear) * pxPerYear, cursor);
+
+    if (names) groups.push({ year, names, y });
+    if (tickYears.has(year)) ticks.push({ year, y });
+
+    cursor = y + (names ? (names.length - 1) * NAME_LINE : 0) + (names ? PERSON_GAP : TICK_GAP);
   }
 
-  return { groups, height: y - ROW_GAP };
+  return { groups, ticks, height: cursor };
 }
 
 const Timeline = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Timelines');
   const [activeCategory, setActiveCategory] = useState('Companions');
-  const [openName, setOpenName] = useState(null);
+  const [hoverName, setHoverName] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [showBottomMenu, setShowBottomMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showHadithCollectionMenu, setShowHadithCollectionMenu] = useState(false);
 
   const config = TIMELINES[activeCategory];
-  const { groups, height: spineHeight } = buildLayout(config.people);
+  const lastYear = Math.max(...config.people.map((p) => p.year));
+  const { groups, ticks, height: spineHeight } = buildLayout(
+    config.people,
+    config.startYear,
+    config.pxPerYear,
+    config.tickInterval,
+    lastYear
+  );
 
   const handleCategoryClick = (name) => {
     setActiveCategory(name);
-    setOpenName(null);
+    setHoverName(null);
   };
 
   const handleEditClick = () => router.push('/');
@@ -198,6 +226,31 @@ const Timeline = () => {
         className="absolute top-0 bg-[#E2DBD6]"
         style={{ left: AXIS_X, width: 1, height: spineHeight + 8 }}
       />
+
+      {/* tick years, positioned by the shared pass so a tick can never
+          rise above a name from an earlier year */}
+      {ticks.map(({ year, y }) => (
+        <React.Fragment key={`tick-${year}`}>
+          <div
+            className="absolute text-sm text-[#57534E] text-right"
+            style={{ left: 0, top: y - 9, width: AXIS_X - 22 }}
+          >
+            {year}
+          </div>
+          <div
+            className="absolute bg-[#E2DBD6]"
+            style={{ left: AXIS_X - 6, top: y, width: 13, height: 1 }}
+          />
+        </React.Fragment>
+      ))}
+
+      {/* start-year anchor */}
+      <div
+        className="absolute text-sm font-medium text-[#523230] text-right"
+        style={{ left: 0, top: -9, width: AXIS_X - 22 }}
+      >
+        {config.startYear}
+      </div>
 
       {/* people, grouped by year: one dot per year, names stacked under it */}
       {groups.map((group) => {
@@ -218,21 +271,23 @@ const Timeline = () => {
             />
 
             {group.names.map((name, i) => {
-              const isOpen = openName === name;
+              const isShown = hoverName === name;
               return (
                 <button
                   key={name}
                   type="button"
-                  aria-expanded={isOpen}
-                  className="absolute text-[15px] text-[#1C1917] text-start cursor-pointer whitespace-nowrap"
+                  className="absolute text-[15px] text-[#1C1917] text-start cursor-default whitespace-nowrap"
                   style={{ left: NAME_X, top: group.y - 11 + i * NAME_LINE }}
-                  onClick={() => setOpenName(isOpen ? null : name)}
+                  onMouseEnter={() => setHoverName(name)}
+                  onMouseLeave={() => setHoverName(null)}
+                  /* Touch has no hover, so tap toggles the same thing. */
+                  onClick={() => setHoverName(isShown ? null : name)}
                 >
                   {name}
-                  {/* Year appears only on click. The axis is approximate
-                      where names bunch together, so this is the only place
-                      an exact year of death is stated. */}
-                  {isOpen && (
+                  {/* The axis is approximate where names bunch together —
+                      up to ~6 years in the dense eras — so this is the only
+                      place an exact year is stated. */}
+                  {isShown && (
                     <span className="ms-2 text-[13px] text-[#7A4B2B]">d. {group.year}</span>
                   )}
                 </button>
@@ -348,7 +403,7 @@ const Timeline = () => {
                 scrolled inside the page's own scrollbar, so the view had
                 two competing scroll contexts. */}
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-[#57534E] mb-6">Click a name for year of death</div>
+              <div className="text-xs text-[#57534E] mb-6">Year of death (CE) — hover a name for the exact year</div>
               {renderSpine()}
             </div>
           </div>

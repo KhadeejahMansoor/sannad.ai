@@ -66,7 +66,12 @@ const TIMELINES = {
 
   'Hadith compilers': {
     startYear: 796,
-    pxPerYear: 5,
+    /* 5px/yr squeezed 21 people into 1350px, which forced labels up to
+       72px — about 14 years — off their true position. 9 holds the worst
+       case to ~5 years. Zero drift needs 30px/yr and an 8100px page:
+       people who die a year apart can't both sit on their exact pixel
+       and stay readable. */
+    pxPerYear: 9,
     tickInterval: 25,
     people: [
       { year: 796, name: 'Malik' },
@@ -95,7 +100,9 @@ const TIMELINES = {
 
   'Classical scholars': {
     startYear: 1064,
-    pxPerYear: 2,
+    /* Same problem, worse: 2px/yr meant a 46px shove was a 23-year lie.
+       4 brings the worst case down to ~6 years. */
+    pxPerYear: 4,
     tickInterval: 100,
     people: [
       { year: 1064, name: 'Ibn Hazm' },
@@ -146,30 +153,53 @@ const CATEGORIES = Object.keys(TIMELINES);
    years label to its left, names to its right. */
 const AXIS_X = 68;
 const NAME_X = AXIS_X + 26;
-const MIN_ROW_GAP = 30;
+const NAME_LINE = 26;
+const PERSON_GAP = 30;
+const TICK_GAP = 22;
 
-/* Two people who die within a few years of each other resolve to
-   overlapping pixels. Rather than nudging them by hand — which is what
-   the old `marginLeft` switch statements were doing — push the later
-   label down until it clears, and draw a leader line back to its dot so
-   the true position on the axis is still readable. */
-function layoutPeople(people, startYear, pxPerYear) {
-  const sorted = [...people].sort((a, b) => a.year - b.year);
-  let lastLabelY = -Infinity;
+/* Lay out people and tick years in ONE chronological pass.
+ *
+ * Two things forced this. People who share a year — Ibn Baz/Albani and
+ * Abdul Hasan Ali Nadvi at 1999, Sobhi Hullaq and Muhammad Azami at
+ * 2017 — resolve to the same pixel, so a label has to move. And when
+ * only labels moved, a tick could end up ABOVE a name from an earlier
+ * year: the 2000 gridline was drawing between the two 1999 entries,
+ * which makes the axis contradict itself.
+ *
+ * So: group everyone who shares a year onto a single dot with their
+ * names stacked beneath it, then walk years in order — people and ticks
+ * alike — pushing each row down only as far as it needs to clear the
+ * one above. Chronological order is preserved for every element on the
+ * axis, and nothing needs a leader line. */
+function buildLayout(people, startYear, pxPerYear, tickInterval, lastYear) {
+  const byYear = new Map();
+  for (const p of [...people].sort((a, b) => a.year - b.year)) {
+    if (!byYear.has(p.year)) byYear.set(p.year, []);
+    byYear.get(p.year).push(p.name);
+  }
 
-  return sorted.map((person) => {
-    const dotY = (person.year - startYear) * pxPerYear;
-    const labelY = Math.max(dotY, lastLabelY + MIN_ROW_GAP);
-    lastLabelY = labelY;
-    return { ...person, dotY, labelY, shifted: labelY - dotY > 1 };
-  });
-}
+  const firstTick = Math.ceil(startYear / tickInterval) * tickInterval;
+  const tickYears = new Set();
+  for (let y = firstTick; y <= lastYear; y += tickInterval) tickYears.add(y);
 
-function buildTicks(startYear, lastYear, interval) {
-  const first = Math.ceil(startYear / interval) * interval;
+  const years = [...new Set([...byYear.keys(), ...tickYears])].sort((a, b) => a - b);
+
+  const groups = [];
   const ticks = [];
-  for (let y = first; y <= lastYear; y += interval) ticks.push(y);
-  return ticks;
+  let cursor = -Infinity;
+
+  for (const year of years) {
+    const names = byYear.get(year);
+    const y = Math.max((year - startYear) * pxPerYear, cursor);
+
+    if (names) groups.push({ year, names, y });
+    if (tickYears.has(year)) ticks.push({ year, y });
+
+    const blockHeight = names ? (names.length - 1) * NAME_LINE : 0;
+    cursor = y + blockHeight + (names ? PERSON_GAP : TICK_GAP);
+  }
+
+  return { groups, ticks, height: cursor };
 }
 
 const Timeline = () => {
@@ -182,12 +212,13 @@ const Timeline = () => {
   const [showHadithCollectionMenu, setShowHadithCollectionMenu] = useState(false);
 
   const config = TIMELINES[activeCategory];
-  const laidOut = layoutPeople(config.people, config.startYear, config.pxPerYear);
   const lastYear = Math.max(...config.people.map((p) => p.year));
-  const ticks = buildTicks(config.startYear, lastYear, config.tickInterval);
-  const spineHeight = Math.max(
-    ...laidOut.map((p) => Math.max(p.labelY, p.dotY)),
-    (lastYear - config.startYear) * config.pxPerYear
+  const { groups, ticks, height: spineHeight } = buildLayout(
+    config.people,
+    config.startYear,
+    config.pxPerYear,
+    config.tickInterval,
+    lastYear
   );
 
   const handleCategoryClick = (name) => {
@@ -210,24 +241,22 @@ const Timeline = () => {
         style={{ left: AXIS_X, width: 1, height: spineHeight + 8 }}
       />
 
-      {/* decade / interval ticks */}
-      {ticks.map((year) => {
-        const y = (year - config.startYear) * config.pxPerYear;
-        return (
-          <React.Fragment key={`tick-${year}`}>
-            <div
-              className="absolute text-sm text-[#57534E] text-right"
-              style={{ left: 0, top: y - 9, width: AXIS_X - 22 }}
-            >
-              {year}
-            </div>
-            <div
-              className="absolute bg-[#E2DBD6]"
-              style={{ left: AXIS_X - 6, top: y, width: 13, height: 1 }}
-            />
-          </React.Fragment>
-        );
-      })}
+      {/* decade / interval ticks, positioned by the shared pass so a tick
+          can never rise above a name from an earlier year */}
+      {ticks.map(({ year, y }) => (
+        <React.Fragment key={`tick-${year}`}>
+          <div
+            className="absolute text-sm text-[#57534E] text-right"
+            style={{ left: 0, top: y - 9, width: AXIS_X - 22 }}
+          >
+            {year}
+          </div>
+          <div
+            className="absolute bg-[#E2DBD6]"
+            style={{ left: AXIS_X - 6, top: y, width: 13, height: 1 }}
+          />
+        </React.Fragment>
+      ))}
 
       {/* start-year anchor, picked out darker, with the axis caption */}
       <div
@@ -237,43 +266,33 @@ const Timeline = () => {
         {config.startYear}
       </div>
 
-      {/* people */}
-      {laidOut.map((person) => {
-        const isFirst = person.year === config.startYear;
+      {/* people, grouped by year: one dot per year, names stacked under it */}
+      {groups.map((group) => {
+        const isFirst = group.year === config.startYear;
 
         return (
-          <React.Fragment key={`${person.name}-${person.year}`}>
-            {/* leader line when the label had to shift down to avoid a collision */}
-            {person.shifted && (
-              <div
-                className="absolute bg-[#E7E1DC]"
-                style={{
-                  left: AXIS_X + 11,
-                  top: person.dotY,
-                  width: 1,
-                  height: person.labelY - person.dotY,
-                }}
-              />
-            )}
-
+          <React.Fragment key={`group-${group.year}`}>
             <div
               aria-hidden="true"
               className="absolute rounded-full"
               style={{
                 left: AXIS_X - (isFirst ? 5 : 4),
-                top: person.dotY - (isFirst ? 5 : 4),
+                top: group.y - (isFirst ? 5 : 4),
                 width: isFirst ? 11 : 9,
                 height: isFirst ? 11 : 9,
                 backgroundColor: isFirst ? '#523230' : '#C9C1BC',
               }}
             />
 
-            <div
-              className="absolute text-[15px] text-[#1C1917]"
-              style={{ left: NAME_X, top: person.labelY - 11 }}
-            >
-              {person.name}
-            </div>
+            {group.names.map((name, i) => (
+              <div
+                key={name}
+                className="absolute text-[15px] text-[#1C1917]"
+                style={{ left: NAME_X, top: group.y - 11 + i * NAME_LINE }}
+              >
+                {name}
+              </div>
+            ))}
           </React.Fragment>
         );
       })}

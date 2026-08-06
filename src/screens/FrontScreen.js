@@ -215,8 +215,20 @@ export default function FrontScreen() {
          <div className="flex items-center justify-center">
             {/* Mobile logo */}
             <Image src="/logo.svg" alt="Hadith Logo" width={96} height={96} className="md:hidden" />
-            {/* Desktop logo */}
-            <Image src="/logo.svg" alt="Hadith Logo" width={180} height={230} className="hidden md:block" />
+            {/* Desktop logo.
+                The artwork inside logo.svg is not centred within its own
+                viewBox — it renders ~160px wide inside the 180px box, with the
+                slack falling on the left. CSS centres the box correctly, so the
+                book still read ~12px right of the search bar below it. This
+                translate compensates. Proper fix is to re-export logo.svg
+                cropped tight to the artwork, then drop this class. */}
+            <Image
+              src="/logo.svg"
+              alt="Hadith Logo"
+              width={180}
+              height={230}
+              className="hidden md:block -translate-x-[12px]"
+            />
           </div>
         </div>
          

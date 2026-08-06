@@ -144,19 +144,26 @@ const CATEGORIES = Object.keys(TIMELINES);
    years label to its left, names to its right. */
 const AXIS_X = 68;
 const NAME_X = AXIS_X + 26;
-const NAME_LINE = 26;
-const PERSON_GAP = 30;
-const TICK_GAP = 22;
+const NAME_LINE = 24;
+/* Gap between consecutive rows is clamped. MIN keeps names from
+   colliding; MAX stops a long empty century from stretching the page.
+   Distance still tracks elapsed time between neighbours, it just stops
+   growing past MAX — which is what lets every era fit one screen. */
+const MIN_GAP = 22;
+const MAX_GAP = 38;
 
-/* Proportional axis: y = (year - startYear) * pxPerYear, with tick
- * years down the side. Distance on the spine means elapsed time.
+/* Compressed proportional axis.
  *
- * People and ticks are laid out in ONE chronological pass. When only
- * labels moved to avoid collisions, a tick could end up ABOVE a name
- * from an earlier year — the 2000 gridline drew between the two 1999
- * entries, which makes the axis contradict itself. Walking both
- * together and pushing each row only as far as it must keeps every
- * element in order.
+ * A true axis (y = (year - startYear) * pxPerYear) made Classical
+ * scholars 3088px tall — 772 years, most of them empty, all rendered at
+ * full scale. You scrolled past the timeline instead of seeing it.
+ *
+ * So the gap between consecutive rows is proportional but clamped
+ * between MIN_GAP and MAX_GAP. Neighbours a few years apart still sit
+ * closer than neighbours decades apart; a 120-year void just stops
+ * costing 480px of blank spine. Tick years are interpolated into
+ * whatever span their interval landed in, so the ruler still reads
+ * correctly against the names.
  *
  * People sharing a year share one dot, names stacked beneath it. */
 function buildLayout(people, startYear, pxPerYear, tickInterval, lastYear) {
@@ -166,27 +173,45 @@ function buildLayout(people, startYear, pxPerYear, tickInterval, lastYear) {
     byYear.get(p.year).push(p.name);
   }
 
-  const firstTick = Math.ceil(startYear / tickInterval) * tickInterval;
-  const tickYears = new Set();
-  for (let y = firstTick; y <= lastYear; y += tickInterval) tickYears.add(y);
-
-  const years = [...new Set([...byYear.keys(), ...tickYears])].sort((a, b) => a - b);
-
+  const anchorYears = [...byYear.keys()];
   const groups = [];
-  const ticks = [];
-  let cursor = -Infinity;
+  let y = 0;
 
-  for (const year of years) {
+  anchorYears.forEach((year, i) => {
     const names = byYear.get(year);
-    const y = Math.max((year - startYear) * pxPerYear, cursor);
+    groups.push({ year, names, y });
 
-    if (names) groups.push({ year, names, y });
-    if (tickYears.has(year)) ticks.push({ year, y });
+    if (i < anchorYears.length - 1) {
+      const stack = (names.length - 1) * NAME_LINE;
+      const span = (anchorYears[i + 1] - year) * pxPerYear;
+      y += stack + Math.min(MAX_GAP, Math.max(MIN_GAP, span));
+    }
+  });
 
-    cursor = y + (names ? (names.length - 1) * NAME_LINE : 0) + (names ? PERSON_GAP : TICK_GAP);
+  /* Map any year onto the compressed scale by interpolating inside the
+     segment it falls in, so a tick never contradicts the names around it. */
+  const yFor = (year) => {
+    if (year <= groups[0].year) return groups[0].y;
+    for (let i = 0; i < groups.length - 1; i++) {
+      const a = groups[i];
+      const b = groups[i + 1];
+      if (year >= a.year && year <= b.year) {
+        const aBottom = a.y + (a.names.length - 1) * NAME_LINE;
+        const t = (year - a.year) / (b.year - a.year);
+        return aBottom + t * (b.y - aBottom);
+      }
+    }
+    return groups[groups.length - 1].y;
+  };
+
+  const firstTick = Math.ceil(startYear / tickInterval) * tickInterval;
+  const ticks = [];
+  for (let t = firstTick; t <= lastYear; t += tickInterval) {
+    ticks.push({ year: t, y: yFor(t) });
   }
 
-  return { groups, ticks, height: cursor };
+  const last = groups[groups.length - 1];
+  return { groups, ticks, height: last.y + (last.names.length - 1) * NAME_LINE };
 }
 
 const Timeline = () => {

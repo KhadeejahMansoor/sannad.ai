@@ -156,7 +156,7 @@ export default function FrontScreen() {
   return (
     <div className="min-h-screen bg-[#F6F4F1]">
       <div className="relative w-full mx-auto px-4 flex flex-col items-center  pt-6 pb-10
-                      md:max-w-none md:min-h-screen md:px-10 md:pt-12 md:pb-16">
+                      md:max-w-none md:min-h-screen md:justify-center md:px-10 md:pt-12 md:pb-16">
 
         {/* header icons */}
     
@@ -206,8 +206,13 @@ export default function FrontScreen() {
           </button>
         </div>
 
-     {/* logo */}
-<div className="mt-20 mb-8 md:mt-55 md:mb-3">
+     {/* logo.
+         md:mt-55 (220px) used to push this down from the top of the page. On a
+         tall monitor that landed near the middle by luck; on a laptop viewport
+         it pushed the search bar below the fold. The parent is min-h-screen
+         with md:justify-center now, so the column centres itself at any
+         viewport height and the fixed offset is gone. */}
+<div className="mt-20 mb-8 md:mt-0 md:mb-3">
          {/* The peach disc was a wrapper background (bg-[#FFE6CA]) applied on
              mobile only and switched off at md, so the same logo sat on a pink
              circle on phones and on nothing on desktop. Dropped, and the mobile

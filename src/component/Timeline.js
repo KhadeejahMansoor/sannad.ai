@@ -76,7 +76,6 @@ const TIMELINES = {
     people: [
       { year: 796, name: 'Malik' },
       { year: 805, name: 'Shaybani' },
-      { year: 820, name: 'Shafii' },
       { year: 848, name: 'Yahya bin Yahya' },
       { year: 849, name: 'Ibn Abu Shaybah' },
       { year: 855, name: 'Ahmad' },
@@ -107,7 +106,6 @@ const TIMELINES = {
     people: [
       { year: 1064, name: 'Ibn Hazm' },
       { year: 1111, name: 'Ghazali' },
-      { year: 1193, name: 'Salahadin' },
       { year: 1201, name: 'Ibn Jawzi' },
       { year: 1273, name: 'Ibn Qurtubi' },
       { year: 1277, name: 'Nawawi' },
@@ -134,7 +132,7 @@ const TIMELINES = {
       { year: 1958, name: 'Shakir' },
       { year: 1976, name: 'Shafii Usmani' },
       { year: 1979, name: 'Maududi' },
-      { year: 1999, name: 'Ibn Baz and Albani' },
+      { year: 1999, name: 'Albani' },
       { year: 1999, name: 'Abdul Hasan Ali Nadvi' },
       { year: 2001, name: 'Ibn Uthaymeen' },
       { year: 2006, name: 'Mubarakpuri' },

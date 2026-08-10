@@ -414,12 +414,20 @@ export async function GET(request) {
     // vector itself to score each row by distance. Only bothered with when the
     // semantic lookup actually returned something.
     let vecParam = null;
-    if (queryVector && semanticIds.length) {
+    // Gated on the same condition as orderBy below, not just on the vector
+    // existing. A "Compiler Number" search ("Abu Dawud 20") sets
+    // compilerNumberHit, so hybridRank is never built and vecParam is never
+    // referenced — but the push still happened, leaving $3 in params with no
+    // mention of it anywhere in the SQL while $4 and $5 were still used.
+    // Postgres can't infer the type of a parameter it never sees, so every
+    // such search died with "could not determine data type of parameter $3".
+    const usesHybridRank = hasText && !compilerNumberHit;
+    if (queryVector && semanticIds.length && usesHybridRank) {
       params.push(queryVector);
       vecParam = `$${params.length}::vector`;
     }
 
-    const orderBy = hasText && !compilerNumberHit
+    const orderBy = usesHybridRank
       ? `${hybridRank(strictRank, vecParam)} DESC,
          ${numericOrder},
          h.hadith_number`

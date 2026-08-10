@@ -146,6 +146,12 @@ const NAME_LINE = 24;
    fills the page instead of stopping short. */
 const MIN_GAP = 22;
 const BOTTOM_PAD = 28;
+/* Below this width the timeline stops trying to fit the viewport and
+   scrolls instead. Squeezing 20 names into a phone screen puts every gap
+   on the floor, which reads as a flat list — the spacing stops carrying
+   any sense of elapsed time. Scrolling costs less than that. */
+const MOBILE_BREAKPOINT = 768;
+const MOBILE_ROW_HEIGHT = 56;
 
 /* Viewport-filling proportional axis.
  *
@@ -235,25 +241,35 @@ const Timeline = () => {
      own top edge to the bottom of the window. Measured rather than
      assumed, because the header, tabs and caption above it all vary. */
   const spineRef = useRef(null);
-  const [available, setAvailable] = useState(0);
+  const [viewport, setViewport] = useState({ available: 0, isMobile: false });
 
   useLayoutEffect(() => {
     const measure = () => {
       if (!spineRef.current) return;
       const top = spineRef.current.getBoundingClientRect().top;
-      setAvailable(Math.max(0, window.innerHeight - top - BOTTOM_PAD));
+      setViewport({
+        available: Math.max(0, window.innerHeight - top - BOTTOM_PAD),
+        isMobile: window.innerWidth < MOBILE_BREAKPOINT,
+      });
     };
     measure();
     window.addEventListener('resize', measure);
     return () => window.removeEventListener('resize', measure);
   }, [activeCategory]);
 
+  /* Desktop fills the measured viewport. Mobile is given a budget based
+     on its own row count instead, so it keeps comfortable spacing and
+     scrolls rather than compressing to fit. */
+  const budget = viewport.isMobile
+    ? config.people.length * MOBILE_ROW_HEIGHT
+    : viewport.available;
+
   const { groups, ticks, height: spineHeight } = buildLayout(
     config.people,
     config.tickInterval,
     lastYear,
     config.startYear,
-    available
+    budget
   );
 
   const handleCategoryClick = (name) => {

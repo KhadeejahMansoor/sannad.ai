@@ -228,7 +228,7 @@ const Timeline = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('Timelines');
   const [activeCategory, setActiveCategory] = useState('Companions');
-  const [hoverName, setHoverName] = useState(null);
+  const [openName, setOpenName] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [showBottomMenu, setShowBottomMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
@@ -274,7 +274,7 @@ const Timeline = () => {
 
   const handleCategoryClick = (name) => {
     setActiveCategory(name);
-    setHoverName(null);
+    setOpenName(null);
   };
 
   const handleEditClick = () => router.push('/');
@@ -336,23 +336,21 @@ const Timeline = () => {
             />
 
             {group.names.map((name, i) => {
-              const isShown = hoverName === name;
+              const isOpen = openName === name;
               return (
                 <button
                   key={name}
                   type="button"
-                  className="absolute text-[15px] text-[#1C1917] text-start cursor-default whitespace-nowrap"
+                  aria-expanded={isOpen}
+                  className="absolute text-[15px] text-[#1C1917] text-start cursor-pointer whitespace-nowrap"
                   style={{ left: NAME_X, top: group.y - 11 + i * NAME_LINE }}
-                  onMouseEnter={() => setHoverName(name)}
-                  onMouseLeave={() => setHoverName(null)}
-                  /* Touch has no hover, so tap toggles the same thing. */
-                  onClick={() => setHoverName(isShown ? null : name)}
+                  onClick={() => setOpenName(isOpen ? null : name)}
                 >
                   {name}
                   {/* The axis is approximate where names bunch together —
                       up to ~6 years in the dense eras — so this is the only
                       place an exact year is stated. */}
-                  {isShown && (
+                  {isOpen && (
                     <span className="ms-2 text-[13px] text-[#7A4B2B]">d. {group.year}</span>
                   )}
                 </button>
@@ -468,7 +466,6 @@ const Timeline = () => {
                 scrolled inside the page's own scrollbar, so the view had
                 two competing scroll contexts. */}
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-[#57534E] mb-6">Year of death (CE) — hover a name for the exact year</div>
               {renderSpine()}
             </div>
           </div>

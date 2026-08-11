@@ -2,12 +2,12 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
 const GRADES = [
-  { key: "sahih", label: "Sahih", color: "#523230" },
-  { key: "hasan", label: "Hasan", color: "#8D6E63" },
-  { key: "daif", label: "Daif", color: "#A03A32" },
-  { key: "difficult", label: "Difficult", color: "#BE9A90" },
-  { key: "fabricated", label: "Fabricated", color: "#7F1D1D" },
-  { key: "notHadith", label: "Not hadith", color: "#C9C2BB" },
+  { key: "sahih", label: "Sahih", color: "#8C2F39" },
+  { key: "hasan", label: "Hasan", color: "#B06A70" },
+  { key: "daif", label: "Daif", color: "#C79EA0" },
+  { key: "difficult", label: "Difficult", color: "#DCC6C6" },
+  { key: "fabricated", label: "Fabricated", color: "#8E8078" },
+  { key: "notHadith", label: "Not hadith", color: "#E8DEDC" },
 ];
 
 const DEFAULT_DATA = [

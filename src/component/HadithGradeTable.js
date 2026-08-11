@@ -156,13 +156,28 @@ export default function HadithGradeTable({
   const [tip, setTip] = useState(null);
   const wrapRef = useRef(null);
   const prevCombo = useRef({ view, mode });
+  // What the sort was before distribution+percent forced it to "sahih".
+  const sortBeforeAuto = useRef(null);
 
   useEffect(() => {
     const wasIn =
       prevCombo.current.view === "distribution" &&
       prevCombo.current.mode === "percent";
     const isIn = view === "distribution" && mode === "percent";
-    if (isIn && !wasIn) setSort("sahih");
+
+    if (isIn && !wasIn) {
+      // Remember what the user had, so the switch is reversible.
+      sortBeforeAuto.current = sort;
+      setSort("sahih");
+    } else if (!isIn && wasIn && sortBeforeAuto.current !== null) {
+      // Put it back. Without this the forced "sahih" survived the trip
+      // out of distribution+percent, so returning to the table showed
+      // rows ordered by sahih count rather than the order they're
+      // declared in.
+      setSort(sortBeforeAuto.current);
+      sortBeforeAuto.current = null;
+    }
+
     prevCombo.current = { view, mode };
   }, [view, mode]);
 

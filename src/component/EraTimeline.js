@@ -1,0 +1,396 @@
+'use client';
+import React, { useState, useRef, useLayoutEffect } from 'react';
+
+/* ------------------------------------------------------------------ *
+ * Timeline data
+ * ------------------------------------------------------------------
+ * Every person lives here, with a real year. The previous version kept
+ * five people — Bukhari, Ibn Abu Shaybah, Tirmidhi, Ibn Hatim, Ibn
+ * Qayyim, Muhammad Azami — out of these arrays entirely and rendered
+ * them as hardcoded JSX blocks pinned under a neighbouring name, which
+ * meant they had no year, sat in the wrong place on the axis, and
+ * needed two parallel lookup tables to fake a position. They're normal
+ * rows now.
+ *
+ * VERIFY THE YEARS MARKED /* new *\/ — they're the standard CE death
+ * years but they were never in your data, so I supplied them.
+ * ------------------------------------------------------------------ */
+
+const TIMELINES = {
+  Companions: {
+    startYear: 632,
+    tickInterval: 10,
+    people: [
+      { year: 632, name: 'Prophet ﷺ' },
+      { year: 634, name: 'Abu Bakr' },
+      { year: 644, name: 'Umar' },
+      { year: 651, name: 'Abdullah bin Masud' },
+      { year: 656, name: 'Uthman' },
+      { year: 661, name: 'Ali' },
+      { year: 665, name: 'Zayd bin Thabit' },
+      { year: 678, name: 'Abu Huraira & Ayesha' },
+      { year: 680, name: 'Muawiyah & Hussein' },
+      { year: 687, name: 'Abdullah bin Abbas' },
+      { year: 692, name: 'Abdullah bin Zubair' },
+      { year: 693, name: 'Abdullah bin Umar' },
+      { year: 697, name: 'Jabir bin Abdullah' },
+      { year: 712, name: 'Anas bin Malik' },
+    ],
+  },
+
+  'After the Companions': {
+    startYear: 702,
+    tickInterval: 10,
+    people: [
+      { year: 702, name: 'Abban bin Uthman bin Affan' },
+      { year: 713, name: 'Urwah bin Zubayr' },
+      { year: 715, name: 'Said bin Musayyib' },
+      { year: 720, name: 'Umar bin Abdul-Aziz' },
+      { year: 728, name: 'Hasan al-Basri' },
+      { year: 742, name: 'Ibn Shibab al-Zuhri' },
+      { year: 767, name: 'Abu Hanifa' },
+      { year: 768, name: 'Ibn Ishaq' },
+      { year: 778, name: 'Sufyan al-Thawri' },
+    ],
+  },
+
+  'Hadith compilers': {
+    startYear: 796,
+    tickInterval: 25,
+    people: [
+      { year: 796, name: 'Malik' },
+      { year: 805, name: 'Shaybani' },
+      { year: 848, name: 'Yahya bin Yahya' },
+      { year: 849, name: 'Ibn Abu Shaybah' },
+      { year: 855, name: 'Ahmad' },
+      { year: 869, name: 'Darimi' },
+      { year: 870, name: 'Bukhari' },
+      { year: 875, name: 'Muslim' },
+      { year: 887, name: 'Ibn Majah' },
+      { year: 889, name: 'Abu Dawud' },
+      { year: 890, name: 'Abu Hatim' },
+      { year: 892, name: 'Tirmidhi' },
+      { year: 905, name: 'Bazzar' },
+      { year: 915, name: 'Nasai' },
+      { year: 963, name: 'Ibn Khuzaymah' },
+      { year: 965, name: 'Ibn Hibban' },
+      { year: 971, name: 'Tabarani' },
+      { year: 995, name: 'Daraqutni' },
+      { year: 1003, name: 'Hakim' },
+      { year: 1066, name: 'Bayhaqi' },
+    ],
+  },
+
+  'Classical scholars': {
+    startYear: 1064,
+    tickInterval: 100,
+    people: [
+      { year: 1064, name: 'Ibn Hazm' },
+      { year: 1111, name: 'Ghazali' },
+      { year: 1201, name: 'Ibn Jawzi' },
+      { year: 1273, name: 'Ibn Qurtubi' },
+      { year: 1277, name: 'Nawawi' },
+      { year: 1328, name: 'Ibn Taymiyyah' },
+      { year: 1341, name: 'Mizzi' },
+      { year: 1348, name: 'Dhahabi' },
+      { year: 1350, name: 'Ibn Qayyim' },
+      { year: 1373, name: 'Ibn Kathir' },
+      { year: 1393, name: 'Ibn Rajab' },
+      { year: 1449, name: 'Ibn Hajjar' },
+      { year: 1505, name: 'Suyuti' },
+      { year: 1625, name: 'Ahmad Sirhindi' },
+      { year: 1762, name: 'Shah Waliullah' },
+      { year: 1836, name: 'Ibn Abidin' },
+    ],
+  },
+
+  'Contemporary scholars': {
+    startYear: 1943,
+    tickInterval: 10,
+    people: [
+      { year: 1943, name: 'Thanvi' },
+      { year: 1958, name: 'Shakir' },
+      { year: 1976, name: 'Shafii Usmani' },
+      { year: 1979, name: 'Maududi' },
+      { year: 1999, name: 'Albani' },
+      { year: 1999, name: 'Abdul Hasan Ali Nadvi' },
+      { year: 2001, name: 'Ibn Uthaymeen' },
+      { year: 2006, name: 'Mubarakpuri' },
+      { year: 2013, name: 'Zubair Ali Zai' },
+      { year: 2016, name: 'Arnaut' },
+      { year: 2017, name: 'Muhammad Sobhi Hullaq' },
+      { year: 2017, name: 'Muhammad Azami' },
+      { year: 2020, name: 'Ziya-ur-Rahman Azami' },
+    ],
+  },
+};
+
+const CATEGORIES = Object.keys(TIMELINES);
+
+/* Axis geometry. AXIS_X is where the vertical rule sits inside the panel;
+   years label to its left, names to its right. */
+const AXIS_X = 68;
+const NAME_X = AXIS_X + 26;
+const NAME_LINE = 24;
+/* Floor on the gap between consecutive rows — below this, names touch.
+   There is no ceiling: whatever height the viewport gives us above the
+   floor is shared out in proportion to elapsed time, so the timeline
+   fills the page instead of stopping short. */
+const MIN_GAP = 22;
+const BOTTOM_PAD = 28;
+/* Below this width the timeline stops trying to fit the viewport and
+   scrolls instead. Squeezing 20 names into a phone screen puts every gap
+   on the floor, which reads as a flat list — the spacing stops carrying
+   any sense of elapsed time. Scrolling costs less than that. */
+const MOBILE_BREAKPOINT = 768;
+const MOBILE_ROW_HEIGHT = 56;
+
+/* Viewport-filling proportional axis.
+ *
+ * Earlier versions picked a fixed pxPerYear. A true scale made Classical
+ * scholars 3088px tall, so you scrolled; clamping the gaps fixed the
+ * scrolling but then short eras stopped halfway down the page and left
+ * the rest empty.
+ *
+ * So the scale is derived from the space available instead of chosen in
+ * advance. Every row gets MIN_GAP, and whatever height is left over is
+ * shared out in proportion to the years between neighbours. A dense era
+ * squeezes toward the floor; a sparse one stretches to the bottom of the
+ * viewport. Either way it ends where the page ends.
+ *
+ * People sharing a year share one dot, names stacked beneath it. */
+function buildLayout(people, tickInterval, lastYear, startYear, available) {
+  const byYear = new Map();
+  for (const p of [...people].sort((a, b) => a.year - b.year)) {
+    if (!byYear.has(p.year)) byYear.set(p.year, []);
+    byYear.get(p.year).push(p.name);
+  }
+
+  const anchorYears = [...byYear.keys()];
+  const stacks = anchorYears.map((y) => (byYear.get(y).length - 1) * NAME_LINE);
+  const deltas = anchorYears.slice(0, -1).map((y, i) => anchorYears[i + 1] - y);
+
+  const stackTotal = stacks.slice(0, -1).reduce((a, b) => a + b, 0);
+  const floorTotal = stackTotal + deltas.length * MIN_GAP;
+  const yearTotal = deltas.reduce((a, b) => a + b, 0) || 1;
+
+  /* Surplus is whatever the viewport offers beyond the floor. Zero when
+     the era is too dense to fit — then every gap is MIN_GAP and the page
+     scrolls, which is the only honest outcome for 20 names on a short
+     screen. */
+  const surplus = Math.max(0, (available || 0) - floorTotal - NAME_LINE);
+
+  const groups = [];
+  let y = 0;
+
+  anchorYears.forEach((year, i) => {
+    groups.push({ year, names: byYear.get(year), y });
+    if (i < deltas.length) {
+      y += stacks[i] + MIN_GAP + (surplus * deltas[i]) / yearTotal;
+    }
+  });
+
+  /* Map any year onto this scale by interpolating inside its segment, so
+     a tick never contradicts the names around it. */
+  const yFor = (year) => {
+    if (year <= groups[0].year) return groups[0].y;
+    for (let i = 0; i < groups.length - 1; i++) {
+      const a = groups[i];
+      const b = groups[i + 1];
+      if (year >= a.year && year <= b.year) {
+        const aBottom = a.y + (a.names.length - 1) * NAME_LINE;
+        const t = (year - a.year) / (b.year - a.year);
+        return aBottom + t * (b.y - aBottom);
+      }
+    }
+    return groups[groups.length - 1].y;
+  };
+
+  const firstTick = Math.ceil(startYear / tickInterval) * tickInterval;
+  const ticks = [];
+  for (let t = firstTick; t <= lastYear; t += tickInterval) {
+    ticks.push({ year: t, y: yFor(t) });
+  }
+
+  const last = groups[groups.length - 1];
+  return { groups, ticks, height: last.y + (last.names.length - 1) * NAME_LINE };
+}
+
+
+/* ------------------------------------------------------------------ *
+ * EraTimeline
+ * ------------------------------------------------------------------
+ * The era nav plus the spine, with no page furniture around it, so it
+ * can sit on /timeline and inside About Hadith without either one
+ * owning the other. Everything here used to live in Timeline.js.
+ *
+ * fillViewport — true (default) stretches the spine to the bottom of
+ *   the window, which is right when the timeline IS the page. Pass
+ *   false when it's one section among others: the spine then sizes to
+ *   its own content instead of pushing whatever follows off-screen.
+ * ------------------------------------------------------------------ */
+export default function EraTimeline({ fillViewport = true }) {
+  const [activeCategory, setActiveCategory] = useState('Companions');
+  const [openName, setOpenName] = useState(null);
+
+  const config = TIMELINES[activeCategory];
+  const lastYear = Math.max(...config.people.map((p) => p.year));
+
+  /* How much vertical room the spine actually has: everything from its
+     own top edge to the bottom of the window. Measured rather than
+     assumed, because the header, tabs and caption above it all vary. */
+  const spineRef = useRef(null);
+  const [viewport, setViewport] = useState({ available: 0, isMobile: false });
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!spineRef.current) return;
+      const top = spineRef.current.getBoundingClientRect().top;
+      setViewport({
+        available: Math.max(0, window.innerHeight - top - BOTTOM_PAD),
+        isMobile: window.innerWidth < MOBILE_BREAKPOINT,
+      });
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [activeCategory]);
+
+  /* Desktop on the standalone /timeline page fills the measured
+     viewport. Mobile — and any embedded use, where the timeline is one
+     section among several rather than the whole page — gets a budget
+     based on its own row count instead, so it sizes to its content
+     rather than stretching to the bottom of the window. */
+  const budget =
+    viewport.isMobile || !fillViewport
+      ? config.people.length * MOBILE_ROW_HEIGHT
+      : viewport.available;
+
+  const { groups, ticks, height: spineHeight } = buildLayout(
+    config.people,
+    config.tickInterval,
+    lastYear,
+    config.startYear,
+    budget
+  );
+
+  const handleCategoryClick = (name) => {
+    setActiveCategory(name);
+    setOpenName(null);
+  };
+
+
+  const renderSpine = () => (
+    <div ref={spineRef} className="relative" style={{ height: spineHeight + NAME_LINE }}>
+      {/* vertical rule */}
+      <div
+        className="absolute top-0 bg-[#E2DBD6]"
+        style={{ left: AXIS_X, width: 1, height: spineHeight }}
+      />
+
+      {/* tick years, positioned by the shared pass so a tick can never
+          rise above a name from an earlier year */}
+      {ticks.map(({ year, y }) => (
+        <React.Fragment key={`tick-${year}`}>
+          <div
+            className="absolute text-sm text-[#57534E] text-right"
+            style={{ left: 0, top: y - 9, width: AXIS_X - 22 }}
+          >
+            {year}
+          </div>
+          <div
+            className="absolute bg-[#E2DBD6]"
+            style={{ left: AXIS_X - 6, top: y, width: 13, height: 1 }}
+          />
+        </React.Fragment>
+      ))}
+
+      {/* start-year anchor */}
+      <div
+        className="absolute text-sm font-medium text-[#523230] text-right"
+        style={{ left: 0, top: -9, width: AXIS_X - 22 }}
+      >
+        {config.startYear}
+      </div>
+
+      {/* people, grouped by year: one dot per year, names stacked under it */}
+      {groups.map((group) => {
+        const isFirst = group.year === config.startYear;
+
+        return (
+          <React.Fragment key={`group-${group.year}`}>
+            <div
+              aria-hidden="true"
+              className="absolute rounded-full"
+              style={{
+                left: AXIS_X - (isFirst ? 5 : 4),
+                top: group.y - (isFirst ? 5 : 4),
+                width: isFirst ? 11 : 9,
+                height: isFirst ? 11 : 9,
+                backgroundColor: '#523230',
+              }}
+            />
+
+            {group.names.map((name, i) => {
+              const isOpen = openName === name;
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  aria-expanded={isOpen}
+                  className="absolute text-[15px] text-[#1C1917] text-start cursor-pointer whitespace-nowrap"
+                  style={{ left: NAME_X, top: group.y - 11 + i * NAME_LINE }}
+                  onClick={() => setOpenName(isOpen ? null : name)}
+                >
+                  {name}
+                  {/* The axis is approximate where names bunch together —
+                      up to ~6 years in the dense eras — so this is the only
+                      place an exact year is stated. */}
+                  {isOpen && (
+                    <span className="ms-2 text-[13px] text-[#7A4B2B]">d. {group.year}</span>
+                  )}
+                </button>
+              );
+            })}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+
+
+  return (
+    <div className="md:flex md:gap-8 lg:gap-10">
+            {/* Era nav. On mobile this is a horizontal scrolling row of
+                chips rather than a stacked list — five stacked rows ate
+                ~230px of a phone screen and pushed the timeline below
+                the fold before it started. They wrap onto two or three
+                lines rather than scrolling sideways, so every era stays
+                visible at once. From md up it's the sidebar. */}
+            <div className="w-full md:w-[190px] lg:w-[220px] flex-shrink-0 mb-6 md:mb-0">
+              <div className="flex flex-row flex-wrap gap-2 md:flex-col md:flex-nowrap md:gap-0">
+                {CATEGORIES.map((name) => {
+                  const isActive = activeCategory === name;
+                  return (
+                    <button
+                      key={name}
+                      className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors
+                        md:whitespace-normal md:text-start md:text-[15px] md:rounded-none md:border-0 md:border-s-2 md:px-0 md:ps-4 md:py-3 ${
+                          isActive
+                            ? 'bg-white border-[#523230] text-[#1C1917] md:bg-white md:border-[#523230]'
+                            : 'bg-transparent border-[#E2DBD6] text-[#78716C] md:border-transparent md:hover:text-[#1C1917]'
+                        }`}
+                      onClick={() => handleCategoryClick(name)}
+                    >
+                      {name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+
+      <div className="flex-1 min-w-0">{renderSpine()}</div>
+    </div>
+  );
+}

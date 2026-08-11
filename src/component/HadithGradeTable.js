@@ -2,7 +2,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
 const GRADES = [
-  { key: "sahih", label: "Sahih", color: "#3E2723" },
+  { key: "sahih", label: "Sahih", color: "#523230" },
   { key: "hasan", label: "Hasan", color: "#8D6E63" },
   { key: "daif", label: "Daif", color: "#A03A32" },
   { key: "difficult", label: "Difficult", color: "#BE9A90" },

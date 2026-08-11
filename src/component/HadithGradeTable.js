@@ -296,7 +296,6 @@ export default function HadithGradeTable({
               style={{
                 width: `${width.toFixed(2)}%`,
                 minWidth: "3%",
-                maxWidth: mode === "percent" ? "440px" : "none",
               }}
             >
               <div className="flex h-5 gap-px overflow-hidden rounded-sm">
@@ -423,7 +422,7 @@ export default function HadithGradeTable({
             </table>
           </div>
         ) : (
-          <div className={mode === "percent" ? "max-w-[520px]" : ""}>
+          <div>
             <div className="mb-3 flex items-center justify-end border-b border-neutral-300 pb-2 text-xs font-medium text-neutral-500">
               <span className="flex items-center gap-4">
                 {mode === "percent" && <CycleSort />}

@@ -13,7 +13,7 @@ import { AnimatePresence } from 'framer-motion';
 
 const Timeline = () => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('Timelines');
+  const [activeTab, setActiveTab] = useState('Grades');
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [showBottomMenu, setShowBottomMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
@@ -77,7 +77,7 @@ const Timeline = () => {
       {/* Tabs. Pills replaced with a text underline — the filled grey
           pills were the heaviest element on an otherwise empty page. */}
       <div className="flex gap-7 px-4 sm:px-8 mt-6 border-b border-[#E7E1DC]">
-        {['Timelines', 'Grades', 'Articles'].map((tab) => (
+        {['Grades', 'Timelines', 'Articles'].map((tab) => (
           <button
             key={tab}
             className={`text-[15px] pb-3 -mb-px transition-colors ${
@@ -100,11 +100,7 @@ const Timeline = () => {
           <EraTimeline />
         )}
 
-        {activeTab === 'Grades' && (
-          <div className="mx-auto w-full max-w-[900px]">
-            <HadithGradeTable />
-          </div>
-        )}
+        {activeTab === 'Grades' && <HadithGradeTable />}
 
         {activeTab === 'Articles' && !selectedArticle && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

@@ -8,6 +8,7 @@ import LanguageMenu from './LanguageMenu';
 import HadithCollectionMenu from './HadithCollectionMenu';
 import ArticleVideo from './ArticleVideo';
 import EraTimeline from './EraTimeline';
+import HadithGradeTable from './HadithGradeTable';
 import { AnimatePresence } from 'framer-motion';
 
 const Timeline = () => {
@@ -76,7 +77,7 @@ const Timeline = () => {
       {/* Tabs. Pills replaced with a text underline — the filled grey
           pills were the heaviest element on an otherwise empty page. */}
       <div className="flex gap-7 px-4 sm:px-8 mt-6 border-b border-[#E7E1DC]">
-        {['Timelines', 'Articles'].map((tab) => (
+        {['Timelines', 'Grades', 'Articles'].map((tab) => (
           <button
             key={tab}
             className={`text-[15px] pb-3 -mb-px transition-colors ${
@@ -97,6 +98,17 @@ const Timeline = () => {
       <div className="flex-1 px-4 sm:px-8 pb-16 pt-8">
         {activeTab === 'Timelines' && (
           <EraTimeline />
+        )}
+
+        {activeTab === 'Grades' && (
+          <div className="mx-auto w-full max-w-[900px]">
+            <p className="mb-7 text-[15px] leading-relaxed text-[#57534E] max-w-[68ch]">
+              Not every narration in a collection carries the same authority. This breaks each
+              collection down by the grade its narrations were given, so the proportions can be
+              compared directly rather than inferred from a total.
+            </p>
+            <HadithGradeTable />
+          </div>
         )}
 
         {activeTab === 'Articles' && !selectedArticle && (

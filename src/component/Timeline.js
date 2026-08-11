@@ -102,11 +102,6 @@ const Timeline = () => {
 
         {activeTab === 'Grades' && (
           <div className="mx-auto w-full max-w-[900px]">
-            <p className="mb-7 text-[15px] leading-relaxed text-[#57534E] max-w-[68ch]">
-              Not every narration in a collection carries the same authority. This breaks each
-              collection down by the grade its narrations were given, so the proportions can be
-              compared directly rather than inferred from a total.
-            </p>
             <HadithGradeTable />
           </div>
         )}

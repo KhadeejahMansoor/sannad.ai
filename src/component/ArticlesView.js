@@ -60,9 +60,9 @@ function ArticleBody({ article }) {
         if (block.type === 'qa') {
           return (
             <p key={i} className="text-[16px] leading-relaxed text-[#292524]">
-              {/* Speaker set in the site brown so the exchange can be
-                  followed without reading every line. */}
-              <span className="font-medium text-[#7B2833]">{block.speaker}: </span>
+              {/* Speaker set in the site maroon, no colon — the colour and
+                  weight already separate it from the words that follow. */}
+              <span className="font-medium text-[#7B2833]">{block.speaker} </span>
               {withMarkers(block.text)}
             </p>
           );

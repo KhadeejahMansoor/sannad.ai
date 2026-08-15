@@ -97,20 +97,6 @@ export default function ArticlesView() {
           {article.title}
         </h1>
 
-        {article.subtitle && (
-          <p className="mt-2 text-[17px] text-[#78716C]">{article.subtitle}</p>
-        )}
-
-        <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-sm text-[#A8A29E]">
-          <span className="uppercase tracking-wide text-[#57534E]">
-            {article.author}
-          </span>
-          <span>{article.date}</span>
-          {article.interviewDate && (
-            <span>· Interview recorded {article.interviewDate}</span>
-          )}
-        </div>
-
         {/* Video sits above the text: it's the primary artefact here and
             the transcript is the record of it. */}
         {article.videoId && (
@@ -139,19 +125,6 @@ export default function ArticlesView() {
           </div>
         )}
 
-        {article.sourceUrl && (
-          <p className="mt-8 text-[13px] text-[#A8A29E]">
-            Originally published at{' '}
-            <a
-              href={article.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#7A4B2B]"
-            >
-              akhlaq.substack.com
-            </a>
-          </p>
-        )}
       </div>
     );
   }

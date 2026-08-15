@@ -2,7 +2,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
 const GRADES = [
-  { key: "sahih", label: "Sahih", color: "#6B222D" },
+  { key: "sahih", label: "Sahih", color: "#7B2833" },
   { key: "hasan", label: "Hasan", color: "#B06A70" },
   { key: "daif", label: "Daif", color: "#C79EA0" },
   { key: "difficult", label: "Difficult", color: "#DCC6C6" },
@@ -215,6 +215,21 @@ export default function HadithGradeTable({
     });
   }, []);
 
+  /* Each view opens on the number format that suits it: the table on
+     counts, distribution on percent — bars are for comparing composition,
+     and raw counts there just restate the total. Switching back to a view
+     you've already visited keeps whatever you last chose, so this only
+     sets a default the first time. */
+  const seenViews = useRef({ table: true, distribution: false });
+
+  const handleViewChange = (next) => {
+    if (!seenViews.current[next]) {
+      seenViews.current[next] = true;
+      setMode(next === "distribution" ? "percent" : "counts");
+    }
+    setView(next);
+  };
+
   const hideTip = useCallback(() => setTip(null), []);
 
   const CYCLE = ["sahih", "daif", "date"];
@@ -343,11 +358,11 @@ export default function HadithGradeTable({
 
   return (
     <div className={`w-full text-neutral-900 ${className}`}>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-4 flex max-w-[760px] flex-wrap items-center gap-2">
         <Toggle
           label="View"
           value={view}
-          onChange={setView}
+          onChange={handleViewChange}
           options={[
             { value: "table", label: "Table" },
             { value: "distribution", label: "Distribution" },
@@ -365,7 +380,7 @@ export default function HadithGradeTable({
         />
       </div>
 
-      <div ref={wrapRef} className="relative">
+      <div ref={wrapRef} className="relative max-w-[760px]">
         {view === "table" ? (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] border-collapse text-sm tabular-nums">
@@ -422,7 +437,7 @@ export default function HadithGradeTable({
             </table>
           </div>
         ) : (
-          <div className={mode === "percent" ? "max-w-[760px]" : ""}>
+          <div>
             <div className="mb-3 flex items-center justify-end border-b border-neutral-300 pb-2 text-xs font-medium text-neutral-500">
               <span className="flex items-center gap-4">
                 {mode === "percent" && <CycleSort />}
@@ -454,7 +469,7 @@ export default function HadithGradeTable({
         )}
       </div>
 
-      <p className="mt-3.5 text-xs leading-relaxed text-neutral-500">
+      <p className="mt-3.5 max-w-[760px] text-xs leading-relaxed text-neutral-500">
         Totals cover the {toWord(primary.length)} primary collections (
         {fmtCount(grandTotal)} hadith). Azami&apos;s <em>Jami al-Kamil</em> is
         listed separately as a secondary collection. It is a complete collection

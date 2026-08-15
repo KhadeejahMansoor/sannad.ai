@@ -137,7 +137,7 @@ const ERAS_WITH_OFFSET = new Set([
 function yearsAfterProphet(year) {
   const diff = year - PROPHET_DEATH_YEAR;
   if (diff === 0) return null;
-  return `${diff} ${diff === 1 ? 'year' : 'years'} after the Prophet\u2019s death`;
+  return `${diff} ${diff === 1 ? 'year' : 'years'} after the Prophet \uFDFA\u2019s death`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -195,7 +195,10 @@ function bandLabel({ start, size }) {
 
 export default function EraTimeline() {
   const [activeCategory, setActiveCategory] = useState('Companions');
-  const [openName, setOpenName] = useState(null);
+  /* A Set, not a single name: opening one offset used to close whichever
+     was already open, so you could never compare two. Each name toggles
+     on its own now. */
+  const [openNames, setOpenNames] = useState(() => new Set());
 
   const config = TIMELINES[activeCategory];
   const bands = groupIntoBands(config.people);
@@ -203,7 +206,7 @@ export default function EraTimeline() {
 
   const handleCategoryClick = (name) => {
     setActiveCategory(name);
-    setOpenName(null);
+    setOpenNames(new Set());
   };
 
   return (
@@ -254,12 +257,15 @@ export default function EraTimeline() {
                   {showsOffset ? (
                     <button
                       type="button"
-                      aria-expanded={openName === person.name}
+                      aria-expanded={openNames.has(person.name)}
                       className="flex items-baseline gap-2 text-start cursor-pointer"
                       onClick={() =>
-                        setOpenName(
-                          openName === person.name ? null : person.name
-                        )
+                        setOpenNames((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(person.name)) next.delete(person.name);
+                          else next.add(person.name);
+                          return next;
+                        })
                       }
                     >
                       <span className="text-[15px] text-[#1C1917]">
@@ -284,7 +290,7 @@ export default function EraTimeline() {
                       would read as an error rather than as "this is the
                       reference point". */}
                   {showsOffset &&
-                    openName === person.name &&
+                    openNames.has(person.name) &&
                     yearsAfterProphet(person.year) && (
                       <div className="mt-0.5 text-xs text-[#7A4B2B]">
                         {yearsAfterProphet(person.year)}

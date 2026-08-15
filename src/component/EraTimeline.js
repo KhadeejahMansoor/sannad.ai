@@ -122,22 +122,23 @@ const TIMELINES = {
 
 const CATEGORIES = Object.keys(TIMELINES);
 
-/* The Prophet ﷺ died in 632 CE. Clicking a name in the three eras below
-   shows how long after that they died — a Companion who died in 634 is
-   two years after. The later eras are excluded: "1,388 years after the
-   Prophet's death" for a contemporary scholar is a true number but not a
-   useful one, and the framing belongs to the generations close to him. */
+/* The Prophet ﷺ passed away in 632 CE. Clicking a name in the three eras
+   below shows how long after that they died — a Companion who died in 634
+   is two years after. The later eras are excluded: "1,388 years after the
+   Prophet passed away" for a contemporary scholar is a true number but
+   not a useful one, and the framing belongs to the generations close to him. */
 const PROPHET_DEATH_YEAR = 632;
 const ERAS_WITH_OFFSET = new Set([
   'Companions',
   'After the Companions',
   'Hadith compilers',
+  'Classical scholars',
 ]);
 
 function yearsAfterProphet(year) {
   const diff = year - PROPHET_DEATH_YEAR;
   if (diff === 0) return null;
-  return `${diff} ${diff === 1 ? 'year' : 'years'} after the Prophet \uFDFA\u2019s death`;
+  return `${diff} ${diff === 1 ? 'year' : 'years'} after the Prophet \uFDFA passed away`;
 }
 
 /* ------------------------------------------------------------------ *

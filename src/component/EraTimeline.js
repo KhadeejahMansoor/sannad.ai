@@ -167,10 +167,12 @@ function groupIntoBands(people) {
   return bands;
 }
 
-/* "630s" reads naturally for a decade; "1000s" for a century does not,
-   so anything wider than ten years is labelled as a range. */
+/* Just the year the band opens on. Wider bands used to print their full
+   span ("800–849"), which read as two separate numbers rather than one
+   range. The start alone is enough to place the group, and every person
+   carries their own year anyway. */
 function bandLabel({ start, size }) {
-  return size === 10 ? `${start}s` : `${start}–${start + size - 1}`;
+  return size === 10 ? `${start}s` : `${start}`;
 }
 
 export default function EraTimeline() {

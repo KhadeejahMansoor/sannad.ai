@@ -122,6 +122,24 @@ const TIMELINES = {
 
 const CATEGORIES = Object.keys(TIMELINES);
 
+/* The Prophet ﷺ died in 632 CE. Clicking a name in the three eras below
+   shows how long after that they died — a Companion who died in 634 is
+   two years after. The later eras are excluded: "1,388 years after the
+   Prophet's death" for a contemporary scholar is a true number but not a
+   useful one, and the framing belongs to the generations close to him. */
+const PROPHET_DEATH_YEAR = 632;
+const ERAS_WITH_OFFSET = new Set([
+  'Companions',
+  'After the Companions',
+  'Hadith compilers',
+]);
+
+function yearsAfterProphet(year) {
+  const diff = year - PROPHET_DEATH_YEAR;
+  if (diff === 0) return null;
+  return `${diff} ${diff === 1 ? 'year' : 'years'} after the Prophet\u2019s death`;
+}
+
 /* ------------------------------------------------------------------ *
  * Decade bands
  * ------------------------------------------------------------------
@@ -177,12 +195,15 @@ function bandLabel({ start, size }) {
 
 export default function EraTimeline() {
   const [activeCategory, setActiveCategory] = useState('Companions');
+  const [openName, setOpenName] = useState(null);
 
   const config = TIMELINES[activeCategory];
   const bands = groupIntoBands(config.people);
+  const showsOffset = ERAS_WITH_OFFSET.has(activeCategory);
 
   const handleCategoryClick = (name) => {
     setActiveCategory(name);
+    setOpenName(null);
   };
 
   return (
@@ -229,14 +250,46 @@ export default function EraTimeline() {
 
             <div className="ps-1">
               {band.people.map((person) => (
-                <div
-                  key={`${person.name}-${person.year}`}
-                  className="flex items-baseline gap-2 py-1.5"
-                >
-                  <span className="text-[15px] text-[#1C1917]">{person.name}</span>
-                  <span className="text-xs text-[#A8A29E] tabular-nums">
-                    {person.year}
-                  </span>
+                <div key={`${person.name}-${person.year}`} className="py-1.5">
+                  {showsOffset ? (
+                    <button
+                      type="button"
+                      aria-expanded={openName === person.name}
+                      className="flex items-baseline gap-2 text-start cursor-pointer"
+                      onClick={() =>
+                        setOpenName(
+                          openName === person.name ? null : person.name
+                        )
+                      }
+                    >
+                      <span className="text-[15px] text-[#1C1917]">
+                        {person.name}
+                      </span>
+                      <span className="text-xs text-[#A8A29E] tabular-nums">
+                        {person.year}
+                      </span>
+                    </button>
+                  ) : (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[15px] text-[#1C1917]">
+                        {person.name}
+                      </span>
+                      <span className="text-xs text-[#A8A29E] tabular-nums">
+                        {person.year}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* The Prophet ﷺ himself has no offset to show — a zero
+                      would read as an error rather than as "this is the
+                      reference point". */}
+                  {showsOffset &&
+                    openName === person.name &&
+                    yearsAfterProphet(person.year) && (
+                      <div className="mt-0.5 text-xs text-[#7A4B2B]">
+                        {yearsAfterProphet(person.year)}
+                      </div>
+                    )}
                 </div>
               ))}
             </div>

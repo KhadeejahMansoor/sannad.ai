@@ -52,10 +52,13 @@ export default function BottomPopupMenu({
   // by redirect, so the reader saw the old page load and then jump.
   const compilerHref = (scholar) => `/${encodeURIComponent(compilerSlug(scholar))}`;
 
-  // ✅ NEW: Handle About Hadith click to navigate to Timeline
+  // About hadith lives on /timeline. Declared once so the <Link href> and the
+  // mobile handler can't drift apart.
+  const ABOUT_HADITH_HREF = '/timeline';
+
   const handleAboutHadithClick = () => {
-    router.push('/timeline'); // Navigate to Timeline page
-    onClose(); // Close the popup
+    router.push(ABOUT_HADITH_HREF);
+    onClose();
   };
 
   const handleLanguageClickMobile = (e) => {
@@ -118,7 +121,8 @@ export default function BottomPopupMenu({
               <PopupRow
                 icon={<FiBox size={22} />}
                 label="About hadith"
-                onClick={handleAboutHadithClick}
+                href={ABOUT_HADITH_HREF}
+                onClick={onClose}
               />
               <PopupRow
                 icon={<RiBuilding2Line size={22} />}
@@ -170,12 +174,18 @@ export default function BottomPopupMenu({
 
             {/* Footer links */}
            <div className="flex flex-col gap-4 px-5 pb-12 text-sm font-medium text-stone-400 underline">
-              <button 
-                className="text-left" 
-                onClick={handleAboutHadithClick} // ✅ Updated to use new handler
+              {/* A <Link>, not a <button>, so the browser owns the navigation:
+                  right-click > "Open link in new tab", middle-click and
+                  ctrl/cmd-click all work. A button has no href, so the context
+                  menu has nothing to offer — same reasoning as the compiler
+                  list above. */}
+              <Link
+                href={ABOUT_HADITH_HREF}
+                onClick={onClose}
+                className="text-left text-stone-400"
               >
                 About hadith
-              </button>
+              </Link>
               <button className="text-left" onClick={onAboutUsClick}>
                 About us
               </button>
@@ -188,12 +198,19 @@ export default function BottomPopupMenu({
   );
 }
 
-/* ───── PopupRow for Mobile (list-row design) ───── */
-function PopupRow({ icon, label, onClick }) {
+/* ───── PopupRow for Mobile (list-row design) ─────
+   Renders as a <Link> when given an href and a <div> otherwise, so rows that
+   go somewhere are real links (long-press > "Open in new tab") while rows that
+   open a sheet — Language, Hadith collections — stay plain click targets. */
+function PopupRow({ icon, label, onClick, href }) {
+  const Wrapper = href ? Link : 'div';
+  const wrapperProps = href ? { href } : {};
+
   return (
-    <div
+    <Wrapper
+      {...wrapperProps}
       onClick={onClick}
-      className="flex items-center gap-3 bg-white rounded-[16px] border border-[#E4DCD6] px-[14px] py-[13px] cursor-pointer transition-colors hover:bg-[#FAF5F3] active:scale-[0.99]"
+      className={`flex items-center gap-3 bg-white rounded-[16px] border border-[#E4DCD6] px-[14px] py-[13px] cursor-pointer transition-colors hover:bg-[#FAF5F3] active:scale-[0.99] ${href ? 'no-underline' : ''}`}
     >
       <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-[12px] bg-[#ECEAE4] text-[#523230]">
         {icon}
@@ -204,7 +221,7 @@ function PopupRow({ icon, label, onClick }) {
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0" aria-hidden="true">
         <path d="M9 6l6 6-6 6" stroke="#9A8A85" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-    </div>
+    </Wrapper>
   );
 }
 

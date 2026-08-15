@@ -52,9 +52,9 @@ export default function BottomPopupMenu({
   // by redirect, so the reader saw the old page load and then jump.
   const compilerHref = (scholar) => `/${encodeURIComponent(compilerSlug(scholar))}`;
 
-  // About hadith lives on /timeline. Declared once so the <Link href> and the
+  // About hadith lives on /grades. Declared once so the <Link href> and the
   // mobile handler can't drift apart.
-  const ABOUT_HADITH_HREF = '/timeline';
+  const ABOUT_HADITH_HREF = '/grades';
 
   const handleAboutHadithClick = () => {
     router.push(ABOUT_HADITH_HREF);

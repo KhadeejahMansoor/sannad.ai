@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState } from 'react';
 
 /* ------------------------------------------------------------------ *
  * Timeline data
@@ -19,7 +19,6 @@ import React, { useState, useRef, useLayoutEffect } from 'react';
 const TIMELINES = {
   Companions: {
     startYear: 632,
-    tickInterval: 10,
     people: [
       { year: 632, name: 'Prophet ﷺ' },
       { year: 634, name: 'Abu Bakr' },
@@ -40,7 +39,6 @@ const TIMELINES = {
 
   'After the Companions': {
     startYear: 702,
-    tickInterval: 10,
     people: [
       { year: 702, name: 'Abban bin Uthman bin Affan' },
       { year: 713, name: 'Urwah bin Zubayr' },
@@ -56,7 +54,6 @@ const TIMELINES = {
 
   'Hadith compilers': {
     startYear: 796,
-    tickInterval: 25,
     people: [
       { year: 796, name: 'Malik' },
       { year: 805, name: 'Shaybani' },
@@ -83,7 +80,6 @@ const TIMELINES = {
 
   'Classical scholars': {
     startYear: 1064,
-    tickInterval: 100,
     people: [
       { year: 1064, name: 'Ibn Hazm' },
       { year: 1111, name: 'Ghazali' },
@@ -106,7 +102,6 @@ const TIMELINES = {
 
   'Contemporary scholars': {
     startYear: 1943,
-    tickInterval: 10,
     people: [
       { year: 1943, name: 'Thanvi' },
       { year: 1958, name: 'Shakir' },
@@ -127,237 +122,66 @@ const TIMELINES = {
 
 const CATEGORIES = Object.keys(TIMELINES);
 
-/* Axis geometry. AXIS_X is where the vertical rule sits inside the panel;
-   years label to its left, names to its right. */
-const AXIS_X = 68;
-const NAME_X = AXIS_X + 26;
-const NAME_LINE = 24;
-/* Floor on the gap between consecutive rows — below this, names touch.
-   There is no ceiling: whatever height the viewport gives us above the
-   floor is shared out in proportion to elapsed time, so the timeline
-   fills the page instead of stopping short. */
-const MIN_GAP = 22;
-const BOTTOM_PAD = 28;
-/* Below this width the timeline stops trying to fit the viewport and
-   scrolls instead. Squeezing 20 names into a phone screen puts every gap
-   on the floor, which reads as a flat list — the spacing stops carrying
-   any sense of elapsed time. Scrolling costs less than that. */
-const MOBILE_BREAKPOINT = 768;
-const MOBILE_ROW_HEIGHT = 56;
-
-/* Viewport-filling proportional axis.
+/* ------------------------------------------------------------------ *
+ * Decade bands
+ * ------------------------------------------------------------------
+ * People are grouped under the decade they died in, and each band is
+ * labelled. This replaces a proportional spine — a vertical rule with a
+ * dot per person, positioned by year — which had two problems worth
+ * recording: at true scale an era ran to 3000px so you scrolled past it,
+ * and compressing it to fit meant a name could sit several years off its
+ * real position.
  *
- * Earlier versions picked a fixed pxPerYear. A true scale made Classical
- * scholars 3088px tall, so you scrolled; clamping the gaps fixed the
- * scrolling but then short eras stopped halfway down the page and left
- * the rest empty.
- *
- * So the scale is derived from the space available instead of chosen in
- * advance. Every row gets MIN_GAP, and whatever height is left over is
- * shared out in proportion to the years between neighbours. A dense era
- * squeezes toward the floor; a sparse one stretches to the bottom of the
- * viewport. Either way it ends where the page ends.
- *
- * People sharing a year share one dot, names stacked beneath it. */
-function buildLayout(people, tickInterval, lastYear, startYear, available) {
-  const byYear = new Map();
-  for (const p of [...people].sort((a, b) => a.year - b.year)) {
-    if (!byYear.has(p.year)) byYear.set(p.year, []);
-    byYear.get(p.year).push(p.name);
-  }
+ * Bands sidestep both. A decade with nobody in it takes no vertical
+ * space at all, clusters are visible as a matter of course (three deaths
+ * in the 650s, one in the 640s), and every year is printed rather than
+ * hidden behind a hover or a click.
+ * ------------------------------------------------------------------ */
+/* Band width is chosen per era rather than fixed at ten years. Decades
+   suit Companions, where fourteen people fall inside eighty years — but
+   Classical scholars spans 772 years, and at ten-year bands that came out
+   as fourteen headers for sixteen people, which is a header per person
+   and no grouping at all. The span is divided into roughly eight bands
+   and rounded to a sensible unit. */
+const BAND_UNITS = [10, 25, 50, 100, 250, 500];
 
-  const anchorYears = [...byYear.keys()];
-  const stacks = anchorYears.map((y) => (byYear.get(y).length - 1) * NAME_LINE);
-  const deltas = anchorYears.slice(0, -1).map((y, i) => anchorYears[i + 1] - y);
-
-  const stackTotal = stacks.slice(0, -1).reduce((a, b) => a + b, 0);
-  const floorTotal = stackTotal + deltas.length * MIN_GAP;
-  const yearTotal = deltas.reduce((a, b) => a + b, 0) || 1;
-
-  /* Surplus is whatever the viewport offers beyond the floor. Zero when
-     the era is too dense to fit — then every gap is MIN_GAP and the page
-     scrolls, which is the only honest outcome for 20 names on a short
-     screen. */
-  const surplus = Math.max(0, (available || 0) - floorTotal - NAME_LINE);
-
-  const groups = [];
-  let y = 0;
-
-  anchorYears.forEach((year, i) => {
-    groups.push({ year, names: byYear.get(year), y });
-    if (i < deltas.length) {
-      y += stacks[i] + MIN_GAP + (surplus * deltas[i]) / yearTotal;
-    }
-  });
-
-  /* Map any year onto this scale by interpolating inside its segment, so
-     a tick never contradicts the names around it. */
-  const yFor = (year) => {
-    if (year <= groups[0].year) return groups[0].y;
-    for (let i = 0; i < groups.length - 1; i++) {
-      const a = groups[i];
-      const b = groups[i + 1];
-      if (year >= a.year && year <= b.year) {
-        const aBottom = a.y + (a.names.length - 1) * NAME_LINE;
-        const t = (year - a.year) / (b.year - a.year);
-        return aBottom + t * (b.y - aBottom);
-      }
-    }
-    return groups[groups.length - 1].y;
-  };
-
-  const firstTick = Math.ceil(startYear / tickInterval) * tickInterval;
-  const ticks = [];
-  for (let t = firstTick; t <= lastYear; t += tickInterval) {
-    ticks.push({ year: t, y: yFor(t) });
-  }
-
-  const last = groups[groups.length - 1];
-  return { groups, ticks, height: last.y + (last.names.length - 1) * NAME_LINE };
+function bandSize(people) {
+  const years = people.map((p) => p.year);
+  const span = Math.max(...years) - Math.min(...years);
+  const target = span / 8;
+  return BAND_UNITS.find((u) => u >= target) ?? BAND_UNITS[BAND_UNITS.length - 1];
 }
 
+function groupIntoBands(people) {
+  const sorted = [...people].sort((a, b) => a.year - b.year);
+  const size = bandSize(sorted);
+  const bands = [];
 
-/* ------------------------------------------------------------------ *
- * EraTimeline
- * ------------------------------------------------------------------
- * The era nav plus the spine, with no page furniture around it, so it
- * can sit on /timeline and inside About Hadith without either one
- * owning the other. Everything here used to live in Timeline.js.
- *
- * fillViewport — true (default) stretches the spine to the bottom of
- *   the window, which is right when the timeline IS the page. Pass
- *   false when it's one section among others: the spine then sizes to
- *   its own content instead of pushing whatever follows off-screen.
- * ------------------------------------------------------------------ */
-export default function EraTimeline({ fillViewport = true }) {
+  for (const person of sorted) {
+    const start = Math.floor(person.year / size) * size;
+    const last = bands[bands.length - 1];
+    if (last && last.start === start) last.people.push(person);
+    else bands.push({ start, size, people: [person] });
+  }
+
+  return bands;
+}
+
+/* "630s" reads naturally for a decade; "1000s" for a century does not,
+   so anything wider than ten years is labelled as a range. */
+function bandLabel({ start, size }) {
+  return size === 10 ? `${start}s` : `${start}–${start + size - 1}`;
+}
+
+export default function EraTimeline() {
   const [activeCategory, setActiveCategory] = useState('Companions');
-  const [openName, setOpenName] = useState(null);
 
   const config = TIMELINES[activeCategory];
-  const lastYear = Math.max(...config.people.map((p) => p.year));
-
-  /* How much vertical room the spine actually has: everything from its
-     own top edge to the bottom of the window. Measured rather than
-     assumed, because the header, tabs and caption above it all vary. */
-  const spineRef = useRef(null);
-  const [viewport, setViewport] = useState({ available: 0, isMobile: false });
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      if (!spineRef.current) return;
-      const top = spineRef.current.getBoundingClientRect().top;
-      setViewport({
-        available: Math.max(0, window.innerHeight - top - BOTTOM_PAD),
-        isMobile: window.innerWidth < MOBILE_BREAKPOINT,
-      });
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, [activeCategory]);
-
-  /* Desktop on the standalone /timeline page fills the measured
-     viewport. Mobile — and any embedded use, where the timeline is one
-     section among several rather than the whole page — gets a budget
-     based on its own row count instead, so it sizes to its content
-     rather than stretching to the bottom of the window. */
-  const budget =
-    viewport.isMobile || !fillViewport
-      ? config.people.length * MOBILE_ROW_HEIGHT
-      : viewport.available;
-
-  const { groups, ticks, height: spineHeight } = buildLayout(
-    config.people,
-    config.tickInterval,
-    lastYear,
-    config.startYear,
-    budget
-  );
+  const bands = groupIntoBands(config.people);
 
   const handleCategoryClick = (name) => {
     setActiveCategory(name);
-    setOpenName(null);
   };
-
-
-  const renderSpine = () => (
-    <div ref={spineRef} className="relative" style={{ height: spineHeight + NAME_LINE }}>
-      {/* vertical rule */}
-      <div
-        className="absolute top-0 bg-[#E2DBD6]"
-        style={{ left: AXIS_X, width: 1, height: spineHeight }}
-      />
-
-      {/* tick years, positioned by the shared pass so a tick can never
-          rise above a name from an earlier year */}
-      {ticks.map(({ year, y }) => (
-        <React.Fragment key={`tick-${year}`}>
-          <div
-            className="absolute text-sm text-[#57534E] text-right"
-            style={{ left: 0, top: y - 9, width: AXIS_X - 22 }}
-          >
-            {year}
-          </div>
-          <div
-            className="absolute bg-[#E2DBD6]"
-            style={{ left: AXIS_X - 6, top: y, width: 13, height: 1 }}
-          />
-        </React.Fragment>
-      ))}
-
-      {/* start-year anchor */}
-      <div
-        className="absolute text-sm font-medium text-[#523230] text-right"
-        style={{ left: 0, top: -9, width: AXIS_X - 22 }}
-      >
-        {config.startYear}
-      </div>
-
-      {/* people, grouped by year: one dot per year, names stacked under it */}
-      {groups.map((group) => {
-        const isFirst = group.year === config.startYear;
-
-        return (
-          <React.Fragment key={`group-${group.year}`}>
-            <div
-              aria-hidden="true"
-              className="absolute rounded-full"
-              style={{
-                left: AXIS_X - (isFirst ? 5 : 4),
-                top: group.y - (isFirst ? 5 : 4),
-                width: isFirst ? 11 : 9,
-                height: isFirst ? 11 : 9,
-                backgroundColor: '#523230',
-              }}
-            />
-
-            {group.names.map((name, i) => {
-              const isOpen = openName === name;
-              return (
-                <button
-                  key={name}
-                  type="button"
-                  aria-expanded={isOpen}
-                  className="absolute text-[15px] text-[#1C1917] text-start cursor-pointer whitespace-nowrap"
-                  style={{ left: NAME_X, top: group.y - 11 + i * NAME_LINE }}
-                  onClick={() => setOpenName(isOpen ? null : name)}
-                >
-                  {name}
-                  {/* The axis is approximate where names bunch together —
-                      up to ~6 years in the dense eras — so this is the only
-                      place an exact year is stated. */}
-                  {isOpen && (
-                    <span className="ms-2 text-[13px] text-[#7A4B2B]">d. {group.year}</span>
-                  )}
-                </button>
-              );
-            })}
-          </React.Fragment>
-        );
-      })}
-    </div>
-  );
-
 
   return (
     <div className="md:flex md:gap-8 lg:gap-10">
@@ -390,7 +214,33 @@ export default function EraTimeline({ fillViewport = true }) {
             </div>
 
 
-      <div className="flex-1 min-w-0">{renderSpine()}</div>
+      <div className="flex-1 min-w-0">
+        {bands.map((band) => (
+          <div key={band.start} className="mb-6 last:mb-0">
+            {/* Band header: label, then a rule running to the edge. */}
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-xs tracking-wide text-[#A8A29E] tabular-nums">
+                {bandLabel(band)}
+              </span>
+              <span className="flex-1 h-px bg-[#E2DBD6]" />
+            </div>
+
+            <div className="ps-1">
+              {band.people.map((person) => (
+                <div
+                  key={`${person.name}-${person.year}`}
+                  className="flex items-baseline gap-2 py-1.5"
+                >
+                  <span className="text-[15px] text-[#1C1917]">{person.name}</span>
+                  <span className="text-xs text-[#A8A29E] tabular-nums">
+                    {person.year}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

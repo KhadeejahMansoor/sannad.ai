@@ -42,7 +42,14 @@ const ArticleVideo = ({ videoId, title = "Related Video" }) => {
         {!isPlaying ? (
           // Thumbnail with Play Button
           <div className="absolute inset-0 cursor-pointer group" onClick={() => setIsPlaying(true)}>
-            {/* Thumbnail Image */}
+            {/* Thumbnail Image.
+                Plain <img> rather than next/image: this is a fixed-size
+                thumbnail served by YouTube's CDN at exactly the dimensions
+                we render it, so the resizing and format negotiation
+                next/image provides buy nothing here — and it would need
+                img.youtube.com whitelisted in next.config.js to render at
+                all. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={thumbnailUrl}
               alt={title || "Video thumbnail"}

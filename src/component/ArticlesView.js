@@ -97,6 +97,15 @@ export default function ArticlesView() {
           {article.title}
         </h1>
 
+        {article.subtitle && (
+          <p className="mt-2 text-[17px] text-[#78716C]">
+            {article.subtitle}
+            {article.interviewDate && (
+              <span className="text-[#A8A29E]"> · {article.interviewDate}</span>
+            )}
+          </p>
+        )}
+
         {/* Video sits above the text: it's the primary artefact here and
             the transcript is the record of it. */}
         {article.videoId && (

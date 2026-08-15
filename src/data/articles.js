@@ -22,7 +22,6 @@ const article = {
   date: 'January 13, 2025',
   interviewDate: 'April 12, 2019',
   videoId: 'y2ZI_ykyv8o',
-  videoTitle: 'From Hinduism to hadith scholar — an interview',
   sourceUrl:
     'https://akhlaq.substack.com/p/interview-with-shakyh-zia-ur-rahman',
 

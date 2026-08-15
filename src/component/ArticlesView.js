@@ -109,7 +109,7 @@ export default function ArticlesView() {
         {/* Video sits above the text: it's the primary artefact here and
             the transcript is the record of it. */}
         {article.videoId && (
-          <ArticleVideo videoId={article.videoId} title={article.videoTitle} />
+          <ArticleVideo videoId={article.videoId} title={article.videoTitle ?? null} />
         )}
 
         <div className="mt-8">

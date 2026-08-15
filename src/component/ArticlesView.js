@@ -144,7 +144,7 @@ export default function ArticlesView() {
         <button
           key={a.slug}
           type="button"
-          className="flex min-h-[168px] flex-col gap-3 rounded-[8px] border border-[#E7E1DC] bg-white p-5 text-start transition-colors hover:border-[#CFC7C1]"
+          className="flex flex-col gap-2 rounded-[8px] border border-[#E7E1DC] bg-white p-5 text-start transition-colors hover:border-[#CFC7C1]"
           onClick={() => setOpenSlug(a.slug)}
         >
           <span className="text-base font-medium leading-tight text-[#1C1917]">
@@ -153,9 +153,6 @@ export default function ArticlesView() {
           {a.subtitle && (
             <span className="text-sm leading-snug text-[#57534E]">{a.subtitle}</span>
           )}
-          <span className="mt-auto text-xs text-[#A8A29E]">
-            {a.date} — {a.author}
-          </span>
         </button>
       ))}
     </div>

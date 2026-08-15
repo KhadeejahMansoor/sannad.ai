@@ -179,6 +179,11 @@ export default function HadithGradeTable({
     }
 
     prevCombo.current = { view, mode };
+    // `sort` is read here to stash the previous value, but must not be a
+    // dependency: adding it would re-run this effect on every sort change and
+    // immediately overwrite the value it had just saved. Only view/mode
+    // transitions should trigger it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, mode]);
 
   const secondary = data.filter((r) => r.secondary);

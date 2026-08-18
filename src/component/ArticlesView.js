@@ -94,6 +94,23 @@ function ArticleBody({ article }) {
         }
 
         lastSpeaker = null;
+
+        /* Closing signature — place, date, attribution. Set apart and
+           quieter than the body, so it reads as the end of the piece
+           rather than another paragraph. */
+        if (block.type === "sig") {
+          return (
+            <div
+              key={i}
+              className="mt-4 flex flex-col gap-0.5 text-[15px] leading-relaxed text-[#78716C]"
+            >
+              {block.lines.map((line, j) => (
+                <span key={j}>{line}</span>
+              ))}
+            </div>
+          );
+        }
+
         return (
           <p key={i} className="text-[16px] leading-relaxed text-[#292524]">
             {withMarkers(block.text)}

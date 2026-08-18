@@ -1,20 +1,21 @@
 /* ------------------------------------------------------------------ *
- * Interview with Shaykh Zia-ur-Rahman Azami by Yasir Qadhi
+ * Articles
  * ------------------------------------------------------------------
- * Content lives in a data file rather than in JSX so the article reads
- * as prose while editing, and so adding the next one means adding an
- * object here instead of another component.
+ * Content lives in a data file rather than in JSX so each piece reads as
+ * prose while editing, and so adding the next one means adding an object
+ * to ARTICLES at the foot of this file — the route picks it up.
  *
  * `body` is an array of blocks. Types:
- *   p       — a paragraph of narration
- *   qa      — one exchange: { speaker, text }
+ *   p       — a paragraph
+ *   qa      — one exchange: { speaker, text }; consecutive blocks from the
+ *             same speaker are labelled once
  *   h2      — a section heading
- *   note    — the closing italic line
+ *   sig     — a closing signature block, set apart and quieter
  * Footnote markers in text are written as [1], [2] … and matched to the
- * `footnotes` array below.
+ * `footnotes` array on each article. The honorific ﷺ is written [[r9]].
  * ------------------------------------------------------------------ */
 
-const article = {
+const interviewAzami = {
   slug: 'interview-with-shaykh-zia-ur-rahman-azami',
   title: 'Interview with Shaykh Zia-ur-Rahman Azami by Yasir Qadhi',
   subtitle: 'From Hinduism to hadith scholar',
@@ -316,5 +317,87 @@ const article = {
   ],
 };
 
-export default article;
-export const ARTICLES = [article];
+const jamiAlKamilIntro = {
+  slug: 'introduction-to-jami-al-kamil-first-edition',
+  title: 'Translation of the introduction to Jami al-Kamil (1st edition)',
+  subtitle:
+    'The Complete Collection of Sahih Hadith by Zia-ur-Rahman al-Azami',
+  author: 'Muhammad Qassam',
+  date: 'January 9, 2025',
+  sourceUrl:
+    'https://akhlaq.substack.com/p/translation-to-the-introduction-to',
+
+  /* Written by Azami himself, so there is no exchange here — every block
+     is prose rather than qa. */
+  body: [
+    {
+      type: 'p',
+      text: 'From the writing of Shaykh Zia-ur-Rahman al-Azami, compiler of Jami al-Kamil.',
+    },
+    {
+      type: 'p',
+      text: 'الحمدُ لله ربِّ العالمين، والصلاةُ والسلامُ على سيِّد المُرْسَلين، وعلى آلِه وصَحْبِه أجمعين',
+    },
+    {
+      type: 'p',
+      text: 'All praise is due to Allah, Lord of all worlds, and may peace and blessings be upon the Sayyid of the Messengers, and his family, and all his companions.',
+    },
+    {
+      type: 'p',
+      text: 'Indeed, Allah — exalted be His praise — has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqeedah, religions, and other subjects. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, which is: The Complete Collection of Sahih Hadith.',
+    },
+    {
+      type: 'p',
+      text: 'This book aims to gather all sahih Hadith in a single collection, arranged according to chapters of fiqh. I spent several consecutive years to compile it. This involved working day and night, isolating myself from visits and meetings, abandoning travels and journeys, and excusing myself from attending seminars and conferences.',
+    },
+    {
+      type: 'p',
+      text: 'By Allah\u2019s permission, may this collection serve as a beacon of guidance for those who love the Sunnah of al-Mustafa [[r9]], follow his exemplary path, delve into his fragrant biography, and emulate his excellent example. Having this book in your home is like having a Prophet speaking within its walls.[1]',
+    },
+    {
+      type: 'p',
+      text: 'During my work, I faced several difficulties that can only be appreciated by someone who has prepared an academic encyclopedia like this and practiced the science of hadith authentication.',
+    },
+    {
+      type: 'p',
+      text: '\u201cTakhreej\u201d is considered one of the most difficult Islamic sciences, as it requires knowledge of jarh and ta\u2019dil (criticism and validation of narrators), what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and mursal chains, Prophetic and mauquf narrations, chains with narrators that did not meet, chains with missing narrators, tashif and tahrif, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
+    },
+    {
+      type: 'p',
+      text: 'Praise be to Allah, by whose favor righteous deeds are completed. This blessed work began and was completed, with Allah\u2019s praise and facilitation, in the City of the Prophet\u2019s Migration [[r9]], which is also called the Home of the Sunnah, in an atmosphere filled with knowledge and faith during the prosperous and blessed Saudi era.[3]',
+    },
+    {
+      type: 'p',
+      text: 'Finally, I must thank everyone who contributed to the completion of this blessed project materially and academically. Praying to Allah سبحانه وتعالى for everyone\u2019s success and guidance.',
+    },
+    {
+      type: 'p',
+      text: 'I do not claim absolute perfection, as that is not for any human — rather, that belongs to Allah alone. However, what has been accomplished, I consider it magnificent in compiling authentic Sunnah in a single collection, by the grace and favor of Allah. If I\u2019ve overlooked anything, I\u2019ll rectify it.',
+    },
+    {
+      type: 'p',
+      text: 'InshaAllah, there will be future editions. The lack of resources may have indeed impacted the quality and perfection of our work. I also ask Allah سبحانه وتعالى to make this blessed work purely for His noble face and to make it one of the reasons for unifying the Ummah upon the Quran and Sunnah, as our beloved Prophet [[r9]], our intercessor, urges us to follow.',
+    },
+    {
+      type: 'p',
+      text: 'Indeed He is All-Hearing, Near, and responsive to our duas. And praise be to Allah, from beginning to end.',
+    },
+    {
+      type: 'sig',
+      lines: [
+        'Madinah al-Munawwarah',
+        '5 Shawwal 1436 — July 22, 2015',
+        'The Author, may Allah forgive him',
+      ],
+    },
+  ],
+
+  footnotes: [
+    'I borrowed this saying from Imam al-Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
+    'Translator\u2019s note. Takhreej refers to identifying and documenting the sources of Hadith narrations. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
+    'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
+  ],
+};
+
+/* Newest first — this is the order the cards render in. */
+export const ARTICLES = [interviewAzami, jamiAlKamilIntro];

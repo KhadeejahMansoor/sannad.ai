@@ -150,7 +150,12 @@ export function ArticleDetail({ article }) {
         ← All articles
       </Link>
 
-      <h1 className="text-[26px] sm:text-[30px] font-medium leading-tight text-[#1C1917]">
+      {/* Same serif as the index, so a piece looks continuous with the
+          entry that led to it. */}
+      <h1
+        className="text-[28px] sm:text-[34px] leading-[1.15] text-[#1C1917]"
+        style={{ fontFamily: 'var(--font-serif)' }}
+      >
         {article.title}
       </h1>
 
@@ -195,21 +200,50 @@ export function ArticleDetail({ article }) {
 }
 
 export default function ArticlesView() {
+  const [lead, ...rest] = ARTICLES;
+
+  /* An editorial index rather than a grid of cards. Four white rectangles
+     read as a dashboard; serif titles on the bare page read as a
+     publication. The newest piece is set larger so the page has a focal
+     point, and hairlines separate the rest — no boxes.
+
+     Subtitles sit in the site maroon rather than grey: at this size the
+     colour does the separating that a border used to. */
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {ARTICLES.map((a) => (
+    <div className="mx-auto w-full max-w-[760px]">
+      <Link
+        href={`/articles/${lead.slug}`}
+        className="block border-b border-[#DDD5CE] pb-7 no-underline"
+      >
+        <h2
+          className="text-[30px] sm:text-[34px] leading-[1.15] text-[#1C1917] transition-colors hover:text-[#7B2833]"
+          style={{ fontFamily: 'var(--font-serif)' }}
+        >
+          {lead.title}
+        </h2>
+        {lead.subtitle && (
+          <p className="mt-3 text-[15px] leading-relaxed text-[#7B2833]">
+            {lead.subtitle}
+          </p>
+        )}
+      </Link>
+
+      {rest.map((a) => (
         <Link
           key={a.slug}
           href={`/articles/${a.slug}`}
-          className="flex flex-col gap-2 rounded-[8px] border border-[#E7E1DC] bg-white p-5 text-start no-underline transition-colors hover:border-[#CFC7C1]"
+          className="block border-b border-[#E7E1DC] py-7 no-underline last:border-b-0"
         >
-          <span className="text-base font-medium leading-tight text-[#1C1917]">
+          <h2
+            className="text-[22px] sm:text-[26px] leading-[1.2] text-[#1C1917] transition-colors hover:text-[#7B2833]"
+            style={{ fontFamily: 'var(--font-serif)' }}
+          >
             {a.title}
-          </span>
+          </h2>
           {a.subtitle && (
-            <span className="text-sm leading-snug text-[#57534E]">
+            <p className="mt-2 text-[14px] leading-relaxed text-[#7B2833]">
               {a.subtitle}
-            </span>
+            </p>
           )}
         </Link>
       ))}

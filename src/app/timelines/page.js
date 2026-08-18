@@ -1,15 +1,8 @@
-import AboutShell from '../../component/AboutShell';
-import EraTimeline from '../../component/EraTimeline';
+import { redirect } from 'next/navigation';
+import { ERA_SLUGS, DEFAULT_ERA } from '../../component/EraTimeline';
 
-export const metadata = {
-  title: 'Timelines — Sannad',
-  description: 'The narrators and scholars of each era, by year of death.',
-};
-
+// /timelines has no content of its own — it opens on the first era, which
+// is what it showed before each era had its own address.
 export default function Page() {
-  return (
-    <AboutShell>
-      <EraTimeline />
-    </AboutShell>
-  );
+  redirect(`/timelines/${ERA_SLUGS[DEFAULT_ERA]}`);
 }

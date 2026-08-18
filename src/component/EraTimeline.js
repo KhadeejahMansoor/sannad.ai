@@ -1,5 +1,6 @@
-'use client';
-import React, { useState } from 'react';
+"use client";
+import React, { useState } from "react";
+import Link from "next/link";
 
 /* ------------------------------------------------------------------ *
  * Timeline data
@@ -20,107 +21,124 @@ const TIMELINES = {
   Companions: {
     startYear: 632,
     people: [
-      { year: 632, name: 'Prophet ﷺ' },
-      { year: 634, name: 'Abu Bakr' },
-      { year: 644, name: 'Umar' },
-      { year: 651, name: 'Abdullah bin Masud' },
-      { year: 656, name: 'Uthman' },
-      { year: 661, name: 'Ali' },
-      { year: 665, name: 'Zayd bin Thabit' },
-      { year: 678, name: 'Abu Huraira & Ayesha' },
-      { year: 680, name: 'Muawiyah & Hussein' },
-      { year: 687, name: 'Abdullah bin Abbas' },
-      { year: 692, name: 'Abdullah bin Zubair' },
-      { year: 693, name: 'Abdullah bin Umar' },
-      { year: 697, name: 'Jabir bin Abdullah' },
-      { year: 712, name: 'Anas bin Malik' },
+      { year: 632, name: "Prophet ﷺ" },
+      { year: 634, name: "Abu Bakr" },
+      { year: 644, name: "Umar" },
+      { year: 651, name: "Abdullah bin Masud" },
+      { year: 656, name: "Uthman" },
+      { year: 661, name: "Ali" },
+      { year: 665, name: "Zayd bin Thabit" },
+      { year: 678, name: "Abu Huraira & Ayesha" },
+      { year: 680, name: "Muawiyah & Hussein" },
+      { year: 687, name: "Abdullah bin Abbas" },
+      { year: 692, name: "Abdullah bin Zubair" },
+      { year: 693, name: "Abdullah bin Umar" },
+      { year: 697, name: "Jabir bin Abdullah" },
+      { year: 712, name: "Anas bin Malik" },
     ],
   },
 
-  'After the Companions': {
+  "After the Companions": {
     startYear: 702,
     people: [
-      { year: 702, name: 'Abban bin Uthman bin Affan' },
-      { year: 713, name: 'Urwah bin Zubayr' },
-      { year: 715, name: 'Said bin Musayyib' },
-      { year: 720, name: 'Umar bin Abdul-Aziz' },
-      { year: 728, name: 'Hasan al-Basri' },
-      { year: 742, name: 'Ibn Shibab al-Zuhri' },
-      { year: 767, name: 'Abu Hanifa' },
-      { year: 768, name: 'Ibn Ishaq' },
-      { year: 778, name: 'Sufyan al-Thawri' },
+      { year: 702, name: "Abban bin Uthman bin Affan" },
+      { year: 713, name: "Urwah bin Zubayr" },
+      { year: 715, name: "Said bin Musayyib" },
+      { year: 720, name: "Umar bin Abdul-Aziz" },
+      { year: 728, name: "Hasan al-Basri" },
+      { year: 742, name: "Ibn Shibab al-Zuhri" },
+      { year: 767, name: "Abu Hanifa" },
+      { year: 768, name: "Ibn Ishaq" },
+      { year: 778, name: "Sufyan al-Thawri" },
     ],
   },
 
-  'Hadith compilers': {
+  "Hadith compilers": {
     startYear: 796,
     people: [
-      { year: 796, name: 'Malik' },
-      { year: 805, name: 'Shaybani' },
-      { year: 848, name: 'Yahya bin Yahya' },
-      { year: 849, name: 'Ibn Abu Shaybah' },
-      { year: 855, name: 'Ahmad' },
-      { year: 869, name: 'Darimi' },
-      { year: 870, name: 'Bukhari' },
-      { year: 875, name: 'Muslim' },
-      { year: 887, name: 'Ibn Majah' },
-      { year: 889, name: 'Abu Dawud' },
-      { year: 890, name: 'Abu Hatim' },
-      { year: 892, name: 'Tirmidhi' },
-      { year: 905, name: 'Bazzar' },
-      { year: 915, name: 'Nasai' },
-      { year: 963, name: 'Ibn Khuzaymah' },
-      { year: 965, name: 'Ibn Hibban' },
-      { year: 971, name: 'Tabarani' },
-      { year: 995, name: 'Daraqutni' },
-      { year: 1003, name: 'Hakim' },
-      { year: 1066, name: 'Bayhaqi' },
+      { year: 796, name: "Malik" },
+      { year: 805, name: "Shaybani" },
+      { year: 848, name: "Yahya bin Yahya" },
+      { year: 849, name: "Ibn Abu Shaybah" },
+      { year: 855, name: "Ahmad" },
+      { year: 869, name: "Darimi" },
+      { year: 870, name: "Bukhari" },
+      { year: 875, name: "Muslim" },
+      { year: 887, name: "Ibn Majah" },
+      { year: 889, name: "Abu Dawud" },
+      { year: 890, name: "Abu Hatim" },
+      { year: 892, name: "Tirmidhi" },
+      { year: 905, name: "Bazzar" },
+      { year: 915, name: "Nasai" },
+      { year: 963, name: "Ibn Khuzaymah" },
+      { year: 965, name: "Ibn Hibban" },
+      { year: 971, name: "Tabarani" },
+      { year: 995, name: "Daraqutni" },
+      { year: 1003, name: "Hakim" },
+      { year: 1066, name: "Bayhaqi" },
     ],
   },
 
-  'Classical scholars': {
+  "Classical scholars": {
     startYear: 1064,
     people: [
-      { year: 1064, name: 'Ibn Hazm' },
-      { year: 1111, name: 'Ghazali' },
-      { year: 1201, name: 'Ibn Jawzi' },
-      { year: 1273, name: 'Ibn Qurtubi' },
-      { year: 1277, name: 'Nawawi' },
-      { year: 1328, name: 'Ibn Taymiyyah' },
-      { year: 1341, name: 'Mizzi' },
-      { year: 1348, name: 'Dhahabi' },
-      { year: 1350, name: 'Ibn Qayyim' },
-      { year: 1373, name: 'Ibn Kathir' },
-      { year: 1393, name: 'Ibn Rajab' },
-      { year: 1449, name: 'Ibn Hajjar' },
-      { year: 1505, name: 'Suyuti' },
-      { year: 1625, name: 'Ahmad Sirhindi' },
-      { year: 1762, name: 'Shah Waliullah' },
-      { year: 1836, name: 'Ibn Abidin' },
+      { year: 1064, name: "Ibn Hazm" },
+      { year: 1111, name: "Ghazali" },
+      { year: 1201, name: "Ibn Jawzi" },
+      { year: 1273, name: "Ibn Qurtubi" },
+      { year: 1277, name: "Nawawi" },
+      { year: 1328, name: "Ibn Taymiyyah" },
+      { year: 1341, name: "Mizzi" },
+      { year: 1348, name: "Dhahabi" },
+      { year: 1350, name: "Ibn Qayyim" },
+      { year: 1373, name: "Ibn Kathir" },
+      { year: 1393, name: "Ibn Rajab" },
+      { year: 1449, name: "Ibn Hajjar" },
+      { year: 1505, name: "Suyuti" },
+      { year: 1625, name: "Ahmad Sirhindi" },
+      { year: 1762, name: "Shah Waliullah" },
+      { year: 1836, name: "Ibn Abidin" },
     ],
   },
 
-  'Contemporary scholars': {
+  "Contemporary scholars": {
     startYear: 1943,
     people: [
-      { year: 1943, name: 'Thanvi' },
-      { year: 1958, name: 'Shakir' },
-      { year: 1976, name: 'Shafii Usmani' },
-      { year: 1979, name: 'Maududi' },
-      { year: 1999, name: 'Albani' },
-      { year: 1999, name: 'Abdul Hasan Ali Nadvi' },
-      { year: 2001, name: 'Ibn Uthaymeen' },
-      { year: 2006, name: 'Mubarakpuri' },
-      { year: 2013, name: 'Zubair Ali Zai' },
-      { year: 2016, name: 'Arnaut' },
-      { year: 2017, name: 'Muhammad Sobhi Hullaq' },
-      { year: 2017, name: 'Muhammad Azami' },
-      { year: 2020, name: 'Ziya-ur-Rahman Azami' },
+      { year: 1943, name: "Thanvi" },
+      { year: 1958, name: "Shakir" },
+      { year: 1976, name: "Shafii Usmani" },
+      { year: 1979, name: "Maududi" },
+      { year: 1999, name: "Albani" },
+      { year: 1999, name: "Abdul Hasan Ali Nadvi" },
+      { year: 2001, name: "Ibn Uthaymeen" },
+      { year: 2006, name: "Mubarakpuri" },
+      { year: 2013, name: "Zubair Ali Zai" },
+      { year: 2016, name: "Arnaut" },
+      { year: 2017, name: "Muhammad Sobhi Hullaq" },
+      { year: 2017, name: "Muhammad Azami" },
+      { year: 2020, name: "Ziya-ur-Rahman Azami" },
     ],
   },
 };
 
 const CATEGORIES = Object.keys(TIMELINES);
+
+/* Each era has its own address: /timelines/companions and so on. The era
+   used to be useState, so all five shared the /timelines URL — one
+   couldn't be linked to, bookmarked, or reached with the back button. */
+export const ERA_SLUGS = {
+  Companions: "companions",
+  "After the Companions": "after-the-companions",
+  "Hadith compilers": "hadith-compilers",
+  "Classical scholars": "classical-scholars",
+  "Contemporary scholars": "contemporary-scholars",
+};
+
+export const ERA_BY_SLUG = Object.fromEntries(
+  Object.entries(ERA_SLUGS).map(([name, slug]) => [slug, name]),
+);
+
+export const DEFAULT_ERA = "Companions";
 
 /* The Prophet ﷺ passed away in 632 CE. Clicking a name in the three eras
    below shows how long after that they died — a Companion who died in 634
@@ -129,16 +147,16 @@ const CATEGORIES = Object.keys(TIMELINES);
    not a useful one, and the framing belongs to the generations close to him. */
 const PROPHET_DEATH_YEAR = 632;
 const ERAS_WITH_OFFSET = new Set([
-  'Companions',
-  'After the Companions',
-  'Hadith compilers',
-  'Classical scholars',
+  "Companions",
+  "After the Companions",
+  "Hadith compilers",
+  "Classical scholars",
 ]);
 
 function yearsAfterProphet(year) {
   const diff = year - PROPHET_DEATH_YEAR;
   if (diff === 0) return null;
-  return `${diff} ${diff === 1 ? 'year' : 'years'} after the Prophet \uFDFA passed away`;
+  return `${diff} ${diff === 1 ? "year" : "years"} after the Prophet \uFDFA passed away`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -168,7 +186,9 @@ function bandSize(people) {
   const years = people.map((p) => p.year);
   const span = Math.max(...years) - Math.min(...years);
   const target = span / 8;
-  return BAND_UNITS.find((u) => u >= target) ?? BAND_UNITS[BAND_UNITS.length - 1];
+  return (
+    BAND_UNITS.find((u) => u >= target) ?? BAND_UNITS[BAND_UNITS.length - 1]
+  );
 }
 
 function groupIntoBands(people) {
@@ -194,52 +214,54 @@ function bandLabel({ start, size }) {
   return size === 10 ? `${start}s` : `${start}`;
 }
 
-export default function EraTimeline() {
-  const [activeCategory, setActiveCategory] = useState('Companions');
+export default function EraTimeline({ era = DEFAULT_ERA }) {
+  const activeCategory = TIMELINES[era] ? era : DEFAULT_ERA;
   /* A Set, not a single name: opening one offset used to close whichever
      was already open, so you could never compare two. Each name toggles
      on its own now. */
+  /* Keyed on the era, so navigating between eras gives a fresh Set rather
+     than carrying open offsets across — a name from the previous era
+     could otherwise match one here and open by itself. */
   const [openNames, setOpenNames] = useState(() => new Set());
+  const [seenEra, setSeenEra] = useState(activeCategory);
+  if (seenEra !== activeCategory) {
+    setSeenEra(activeCategory);
+    setOpenNames(new Set());
+  }
 
   const config = TIMELINES[activeCategory];
   const bands = groupIntoBands(config.people);
   const showsOffset = ERAS_WITH_OFFSET.has(activeCategory);
 
-  const handleCategoryClick = (name) => {
-    setActiveCategory(name);
-    setOpenNames(new Set());
-  };
-
   return (
     <div className="md:flex md:gap-8 lg:gap-10">
-            {/* Era nav. On mobile this is a horizontal scrolling row of
+      {/* Era nav. On mobile this is a horizontal scrolling row of
                 chips rather than a stacked list — five stacked rows ate
                 ~230px of a phone screen and pushed the timeline below
                 the fold before it started. They wrap onto two or three
                 lines rather than scrolling sideways, so every era stays
                 visible at once. From md up it's the sidebar. */}
-            <div className="w-full md:w-[190px] lg:w-[220px] flex-shrink-0 mb-6 md:mb-0">
-              <div className="flex flex-row flex-wrap gap-2 md:flex-col md:flex-nowrap md:gap-0">
-                {CATEGORIES.map((name) => {
-                  const isActive = activeCategory === name;
-                  return (
-                    <button
-                      key={name}
-                      className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors
+      <div className="w-full md:w-[190px] lg:w-[220px] flex-shrink-0 mb-6 md:mb-0">
+        <div className="flex flex-row flex-wrap gap-2 md:flex-col md:flex-nowrap md:gap-0">
+          {CATEGORIES.map((name) => {
+            const isActive = activeCategory === name;
+            return (
+              <Link
+                key={name}
+                href={`/timelines/${ERA_SLUGS[name]}`}
+                className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm no-underline transition-colors
                         md:whitespace-normal md:text-start md:text-[15px] md:rounded-none md:border-0 md:border-s-2 md:px-0 md:ps-4 md:py-3 ${
                           isActive
-                            ? 'bg-white border-[#523230] text-[#1C1917] md:bg-white md:border-[#523230]'
-                            : 'bg-transparent border-[#E2DBD6] text-[#78716C] md:border-transparent md:hover:text-[#1C1917]'
+                            ? "bg-white border-[#523230] text-[#1C1917] md:bg-white md:border-[#523230]"
+                            : "bg-transparent border-[#E2DBD6] text-[#78716C] md:border-transparent md:hover:text-[#1C1917]"
                         }`}
-                      onClick={() => handleCategoryClick(name)}
-                    >
-                      {name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
+              >
+                {name}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="flex-1 min-w-0">
         {bands.map((band) => (

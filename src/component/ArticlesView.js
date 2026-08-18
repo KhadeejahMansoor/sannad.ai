@@ -200,43 +200,27 @@ export function ArticleDetail({ article }) {
 }
 
 export default function ArticlesView() {
-  const [lead, ...rest] = ARTICLES;
-
-  /* An editorial index rather than a grid of cards. Four white rectangles
+  /* An editorial index rather than a grid of cards — four white rectangles
      read as a dashboard; serif titles on the bare page read as a
-     publication. The newest piece is set larger so the page has a focal
-     point, and hairlines separate the rest — no boxes.
+     publication.
+
+     Every entry is set at the same size. An earlier version gave the newest
+     piece a larger title, which made the list look ranked rather than
+     chronological. Hairlines separate them; no boxes.
 
      Subtitles sit in the site maroon rather than grey: at this size the
      colour does the separating that a border used to. */
   return (
     <div className="w-full max-w-[760px]">
-      <Link
-        href={`/articles/${lead.slug}`}
-        className="block border-b border-[#DDD5CE] pb-7 no-underline"
-      >
-        <h2
-          className="text-[18px] sm:text-[20px] leading-[1.15] text-[#1C1917] transition-colors hover:text-[#7B2833]"
-          style={{ fontFamily: 'var(--font-serif)' }}
-        >
-          {lead.title}
-        </h2>
-        {lead.subtitle && (
-          <p className="mt-3 text-[15px] leading-relaxed text-[#7B2833]">
-            {lead.subtitle}
-          </p>
-        )}
-      </Link>
-
-      {rest.map((a) => (
+      {ARTICLES.map((a) => (
         <Link
           key={a.slug}
           href={`/articles/${a.slug}`}
-          className="block border-b border-[#E7E1DC] py-7 no-underline last:border-b-0"
+          className="block border-b border-[#E7E1DC] py-7 no-underline first:pt-0 last:border-b-0"
         >
           <h2
-            className="text-[22px] sm:text-[26px] leading-[1.2] text-[#1C1917] transition-colors hover:text-[#7B2833]"
-            style={{ fontFamily: 'var(--font-serif)' }}
+            className="text-[20px] sm:text-[24px] leading-[1.2] text-[#1C1917] transition-colors hover:text-[#7B2833]"
+            style={{ fontFamily: "var(--font-serif)" }}
           >
             {a.title}
           </h2>

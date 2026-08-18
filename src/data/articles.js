@@ -329,6 +329,10 @@ const jamiAlKamil = {
   sourceUrl:
     'https://akhlaq.substack.com/p/translation-to-the-introduction-to',
 
+  /* A standfirst, shown above the contents list at the head of the piece. */
+  intro:
+    'Shaykh Zia-ur-Rahman Azami authored Jami al-Kamil, which seeks to be a comprehensive collection of sahih and hasan hadith. This page includes introductions written by Shaykh Azami himself, as well as a list of his works and credentials.',
+
   /* Three pieces folded into one: the translated introduction, then the
      compiler's credentials, then his works. They were separate articles
      covering one subject, which made the index read as four entries about

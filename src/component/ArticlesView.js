@@ -51,6 +51,16 @@ function withMarkers(text) {
   });
 }
 
+/* Section ids, derived from the heading text so the contents list and the
+   headings can't drift apart — both call this rather than keeping their own
+   list. */
+const sectionId = (text) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+
 /* A speaker is named only when the speaker changes. Azami and Qadhi each
    run several paragraphs at a stretch, and repeating the name on every
    one of them read as a new turn each time — the transcript looked like
@@ -68,7 +78,10 @@ function ArticleBody({ article }) {
           return (
             <h2
               key={i}
-              className="mt-8 text-[21px] font-medium text-[#1C1917] first:mt-0"
+              id={sectionId(block.text)}
+              /* scroll-mt clears the sticky site header, which would
+                 otherwise cover the heading a contents link jumps to. */
+              className="mt-8 scroll-mt-28 text-[21px] font-medium text-[#1C1917] first:mt-0"
             >
               {withHonorifics(block.text)}
             </h2>
@@ -195,6 +208,35 @@ export function ArticleDetail({ article }) {
       {article.interviewDate && (
         <p className="mt-2 text-sm text-[#A8A29E]">{article.interviewDate}</p>
       )}
+
+      {article.intro && (
+        <p className="mt-5 text-[16px] leading-relaxed text-[#44403C]">
+          {withHonorifics(article.intro)}
+        </p>
+      )}
+
+      {/* Contents, built from the h2 blocks in the body rather than a
+          separate list — a section can't be added without appearing here,
+          and a renamed heading can't leave a dead link behind. Hidden when
+          a piece has fewer than two sections, where it would be noise. */}
+      {(() => {
+        const sections = article.body.filter((b) => b.type === "h2");
+        if (sections.length < 2) return null;
+
+        return (
+          <nav aria-label="Contents" className="mt-6 flex flex-col gap-1.5">
+            {sections.map((b) => (
+              <a
+                key={b.text}
+                href={`#${sectionId(b.text)}`}
+                className="text-[15px] text-[#7B2833] no-underline hover:underline"
+              >
+                {b.text}
+              </a>
+            ))}
+          </nav>
+        );
+      })()}
 
       {/* Video sits above the text: it's the primary artefact here and
             the transcript is the record of it. */}

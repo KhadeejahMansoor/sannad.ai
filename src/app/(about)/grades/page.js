@@ -1,12 +1,7 @@
-import HadithGradeTable from '../../../component/HadithGradeTable';
+import { redirect } from 'next/navigation';
 
-export const metadata = {
-  title: 'Hadith grades — Sannad',
-  description: 'Grade breakdown across the primary hadith collections.',
-};
-
-// No AboutShell here — the header and tabs come from the (about) layout,
-// which stays mounted across tab changes.
+// /grades opens on the table in counts, which is what it showed before each
+// combination had its own address.
 export default function Page() {
-  return <HadithGradeTable />;
+  redirect('/grades/table/counts');
 }

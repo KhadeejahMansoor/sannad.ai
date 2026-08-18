@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from "react";
+import Link from "next/link";
 
 const GRADES = [
   { key: "sahih", label: "Sahih", color: "#7B2833" },
@@ -120,38 +121,46 @@ const fmtPct = (part, whole) => {
   return pct > 0 && pct < 1 ? pct.toFixed(1) + "%" : Math.round(pct) + "%";
 };
 
-function Toggle({ options, value, onChange, label }) {
+/* Each option is a <Link>, not a <button>: view and mode live in the URL
+   now, so every combination has its own address and can be linked,
+   bookmarked, or reached with the back button. */
+function Toggle({ options, value, label }) {
   return (
     <div role="group" aria-label={label} className="flex gap-1">
       {options.map((opt) => {
         const on = opt.value === value;
         return (
-          <button
+          <Link
             key={opt.value}
-            type="button"
-            aria-pressed={on}
-            onClick={() => onChange(opt.value)}
+            href={opt.href}
+            scroll={false}
+            aria-current={on ? "true" : undefined}
             className={
-              "rounded-md border px-3 py-1.5 text-xs transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 " +
+              "rounded-md border px-3 py-1.5 text-xs no-underline transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 " +
               (on
                 ? "border-neutral-400 bg-neutral-100 text-neutral-900"
                 : "border-neutral-200 bg-transparent text-neutral-500 hover:border-neutral-300")
             }
           >
             {opt.label}
-          </button>
+          </Link>
         );
       })}
     </div>
   );
 }
 
+/* view and mode are props, supplied by the route. They used to be useState
+   with a first-visit default (table opened on counts, distribution on
+   percent) — that behaviour now lives in the URLs themselves: the Table
+   link points at /grades/table/counts and Distribution at
+   /grades/distribution/percent. */
 export default function HadithGradeTable({
   data = DEFAULT_DATA,
   className = "",
+  view = "table",
+  mode = "counts",
 }) {
-  const [view, setView] = useState("table");
-  const [mode, setMode] = useState("counts");
   const [sort, setSort] = useState("date");
   const [tip, setTip] = useState(null);
   const wrapRef = useRef(null);
@@ -219,21 +228,6 @@ export default function HadithGradeTable({
       y: seg.top - box.top,
     });
   }, []);
-
-  /* Each view opens on the number format that suits it: the table on
-     counts, distribution on percent — bars are for comparing composition,
-     and raw counts there just restate the total. Switching back to a view
-     you've already visited keeps whatever you last chose, so this only
-     sets a default the first time. */
-  const seenViews = useRef({ table: true, distribution: false });
-
-  const handleViewChange = (next) => {
-    if (!seenViews.current[next]) {
-      seenViews.current[next] = true;
-      setMode(next === "distribution" ? "percent" : "counts");
-    }
-    setView(next);
-  };
 
   const hideTip = useCallback(() => setTip(null), []);
 
@@ -367,20 +361,28 @@ export default function HadithGradeTable({
         <Toggle
           label="View"
           value={view}
-          onChange={handleViewChange}
           options={[
-            { value: "table", label: "Table" },
-            { value: "distribution", label: "Distribution" },
+            /* Switching view carries its preferred format rather than the
+               current one: counts for the table, percent for the bars. */
+            { value: "table", label: "Table", href: "/grades/table/counts" },
+            {
+              value: "distribution",
+              label: "Distribution",
+              href: "/grades/distribution/percent",
+            },
           ]}
         />
         <span className="mx-1 h-4 w-px bg-neutral-200" aria-hidden="true" />
         <Toggle
           label="Number format"
           value={mode}
-          onChange={setMode}
           options={[
-            { value: "counts", label: "Counts" },
-            { value: "percent", label: "Percent" },
+            { value: "counts", label: "Counts", href: `/grades/${view}/counts` },
+            {
+              value: "percent",
+              label: "Percent",
+              href: `/grades/${view}/percent`,
+            },
           ]}
         />
       </div>

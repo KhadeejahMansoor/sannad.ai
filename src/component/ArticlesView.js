@@ -216,7 +216,7 @@ export default function ArticlesView() {
         className="block border-b border-[#DDD5CE] pb-7 no-underline"
       >
         <h2
-          className="text-[20px] sm:text-[20px] leading-[1.15] text-[#1C1917] transition-colors hover:text-[#7B2833]"
+          className="text-[18px] sm:text-[20px] leading-[1.15] text-[#1C1917] transition-colors hover:text-[#7B2833]"
           style={{ fontFamily: 'var(--font-serif)' }}
         >
           {lead.title}

@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { ERA_SLUGS, DEFAULT_ERA } from "../data/eras";
 
 /* ------------------------------------------------------------------ *
  * Timeline data
@@ -126,7 +125,11 @@ const CATEGORIES = Object.keys(TIMELINES);
 
 /* Slugs come from data/eras.js — a plain module with no 'use client'
    directive, so the route files can import them without pulling this
-   client component into a server context. */
+   client component into a server context.
+
+   The nav derives its hrefs locally rather than reading ERA_SLUGS, so a
+   failed import can't silently produce /timelines/undefined. */
+const slugify = (name) => name.toLowerCase().replace(/\s+/g, '-');
 
 /* The Prophet ﷺ passed away in 632 CE. Clicking a name in the three eras
    below shows how long after that they died — a Companion who died in 634
@@ -202,8 +205,16 @@ function bandLabel({ start, size }) {
   return size === 10 ? `${start}s` : `${start}`;
 }
 
-export default function EraTimeline({ era = DEFAULT_ERA }) {
-  const activeCategory = TIMELINES[era] ? era : DEFAULT_ERA;
+export default function EraTimeline({ era }) {
+  /* Falls back to the first key in TIMELINES rather than to an imported
+     constant. The previous guard read `TIMELINES[era] ? era : DEFAULT_ERA`,
+     which is only as good as DEFAULT_ERA — when that arrived undefined,
+     both branches were undefined, `config` was undefined, and reading
+     `config.people` threw "Cannot read properties of undefined". Deriving
+     the fallback from the data itself means this can't happen. */
+  const activeCategory =
+    era && TIMELINES[era] ? era : CATEGORIES[0];
+  const config = TIMELINES[activeCategory];
   /* A Set, not a single name: opening one offset used to close whichever
      was already open, so you could never compare two. Each name toggles
      on its own now. */
@@ -217,7 +228,6 @@ export default function EraTimeline({ era = DEFAULT_ERA }) {
     setOpenNames(new Set());
   }
 
-  const config = TIMELINES[activeCategory];
   const bands = groupIntoBands(config.people);
   const showsOffset = ERAS_WITH_OFFSET.has(activeCategory);
 
@@ -236,7 +246,7 @@ export default function EraTimeline({ era = DEFAULT_ERA }) {
             return (
               <Link
                 key={name}
-                href={`/timelines/${ERA_SLUGS[name]}`}
+                href={`/timelines/${slugify(name)}`}
                 className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm no-underline transition-colors
                         md:whitespace-normal md:text-start md:text-[15px] md:rounded-none md:border-0 md:border-s-2 md:px-0 md:ps-4 md:py-3 ${
                           isActive

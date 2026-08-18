@@ -51,11 +51,20 @@ function withMarkers(text) {
   });
 }
 
+/* A speaker is named only when the speaker changes. Azami and Qadhi each
+   run several paragraphs at a stretch, and repeating the name on every
+   one of them read as a new turn each time — the transcript looked like
+   an exchange where it was really one person talking. A heading resets
+   the run, so the first paragraph after a section break is always
+   attributed. */
 function ArticleBody({ article }) {
+  let lastSpeaker = null;
+
   return (
     <div className="flex flex-col gap-5">
       {article.body.map((block, i) => {
         if (block.type === "h2") {
+          lastSpeaker = null;
           return (
             <h2
               key={i}
@@ -67,18 +76,24 @@ function ArticleBody({ article }) {
         }
 
         if (block.type === "qa") {
+          const isNewSpeaker = block.speaker !== lastSpeaker;
+          lastSpeaker = block.speaker;
+
           return (
             <p key={i} className="text-[16px] leading-relaxed text-[#292524]">
               {/* Speaker set in the site maroon, no colon — the colour and
                   weight already separate it from the words that follow. */}
-              <span className="font-medium text-[#7B2833]">
-                {block.speaker}{" "}
-              </span>
+              {isNewSpeaker && (
+                <span className="font-medium text-[#7B2833]">
+                  {block.speaker}{" "}
+                </span>
+              )}
               {withMarkers(block.text)}
             </p>
           );
         }
 
+        lastSpeaker = null;
         return (
           <p key={i} className="text-[16px] leading-relaxed text-[#292524]">
             {withMarkers(block.text)}

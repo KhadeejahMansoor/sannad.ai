@@ -140,7 +140,7 @@ export function ArticleDetail({ article }) {
   if (!article) return null;
 
   return (
-    <div className="mx-auto w-full max-w-[760px]">
+    <div className="w-full max-w-[760px]">
       {/* A real link, so it can be opened in a new tab and so the
             browser's own back button lands where the reader expects. */}
       <Link
@@ -210,13 +210,13 @@ export default function ArticlesView() {
      Subtitles sit in the site maroon rather than grey: at this size the
      colour does the separating that a border used to. */
   return (
-    <div className="mx-auto w-full max-w-[760px]">
+    <div className="w-full max-w-[760px]">
       <Link
         href={`/articles/${lead.slug}`}
         className="block border-b border-[#DDD5CE] pb-7 no-underline"
       >
         <h2
-          className="text-[20px] sm:text-[25px] leading-[1.15] text-[#1C1917] transition-colors hover:text-[#7B2833]"
+          className="text-[20px] sm:text-[24px] leading-[1.15] text-[#1C1917] transition-colors hover:text-[#7B2833]"
           style={{ fontFamily: 'var(--font-serif)' }}
         >
           {lead.title}

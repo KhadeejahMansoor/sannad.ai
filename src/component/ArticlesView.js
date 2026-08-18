@@ -1,14 +1,22 @@
-'use client';
-import React, { useState } from 'react';
-import ArticleVideo from './ArticleVideo';
-import { ARTICLES } from '../data/articles';
+"use client";
+import React from "react";
+import Link from "next/link";
+import ArticleVideo from "./ArticleVideo";
+import { ARTICLES } from "../data/articles";
 
 /* ------------------------------------------------------------------ *
- * ArticlesView
+ * ArticlesView / ArticleDetail
  * ------------------------------------------------------------------
- * A list of article cards; clicking one opens it in place. Content
- * comes from data/articles.js rather than living in this file, so
- * adding an article means adding an object there.
+ * Two exports. ArticlesView is the card list at /articles;
+ * ArticleDetail renders one piece at /articles/[slug].
+ *
+ * These used to be one component switching on useState, which meant
+ * every article shared the /articles URL — a piece couldn't be linked,
+ * shared, bookmarked, or indexed by a search engine, and the back
+ * button left the section entirely.
+ *
+ * Content comes from data/articles.js, so adding an article means
+ * adding an object there; the route picks it up automatically.
  * ------------------------------------------------------------------ */
 
 /* The honorific ﷺ is written as [[r9]] in the source text, matching the
@@ -16,13 +24,13 @@ import { ARTICLES } from '../data/articles';
    (U+FDFA) so it scales with the surrounding type. */
 function withHonorifics(text) {
   return text.split(/(\[\[r9\]\])/g).map((part, i) =>
-    part === '[[r9]]' ? (
+    part === "[[r9]]" ? (
       <span key={i} lang="ar">
-        {'\uFDFA'}
+        {"\uFDFA"}
       </span>
     ) : (
       part
-    )
+    ),
   );
 }
 
@@ -31,7 +39,8 @@ function withHonorifics(text) {
 function withMarkers(text) {
   return text.split(/(\[\d\])/g).map((part, i) => {
     const m = part.match(/^\[(\d)\]$/);
-    if (!m) return <React.Fragment key={i}>{withHonorifics(part)}</React.Fragment>;
+    if (!m)
+      return <React.Fragment key={i}>{withHonorifics(part)}</React.Fragment>;
     return (
       <sup key={i} className="ms-0.5 text-[11px] text-[#7A4B2B]">
         <a href={`#fn-${m[1]}`} className="no-underline">
@@ -46,7 +55,7 @@ function ArticleBody({ article }) {
   return (
     <div className="flex flex-col gap-5">
       {article.body.map((block, i) => {
-        if (block.type === 'h2') {
+        if (block.type === "h2") {
           return (
             <h2
               key={i}
@@ -57,12 +66,14 @@ function ArticleBody({ article }) {
           );
         }
 
-        if (block.type === 'qa') {
+        if (block.type === "qa") {
           return (
             <p key={i} className="text-[16px] leading-relaxed text-[#292524]">
               {/* Speaker set in the site maroon, no colon — the colour and
                   weight already separate it from the words that follow. */}
-              <span className="font-medium text-[#7B2833]">{block.speaker} </span>
+              <span className="font-medium text-[#7B2833]">
+                {block.speaker}{" "}
+              </span>
               {withMarkers(block.text)}
             </p>
           );
@@ -78,77 +89,82 @@ function ArticleBody({ article }) {
   );
 }
 
-export default function ArticlesView() {
-  const [openSlug, setOpenSlug] = useState(null);
-  const article = ARTICLES.find((a) => a.slug === openSlug);
+export function ArticleDetail({ article }) {
+  if (!article) return null;
 
-  if (article) {
-    return (
-      <div className="mx-auto w-full max-w-[760px]">
-        <button
-          type="button"
-          className="mb-8 text-sm text-[#A8A29E] hover:text-[#1C1917]"
-          onClick={() => setOpenSlug(null)}
-        >
-          ← All articles
-        </button>
+  return (
+    <div className="mx-auto w-full max-w-[760px]">
+      {/* A real link, so it can be opened in a new tab and so the
+            browser's own back button lands where the reader expects. */}
+      <Link
+        href="/articles"
+        className="mb-8 inline-block text-sm text-[#A8A29E] no-underline hover:text-[#1C1917]"
+      >
+        ← All articles
+      </Link>
 
-        <h1 className="text-[26px] sm:text-[30px] font-medium leading-tight text-[#1C1917]">
-          {article.title}
-        </h1>
+      <h1 className="text-[26px] sm:text-[30px] font-medium leading-tight text-[#1C1917]">
+        {article.title}
+      </h1>
 
-        {article.interviewDate && (
-          <p className="mt-2 text-sm text-[#A8A29E]">{article.interviewDate}</p>
-        )}
+      {article.interviewDate && (
+        <p className="mt-2 text-sm text-[#A8A29E]">{article.interviewDate}</p>
+      )}
 
-        {/* Video sits above the text: it's the primary artefact here and
+      {/* Video sits above the text: it's the primary artefact here and
             the transcript is the record of it. */}
-        {article.videoId && (
-          <ArticleVideo videoId={article.videoId} title={article.videoTitle ?? null} />
-        )}
+      {article.videoId && (
+        <ArticleVideo
+          videoId={article.videoId}
+          title={article.videoTitle ?? null}
+        />
+      )}
 
-        <div className="mt-8">
-          <ArticleBody article={article} />
-        </div>
-
-        {article.footnotes?.length > 0 && (
-          <div className="mt-12 border-t border-[#E7E1DC] pt-6">
-            <h2 className="mb-3 text-[15px] font-medium text-[#1C1917]">References</h2>
-            <ol className="flex flex-col gap-2">
-              {article.footnotes.map((note, i) => (
-                <li
-                  key={i}
-                  id={`fn-${i + 1}`}
-                  className="flex gap-3 text-[13px] leading-relaxed text-[#78716C]"
-                >
-                  <span className="tabular-nums text-[#A8A29E]">{i + 1}</span>
-                  <span>{note}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-
+      <div className="mt-8">
+        <ArticleBody article={article} />
       </div>
-    );
-  }
 
+      {article.footnotes?.length > 0 && (
+        <div className="mt-12 border-t border-[#E7E1DC] pt-6">
+          <h2 className="mb-3 text-[15px] font-medium text-[#1C1917]">
+            References
+          </h2>
+          <ol className="flex flex-col gap-2">
+            {article.footnotes.map((note, i) => (
+              <li
+                key={i}
+                id={`fn-${i + 1}`}
+                className="flex gap-3 text-[13px] leading-relaxed text-[#78716C]"
+              >
+                <span className="tabular-nums text-[#A8A29E]">{i + 1}</span>
+                <span>{note}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function ArticlesView() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {ARTICLES.map((a) => (
-        <button
+        <Link
           key={a.slug}
-          type="button"
-          className="flex flex-col gap-2 rounded-[8px] border border-[#E7E1DC] bg-white p-5 text-start transition-colors hover:border-[#CFC7C1]"
-          onClick={() => setOpenSlug(a.slug)}
+          href={`/articles/${a.slug}`}
+          className="flex flex-col gap-2 rounded-[8px] border border-[#E7E1DC] bg-white p-5 text-start no-underline transition-colors hover:border-[#CFC7C1]"
         >
           <span className="text-base font-medium leading-tight text-[#1C1917]">
             {a.title}
           </span>
           {a.subtitle && (
-            <span className="text-sm leading-snug text-[#57534E]">{a.subtitle}</span>
+            <span className="text-sm leading-snug text-[#57534E]">
+              {a.subtitle}
+            </span>
           )}
-        </button>
+        </Link>
       ))}
     </div>
   );

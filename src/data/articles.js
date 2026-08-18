@@ -11,6 +11,7 @@
  *             same speaker are labelled once
  *   h2      — a section heading
  *   h3      — a work or sub-section title
+ *   ol      — a numbered list: { items: [...] }
  *   sig     — a closing signature block, set apart and quieter
  * Footnote markers in text are written as [1], [2] … and matched to the
  * `footnotes` array on each article. The honorific ﷺ is written [[r9]].
@@ -400,6 +401,66 @@ const jamiAlKamil = {
       ],
     },
 
+
+    { type: 'h2', text: 'Introduction to the second edition' },
+    {
+      type: 'p',
+      text: 'الحمد لله رب العالمين والصلاة والسلام على سيد المرسلين، وإمام المتقين، وخاتم النبيين، وعلى آله وأصحابه، وعلى متبعي سنته إلى يوم الدين.',
+    },
+    {
+      type: 'p',
+      text: 'Praise be to Allah, Lord of all worlds, and peace and blessings be upon the Sayyid of all messengers, the leader of the righteous, the seal of the prophets, his family, his companions, and those who follow his Sunnah until the Day of Judgment.',
+    },
+    {
+      type: 'p',
+      text: 'To proceed: indeed, pursuing knowledge is among the best forms of drawing near to Allah and the most noble acts of obedience. Among the most important types of expertise is verifying the authenticity of the Hadith — distinguishing between its authentic and weak narrations.',
+    },
+    {
+      type: 'p',
+      text: 'I have presented at the beginning of the book a detailed introduction in which I mentioned my chain of transmission to the books of Hadith, my scholarly authorizations from the scholars of Hadith, and the history of Hadith documentation and its authentication.',
+    },
+    {
+      type: 'p',
+      text: 'I have also presented what a student of Hadith needs to know, such as tadlees and mudallis, consideration of supporting evidence or narrations, connected and broken chains, mawquf and marfu, mursal and muadal, irregular and rejected narrations, the reliability of a narrator, the narrator\u2019s attributes in transmission, reconciliation between apparently contradicting Hadiths, knowledge of narrators about whom Hadith scholars differed regarding their reliability or unreliability, and other matters.[4]',
+    },
+    {
+      type: 'p',
+      text: 'I have presented the Hadith with its chain of transmission from the author to the Messenger of Allah [[r9]]. Then, I discussed the chains that have been criticized. I avoided including biographies of reliable narrators to prevent the book from becoming too lengthy. I interpret the meaning and fiqh of the Hadith according to my book Al-Minnah Al-Kubra, which is an explanation and authentication of Al-Bayhaqi\u2019s Al-Sunan Al-Sughra. Sometimes I mention Hadith-related and useful points for fiqh briefly.',
+    },
+    {
+      type: 'p',
+      text: 'Allah has granted acceptance to Jami al-Kamil, as the first edition was sold out in record time. Here is the second edition of the book.',
+    },
+    {
+      type: 'p',
+      text: 'It is distinguished by several features, most importantly:',
+    },
+    {
+      type: 'ol',
+      items: [
+        'Numbering of hadiths and adding tashkeel where needed.[5]',
+        'Rearranging some chapters to better suit the fiqh of each chapter.',
+        'Adding hadith fiqh commentary in certain topics where I deemed necessary.',
+        'Adding some new hadith-related discussions in the \u201cIntroduction\u201d that I found beneficial for students of knowledge, some of which I was asked about while teaching Sahih al-Bukhari and Sahih Muslim in the Prophet\u2019s Masjid.',
+        'Revising previous grading where I had ruled some hadiths as weak.',
+        'Identifying critical defects in some hadiths that I had previously graded sahih.',
+        'Adding several authentic hadiths that I discovered after submitting the first edition for publication.',
+        'The 2nd edition is considered my \u201cofficial version\u201d. May Allah forgive me. If I find any authentic hadith after this, I will mention it in a separate supplementary volume, inshaAllah.',
+      ],
+    },
+    {
+      type: 'p',
+      text: 'I ask Allah عز وجل for more beneficial knowledge and righteous deeds. He is the One who grants success and guides to the straight path.',
+    },
+    {
+      type: 'sig',
+      lines: [
+        'Madinah al-Munawwarah',
+        '1440 AH — 2019 CE',
+        'The Author, may Allah forgive him',
+      ],
+    },
+
     { type: 'h2', text: 'Credentials of Shaykh Azami' },
 
     {
@@ -408,11 +469,11 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'He received his qiraah[4] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
+      text: 'He received his qiraah[6] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
     },
     {
       type: 'p',
-      text: 'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[5] in the introduction of the book.',
+      text: 'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[7] in the introduction of the book.',
     },
 
     { type: 'h2', text: 'His works' },
@@ -540,6 +601,8 @@ const jamiAlKamil = {
     'I borrowed this saying from Imam al-Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
     'Translator\u2019s note. Takhreej refers to identifying and documenting the sources of Hadith narrations. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
     'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
+    'Translator\u2019s note. Tadlees refers to concealment in the chain of narration, and mudallis are those deficient narrators who practice tadlees. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. A marfu chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A muadal chain is when two or more consecutive narrators are missing from the chain of transmission.',
+    'Translator\u2019s note. Tashkeel refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include: fatha, kasra, damma, sukoon, and shadda.',
 
     'Qiraah is a reading certification. A more precise translation might be "direct reading," implying that the student read the text under the teacher\u2019s supervision.',
     'The thabat (with fatha on ba) is where a hadith scholar mentions what he has heard from hadith teachers. The thabat is called barnamaj by Andalusian scholars.',

@@ -124,6 +124,25 @@ function ArticleBody({ article }) {
 
         lastSpeaker = null;
 
+        /* Numbered list — the second edition's list of what changed.
+           Numbers sit in the maroon and hang outside the text column, so a
+           long item wraps flush rather than under its own number. */
+        if (block.type === "ol") {
+          return (
+            <ol key={i} className="flex flex-col gap-2">
+              {block.items.map((item, j) => (
+                <li
+                  key={j}
+                  className="flex gap-3 text-[16px] leading-relaxed text-[#292524]"
+                >
+                  <span className="tabular-nums text-[#7B2833]">{j + 1}.</span>
+                  <span>{withMarkers(item)}</span>
+                </li>
+              ))}
+            </ol>
+          );
+        }
+
         /* Closing signature — place, date, attribution. Set apart and
            quieter than the body, so it reads as the end of the piece
            rather than another paragraph. */

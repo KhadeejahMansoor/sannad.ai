@@ -70,8 +70,23 @@ function ArticleBody({ article }) {
               key={i}
               className="mt-4 text-[18px] font-medium text-[#1C1917] first:mt-0"
             >
-              {block.text}
+              {withHonorifics(block.text)}
             </h2>
+          );
+        }
+
+        /* Sub-heading — a work title in the catalogue pieces. Smaller than
+           h2 and set in the site maroon, so a long run of them reads as a
+           list of entries rather than a series of sections. */
+        if (block.type === "h3") {
+          lastSpeaker = null;
+          return (
+            <h3
+              key={i}
+              className="mt-3 text-[16px] font-medium leading-snug text-[#7B2833] first:mt-0"
+            >
+              {withHonorifics(block.text)}
+            </h3>
           );
         }
 

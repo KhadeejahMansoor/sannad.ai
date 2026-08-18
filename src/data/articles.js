@@ -10,6 +10,7 @@
  *   qa      — one exchange: { speaker, text }; consecutive blocks from the
  *             same speaker are labelled once
  *   h2      — a section heading
+ *   h3      — a work or sub-section title
  *   sig     — a closing signature block, set apart and quieter
  * Footnote markers in text are written as [1], [2] … and matched to the
  * `footnotes` array on each article. The honorific ﷺ is written [[r9]].
@@ -399,5 +400,136 @@ const jamiAlKamilIntro = {
   ],
 };
 
+const worksByAzami = {
+  slug: 'works-by-shaykh-zia-ur-rahman-azami',
+  title: 'Works by Shaykh Zia-ur-Rahman Azami',
+  subtitle: 'A selected translation from Jami ul Kamil',
+  author: 'Muhammad Qassam',
+  date: 'January 6, 2025',
+  sourceUrl: 'https://akhlaq.substack.com/p/works-by-shakyh-zia-ur-rahman-azami',
+
+  /* A catalogue rather than an essay: each work is an h3 with its
+     publication history beneath. The two h2s divide his own books from
+     the ones he edited and expanded. */
+  body: [
+    {
+      type: 'p',
+      text: 'Shaykh Zia-ur-Rahman al-Azami (d. 2020) wrote several books in his life. This is a selection of works he highlighted in his magnum opus, Jami ul Kamil. He also wrote books in foreign languages on the translation and tafseer of the Quran.',
+    },
+
+    { type: 'h3', text: 'Jami ul Kamil: The Complete Collection of Sahih Hadith' },
+    {
+      type: 'p',
+      text: 'He compiled all of the sahih hadith, from all of the books of hadith, in one book. The first edition was published in 2016. The second (and final) edition was published in 2019. The second edition includes further verification and corrections of what was missed in the first edition. The final work is 16,546 hadith in 19 volumes.',
+    },
+
+    { type: 'h3', text: 'Abu Huraira (R) in the Light of his Narrations' },
+    {
+      type: 'p',
+      text: 'He wrote this 800-page work which provides an analytical refutation of criticisms against Abu Huraira (R), one of the most knowledgeable companions of the Prophet [[r9]], alongside his biography. The summary was published in 1978 by Dar al-Kitab al-Masri in Cairo, and a further condensed version was published in 1991 by Maktabat al-Ghuraba\u2019 in Medina.',
+    },
+
+    { type: 'h3', text: 'Studies of Reliability and Criticism of Hadith Narrators' },
+    {
+      type: 'p',
+      text: 'The first edition was published in 1981 by Salafi University in India, followed by the second edition in 1994 by Al Ghuraba\u2019 Library in Madinah. A third edition, printed without the author\u2019s knowledge, was published in 1994 by The World of Books in Beirut. The fourth edition was released in 1998 by Al Ghuraba\u2019 Library in Madinah.',
+    },
+
+    {
+      type: 'h3',
+      text: 'Dictionary of Hadith Terminology and Fine Points of Narration Chains',
+    },
+    {
+      type: 'p',
+      text: 'The first edition was published in 1999 by Adwa Al-Salaf in Riyadh. The second edition, with major additions, was released in 2004, also by Adwa\u2019 Al-Salaf in Riyadh. The third edition, with further additions, was published in 2016 by Dar Muslim in Medina. The book was reportedly printed more than three times in Egypt by other publishers.',
+    },
+
+    {
+      type: 'h3',
+      text: 'Gift of the Righteous: Authentic Dua, Zikr, Ruqya, and Medicine from the Leader of the Messengers [[r9]]',
+    },
+    {
+      type: 'p',
+      text: 'This was first published in Pakistan in 2014, followed by a second edition in India in the same year. The book is now being printed by multiple publishers and has been translated into Urdu, with several printings.',
+    },
+
+    { type: 'h3', text: 'The Superior Manners' },
+    {
+      type: 'p',
+      text: 'This was first published by Dar al-Salam University in India in 2016.',
+    },
+
+    { type: 'h3', text: 'Adherence to the Sunnah in Beliefs and Rulings' },
+    {
+      type: 'p',
+      text: 'The first edition was published in 1996 by Al-Ghuraba Library in Medina. An Urdu translation was done in 1997 by Dr. Abu Hassan Taher Mahmoud, a professor at the International Islamic University in Islamabad. This edition was later published by Darussalam Library in Riyadh. Several more editions were subsequently released.',
+    },
+
+    { type: 'h3', text: 'Judaism and Christianity' },
+    {
+      type: 'p',
+      text: 'The author wrote this book, and the first edition was published in 1988 by Al-Daar Library in Medina.',
+    },
+
+    {
+      type: 'h3',
+      text: 'Chapters on the Religions of India (Hinduism, Buddhism, Jainism, and Sikhism)',
+    },
+    {
+      type: 'p',
+      text: 'This book was written by the author. The first edition, titled Studies in Judaism, Christianity, and Indian Religions, was published in 1996 by Al-Bukhari Library in Madinah. Subsequent editions were released by Al-Rashid Library in Riyadh, with the second edition in 2001, the third in 2003, the fourth in 2008, the fifth in 2012, the sixth in 2014, and the seventh in 2015.',
+    },
+
+    { type: 'h2', text: 'Building on the works of other authors' },
+
+    {
+      type: 'h3',
+      text: 'Judgments of the Messenger of Allah [[r9]] by Ibn al-Tala al-Qurtubi (d. 1103)',
+    },
+    {
+      type: 'p',
+      text: 'He conducted an analysis, verification, and rectification of this book. The first edition was released in 1980, followed by a second edition in 1981, both published by Dar al-Kitab al-Lubnani in Beirut, Lebanon. A more thoroughly investigated third edition was published in 2003 by Darussalam Library in Riyadh.',
+    },
+    {
+      type: 'p',
+      text: 'A team of Pakistani scholars translated the book into Urdu to meet the needs of judges and lawyers in Sharia courts, as it is considered one of the most important judicial documents from the Prophetic era. The Urdu editions were released in 1987, 1991, 2002, and several others thereafter.',
+    },
+
+    { type: 'h3', text: 'Introduction to Al Sunan al Kubra by al-Bayhaqi (d. 1066)' },
+    {
+      type: 'p',
+      text: 'He conducted an analysis and verification of the book Introduction to Al Sunan al Kubra by al-Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing al-Bayhaqi\u2019s efforts to preserve the pure Sunnah.',
+    },
+    {
+      type: 'p',
+      text: 'The first edition was published in 1983 by Dar Al-Khalifah in Kuwait, and the second edition was released in 1999 by Adwa Al-Salaf Library in Riyadh. Shaykh al-Hakim Muhammad Yahya Khan translated the book into Urdu, which was printed in Lahore in 1992.',
+    },
+
+    {
+      type: 'h3',
+      text: 'Al-Minnah Al-Kubra: The Greatest Favor in the Evidence of the Four Schools',
+    },
+    {
+      type: 'p',
+      text: 'This book was written by the author as an authentication, verification, and expansion of Bayhaqi\u2019s work Al-Sunan Al-Sughra. He compiles authentic evidence for the Shafi\u2019i school, as well as the other three schools of thought, making it a reference for all four schools. The first edition was published in 2001, and the second edition in 2005, both by Al Rashid Library in Riyadh.',
+    },
+
+    { type: 'h3', text: 'The Amali by Ibn Mardawayh (d. 1019)' },
+    {
+      type: 'p',
+      text: 'He conducted an analysis and verification of this book and wrote a detailed introduction to Ibn Mardawayh\u2019s efforts in preserving the pure Sunnah. The first edition was published in 1989 by Dar Al-Uloom Al-Hadith in the United Arab Emirates.',
+    },
+
+    {
+      type: 'h3',
+      text: 'Fath El Ghafoor: Placement of the Hands on the Chest by Shaykh Muhammad Hayat al-Sindi (d. 1749)',
+    },
+    {
+      type: 'p',
+      text: 'He wrote an analysis and verification of this work. The first edition was published in 1988 in Egypt, followed by a second edition in 1997 in Pakistan. The third edition was released in 1998 by Al-Ghuraba Library in Medina, with later editions printed by various other publishers.',
+    },
+  ],
+};
+
 /* Newest first — this is the order the cards render in. */
-export const ARTICLES = [interviewAzami, jamiAlKamilIntro];
+export const ARTICLES = [interviewAzami, jamiAlKamilIntro, worksByAzami];

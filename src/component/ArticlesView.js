@@ -79,9 +79,14 @@ function ArticleBody({ article }) {
             <h2
               key={i}
               id={sectionId(block.text)}
-              /* scroll-mt clears the sticky site header, which would
-                 otherwise cover the heading a contents link jumps to. */
-              className="mt-8 scroll-mt-28 text-[21px] font-medium text-[#1C1917] first:mt-0"
+              /* Inline rather than a Tailwind class: the jump has to clear
+                 the sticky header AND leave the heading visible, and this is
+                 the one value likely to need tuning by eye. Without it the
+                 browser scrolls the heading to y=0, where the header sits on
+                 top of it — you land on the first paragraph with no idea
+                 which section you're in. */
+              style={{ scrollMarginTop: "150px" }}
+              className="mt-8 text-[21px] font-medium text-[#1C1917] first:mt-0"
             >
               {withHonorifics(block.text)}
             </h2>

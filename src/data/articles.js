@@ -318,19 +318,27 @@ const interviewAzami = {
   ],
 };
 
-const jamiAlKamilIntro = {
-  slug: 'introduction-to-jami-al-kamil-first-edition',
-  title: 'Translation of the introduction to Jami al-Kamil (1st edition)',
+const jamiAlKamil = {
+  slug: 'jami-al-kamil',
+  title: 'Jami al-Kamil',
   subtitle:
     'The Complete Collection of Sahih Hadith by Zia-ur-Rahman al-Azami',
   author: 'Muhammad Qassam',
-  date: 'January 9, 2025',
+  date: 'February 5, 2025',
   sourceUrl:
     'https://akhlaq.substack.com/p/translation-to-the-introduction-to',
 
-  /* Written by Azami himself, so there is no exchange here — every block
-     is prose rather than qa. */
+  /* Three pieces folded into one: the translated introduction, then the
+     compiler's credentials, then his works. They were separate articles
+     covering one subject, which made the index read as four entries about
+     the same book.
+
+     Heading levels shift accordingly — the three parts are h2, the works
+     subsection is h3, and individual work titles are h4. Credentials'
+     footnotes renumbered to 4 and 5 to sit behind the introduction's. */
   body: [
+    { type: 'h2', text: 'Introduction to the first edition' },
+
     {
       type: 'p',
       text: 'From the writing of Shaykh Zia-ur-Rahman al-Azami, compiler of Jami al-Kamil.',
@@ -391,52 +399,49 @@ const jamiAlKamilIntro = {
         'The Author, may Allah forgive him',
       ],
     },
-  ],
 
-  footnotes: [
-    'I borrowed this saying from Imam al-Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
-    'Translator\u2019s note. Takhreej refers to identifying and documenting the sources of Hadith narrations. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
-    'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
-  ],
-};
+    { type: 'h2', text: 'Credentials of Shaykh Azami' },
 
-const worksByAzami = {
-  slug: 'works-by-shaykh-zia-ur-rahman-azami',
-  title: 'Works by Shaykh Zia-ur-Rahman Azami',
-  subtitle: 'A selected translation from Jami ul Kamil',
-  author: 'Muhammad Qassam',
-  date: 'January 6, 2025',
-  sourceUrl: 'https://akhlaq.substack.com/p/works-by-shakyh-zia-ur-rahman-azami',
+    {
+      type: 'p',
+      text: 'He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at Masjid al-Nabawi.',
+    },
+    {
+      type: 'p',
+      text: 'He received his qiraah[4] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
+    },
+    {
+      type: 'p',
+      text: 'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[5] in the introduction of the book.',
+    },
 
-  /* A catalogue rather than an essay: each work is an h3 with its
-     publication history beneath. The two h2s divide his own books from
-     the ones he edited and expanded. */
-  body: [
+    { type: 'h2', text: 'His works' },
+
     {
       type: 'p',
       text: 'Shaykh Zia-ur-Rahman al-Azami (d. 2020) wrote several books in his life. This is a selection of works he highlighted in his magnum opus, Jami ul Kamil. He also wrote books in foreign languages on the translation and tafseer of the Quran.',
     },
 
-    { type: 'h3', text: 'Jami ul Kamil: The Complete Collection of Sahih Hadith' },
+    { type: 'h4', text: 'Jami ul Kamil: The Complete Collection of Sahih Hadith' },
     {
       type: 'p',
       text: 'He compiled all of the sahih hadith, from all of the books of hadith, in one book. The first edition was published in 2016. The second (and final) edition was published in 2019. The second edition includes further verification and corrections of what was missed in the first edition. The final work is 16,546 hadith in 19 volumes.',
     },
 
-    { type: 'h3', text: 'Abu Huraira (R) in the Light of his Narrations' },
+    { type: 'h4', text: 'Abu Huraira (R) in the Light of his Narrations' },
     {
       type: 'p',
       text: 'He wrote this 800-page work which provides an analytical refutation of criticisms against Abu Huraira (R), one of the most knowledgeable companions of the Prophet [[r9]], alongside his biography. The summary was published in 1978 by Dar al-Kitab al-Masri in Cairo, and a further condensed version was published in 1991 by Maktabat al-Ghuraba\u2019 in Medina.',
     },
 
-    { type: 'h3', text: 'Studies of Reliability and Criticism of Hadith Narrators' },
+    { type: 'h4', text: 'Studies of Reliability and Criticism of Hadith Narrators' },
     {
       type: 'p',
       text: 'The first edition was published in 1981 by Salafi University in India, followed by the second edition in 1994 by Al Ghuraba\u2019 Library in Madinah. A third edition, printed without the author\u2019s knowledge, was published in 1994 by The World of Books in Beirut. The fourth edition was released in 1998 by Al Ghuraba\u2019 Library in Madinah.',
     },
 
     {
-      type: 'h3',
+      type: 'h4',
       text: 'Dictionary of Hadith Terminology and Fine Points of Narration Chains',
     },
     {
@@ -445,7 +450,7 @@ const worksByAzami = {
     },
 
     {
-      type: 'h3',
+      type: 'h4',
       text: 'Gift of the Righteous: Authentic Dua, Zikr, Ruqya, and Medicine from the Leader of the Messengers [[r9]]',
     },
     {
@@ -453,26 +458,26 @@ const worksByAzami = {
       text: 'This was first published in Pakistan in 2014, followed by a second edition in India in the same year. The book is now being printed by multiple publishers and has been translated into Urdu, with several printings.',
     },
 
-    { type: 'h3', text: 'The Superior Manners' },
+    { type: 'h4', text: 'The Superior Manners' },
     {
       type: 'p',
       text: 'This was first published by Dar al-Salam University in India in 2016.',
     },
 
-    { type: 'h3', text: 'Adherence to the Sunnah in Beliefs and Rulings' },
+    { type: 'h4', text: 'Adherence to the Sunnah in Beliefs and Rulings' },
     {
       type: 'p',
       text: 'The first edition was published in 1996 by Al-Ghuraba Library in Medina. An Urdu translation was done in 1997 by Dr. Abu Hassan Taher Mahmoud, a professor at the International Islamic University in Islamabad. This edition was later published by Darussalam Library in Riyadh. Several more editions were subsequently released.',
     },
 
-    { type: 'h3', text: 'Judaism and Christianity' },
+    { type: 'h4', text: 'Judaism and Christianity' },
     {
       type: 'p',
       text: 'The author wrote this book, and the first edition was published in 1988 by Al-Daar Library in Medina.',
     },
 
     {
-      type: 'h3',
+      type: 'h4',
       text: 'Chapters on the Religions of India (Hinduism, Buddhism, Jainism, and Sikhism)',
     },
     {
@@ -480,10 +485,10 @@ const worksByAzami = {
       text: 'This book was written by the author. The first edition, titled Studies in Judaism, Christianity, and Indian Religions, was published in 1996 by Al-Bukhari Library in Madinah. Subsequent editions were released by Al-Rashid Library in Riyadh, with the second edition in 2001, the third in 2003, the fourth in 2008, the fifth in 2012, the sixth in 2014, and the seventh in 2015.',
     },
 
-    { type: 'h2', text: 'Building on the works of other authors' },
+    { type: 'h3', text: 'Building on the works of other authors' },
 
     {
-      type: 'h3',
+      type: 'h4',
       text: 'Judgments of the Messenger of Allah [[r9]] by Ibn al-Tala al-Qurtubi (d. 1103)',
     },
     {
@@ -495,7 +500,7 @@ const worksByAzami = {
       text: 'A team of Pakistani scholars translated the book into Urdu to meet the needs of judges and lawyers in Sharia courts, as it is considered one of the most important judicial documents from the Prophetic era. The Urdu editions were released in 1987, 1991, 2002, and several others thereafter.',
     },
 
-    { type: 'h3', text: 'Introduction to Al Sunan al Kubra by al-Bayhaqi (d. 1066)' },
+    { type: 'h4', text: 'Introduction to Al Sunan al Kubra by al-Bayhaqi (d. 1066)' },
     {
       type: 'p',
       text: 'He conducted an analysis and verification of the book Introduction to Al Sunan al Kubra by al-Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing al-Bayhaqi\u2019s efforts to preserve the pure Sunnah.',
@@ -506,7 +511,7 @@ const worksByAzami = {
     },
 
     {
-      type: 'h3',
+      type: 'h4',
       text: 'Al-Minnah Al-Kubra: The Greatest Favor in the Evidence of the Four Schools',
     },
     {
@@ -514,14 +519,14 @@ const worksByAzami = {
       text: 'This book was written by the author as an authentication, verification, and expansion of Bayhaqi\u2019s work Al-Sunan Al-Sughra. He compiles authentic evidence for the Shafi\u2019i school, as well as the other three schools of thought, making it a reference for all four schools. The first edition was published in 2001, and the second edition in 2005, both by Al Rashid Library in Riyadh.',
     },
 
-    { type: 'h3', text: 'The Amali by Ibn Mardawayh (d. 1019)' },
+    { type: 'h4', text: 'The Amali by Ibn Mardawayh (d. 1019)' },
     {
       type: 'p',
       text: 'He conducted an analysis and verification of this book and wrote a detailed introduction to Ibn Mardawayh\u2019s efforts in preserving the pure Sunnah. The first edition was published in 1989 by Dar Al-Uloom Al-Hadith in the United Arab Emirates.',
     },
 
     {
-      type: 'h3',
+      type: 'h4',
       text: 'Fath El Ghafoor: Placement of the Hands on the Chest by Shaykh Muhammad Hayat al-Sindi (d. 1749)',
     },
     {
@@ -529,41 +534,17 @@ const worksByAzami = {
       text: 'He wrote an analysis and verification of this work. The first edition was published in 1988 in Egypt, followed by a second edition in 1997 in Pakistan. The third edition was released in 1998 by Al-Ghuraba Library in Medina, with later editions printed by various other publishers.',
     },
   ],
-};
-
-const credentialsAzami = {
-  slug: 'credentials-of-shaykh-azami',
-  title: 'Credentials of Shaykh Azami',
-  subtitle: 'About the author, summarized from Jami al-Kamil',
-  author: 'Muhammad Qassam',
-  date: 'February 5, 2025',
-  sourceUrl: 'https://akhlaq.substack.com/p/credentials-of-shaykh-azami',
-
-  body: [
-    {
-      type: 'p',
-      text: 'He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at Masjid al-Nabawi.',
-    },
-    {
-      type: 'p',
-      text: 'He received his qiraah[1] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
-    },
-    {
-      type: 'p',
-      text: 'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[2] in the introduction of the book.',
-    },
-  ],
 
   footnotes: [
+
+    'I borrowed this saying from Imam al-Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
+    'Translator\u2019s note. Takhreej refers to identifying and documenting the sources of Hadith narrations. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
+    'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
+
     'Qiraah is a reading certification. A more precise translation might be "direct reading," implying that the student read the text under the teacher\u2019s supervision.',
     'The thabat (with fatha on ba) is where a hadith scholar mentions what he has heard from hadith teachers. The thabat is called barnamaj by Andalusian scholars.',
   ],
 };
 
-/* Newest first — this is the order the cards render in. */
-export const ARTICLES = [
-  credentialsAzami,
-  interviewAzami,
-  jamiAlKamilIntro,
-  worksByAzami,
-];
+/* Newest first — this is the order the entries render in. */
+export const ARTICLES = [jamiAlKamil, interviewAzami];

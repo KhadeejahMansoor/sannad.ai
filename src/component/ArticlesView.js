@@ -68,25 +68,39 @@ function ArticleBody({ article }) {
           return (
             <h2
               key={i}
-              className="mt-4 text-[18px] font-medium text-[#1C1917] first:mt-0"
+              className="mt-8 text-[21px] font-medium text-[#1C1917] first:mt-0"
             >
               {withHonorifics(block.text)}
             </h2>
           );
         }
 
-        /* Sub-heading — a work title in the catalogue pieces. Smaller than
-           h2 and set in the site maroon, so a long run of them reads as a
-           list of entries rather than a series of sections. */
+        /* Sub-section within a part — e.g. "Building on the works of other
+           authors" inside the works section. */
         if (block.type === "h3") {
           lastSpeaker = null;
           return (
             <h3
               key={i}
-              className="mt-3 text-[16px] font-medium leading-snug text-[#7B2833] first:mt-0"
+              className="mt-5 text-[17px] font-medium leading-snug text-[#1C1917] first:mt-0"
             >
               {withHonorifics(block.text)}
             </h3>
+          );
+        }
+
+        /* Lowest level — an individual work title. Set in the site maroon so
+           a long run of them reads as a list of entries rather than a
+           series of sections. */
+        if (block.type === "h4") {
+          lastSpeaker = null;
+          return (
+            <h4
+              key={i}
+              className="mt-3 text-[16px] font-medium leading-snug text-[#7B2833] first:mt-0"
+            >
+              {withHonorifics(block.text)}
+            </h4>
           );
         }
 

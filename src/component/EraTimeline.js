@@ -217,22 +217,21 @@ export default function EraTimeline({ era }) {
   const config = TIMELINES[activeCategory];
   /* A Set, not a single name: opening one offset used to close whichever
      was already open, so you could never compare two. Each name toggles
-     on its own now. */
-  /* Keyed on the era, so navigating between eras gives a fresh Set rather
-     than carrying open offsets across — a name from the previous era
-     could otherwise match one here and open by itself. */
+     on its own.
+
+     `key={activeCategory}` on the wrapper below discards this state when
+     the era changes, which is what a separate seenEra state used to do —
+     it compared the era during render and called two setters mid-render
+     if they differed, forcing a second render pass before paint. That
+     was the jump. React handles the same thing for free by remounting on
+     a changed key. */
   const [openNames, setOpenNames] = useState(() => new Set());
-  const [seenEra, setSeenEra] = useState(activeCategory);
-  if (seenEra !== activeCategory) {
-    setSeenEra(activeCategory);
-    setOpenNames(new Set());
-  }
 
   const bands = groupIntoBands(config.people);
   const showsOffset = ERAS_WITH_OFFSET.has(activeCategory);
 
   return (
-    <div className="md:flex md:gap-8 lg:gap-10">
+    <div key={activeCategory} className="md:flex md:gap-8 lg:gap-10">
       {/* Era nav. On mobile this is a horizontal scrolling row of
                 chips rather than a stacked list — five stacked rows ate
                 ~230px of a phone screen and pushed the timeline below

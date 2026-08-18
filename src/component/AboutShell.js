@@ -14,10 +14,11 @@ import HadithCollectionMenu from './HadithCollectionMenu';
  * Header, tab bar and the three popup menus — everything the Grades,
  * Timelines and Articles pages have in common.
  *
- * These three used to be one component switching on a `activeTab`
- * useState, which meant all three shared the single URL /timeline: a tab
- * couldn't be linked to, bookmarked, or reached with the back button.
- * They're separate routes now, and this holds what they share.
+ * Rendered from app/(about)/layout.js, NOT from each page. A layout stays
+ * mounted across route changes inside its segment, so clicking a tab swaps
+ * only the content beneath it. When each page rendered its own AboutShell,
+ * every tab click tore down the header, tabs and menus and rebuilt them —
+ * a full remount, which showed as a blank beat mid-navigation.
  *
  * The active tab is derived from the pathname rather than passed in, so
  * a page can't render with the wrong tab underlined.

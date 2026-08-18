@@ -12,9 +12,12 @@
  *   h2      — a section heading
  *   h3      — a work or sub-section title
  *   ol      — a numbered list: { items: [...] }
+ *   notes   — footnotes for the section above: { items: [...] }
  *   sig     — a closing signature block, set apart and quieter
  * Footnote markers in text are written as [1], [2] … and matched to the
- * `footnotes` array on each article. The honorific ﷺ is written [[r9]].
+ * nearest `notes` block that follows, so numbering restarts in each
+ * section rather than running the length of the piece. The honorific ﷺ is
+ * written [[r9]].
  * ------------------------------------------------------------------ */
 
 const interviewAzami = {
@@ -406,6 +409,15 @@ const jamiAlKamil = {
     },
 
 
+    {
+      type: 'notes',
+      items: [
+        'I borrowed this saying from Imam al-Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
+        'Translator\u2019s note. Takhreej refers to identifying and documenting the sources of Hadith narrations. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
+        'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
+      ],
+    },
+
     { type: 'h2', text: 'Introduction to the second edition' },
     {
       type: 'p',
@@ -425,7 +437,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'I have also presented what a student of Hadith needs to know, such as tadlees and mudallis, consideration of supporting evidence or narrations, connected and broken chains, mawquf and marfu, mursal and muadal, irregular and rejected narrations, the reliability of a narrator, the narrator\u2019s attributes in transmission, reconciliation between apparently contradicting Hadiths, knowledge of narrators about whom Hadith scholars differed regarding their reliability or unreliability, and other matters.[4]',
+      text: 'I have also presented what a student of Hadith needs to know, such as tadlees and mudallis, consideration of supporting evidence or narrations, connected and broken chains, mawquf and marfu, mursal and muadal, irregular and rejected narrations, the reliability of a narrator, the narrator\u2019s attributes in transmission, reconciliation between apparently contradicting Hadiths, knowledge of narrators about whom Hadith scholars differed regarding their reliability or unreliability, and other matters.[1]',
     },
     {
       type: 'p',
@@ -442,7 +454,7 @@ const jamiAlKamil = {
     {
       type: 'ol',
       items: [
-        'Numbering of hadiths and adding tashkeel where needed.[5]',
+        'Numbering of hadiths and adding tashkeel where needed.[2]',
         'Rearranging some chapters to better suit the fiqh of each chapter.',
         'Adding hadith fiqh commentary in certain topics where I deemed necessary.',
         'Adding some new hadith-related discussions in the \u201cIntroduction\u201d that I found beneficial for students of knowledge, some of which I was asked about while teaching Sahih al-Bukhari and Sahih Muslim in the Prophet\u2019s Masjid.',
@@ -465,6 +477,14 @@ const jamiAlKamil = {
       ],
     },
 
+    {
+      type: 'notes',
+      items: [
+        'Translator\u2019s note. Tadlees refers to concealment in the chain of narration, and mudallis are those deficient narrators who practice tadlees. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. A marfu chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A muadal chain is when two or more consecutive narrators are missing from the chain of transmission.',
+        'Translator\u2019s note. Tashkeel refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include: fatha, kasra, damma, sukoon, and shadda.',
+      ],
+    },
+
     { type: 'h2', text: 'Credentials of Shaykh Azami' },
 
     {
@@ -473,11 +493,19 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'He received his qiraah[6] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
+      text: 'He received his qiraah[1] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
     },
     {
       type: 'p',
-      text: 'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[7] in the introduction of the book.',
+      text: 'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[2] in the introduction of the book.',
+    },
+
+    {
+      type: 'notes',
+      items: [
+        'Qiraah is a reading certification. A more precise translation might be "direct reading," implying that the student read the text under the teacher\u2019s supervision.',
+        'The thabat (with fatha on ba) is where a hadith scholar mentions what he has heard from hadith teachers. The thabat is called barnamaj by Andalusian scholars.',
+      ],
     },
 
     { type: 'h2', text: 'His works' },
@@ -600,17 +628,6 @@ const jamiAlKamil = {
     },
   ],
 
-  footnotes: [
-
-    'I borrowed this saying from Imam al-Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
-    'Translator\u2019s note. Takhreej refers to identifying and documenting the sources of Hadith narrations. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
-    'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
-    'Translator\u2019s note. Tadlees refers to concealment in the chain of narration, and mudallis are those deficient narrators who practice tadlees. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. A marfu chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A muadal chain is when two or more consecutive narrators are missing from the chain of transmission.',
-    'Translator\u2019s note. Tashkeel refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include: fatha, kasra, damma, sukoon, and shadda.',
-
-    'Qiraah is a reading certification. A more precise translation might be "direct reading," implying that the student read the text under the teacher\u2019s supervision.',
-    'The thabat (with fatha on ba) is where a hadith scholar mentions what he has heard from hadith teachers. The thabat is called barnamaj by Andalusian scholars.',
-  ],
 };
 
 /* Newest first — this is the order the entries render in. */

@@ -36,14 +36,14 @@ function withHonorifics(text) {
 
 /* Footnote markers are written as [1], [2] … in the source. They render
    as small raised numbers linking to the list at the foot of the piece. */
-function withMarkers(text) {
+function withMarkers(text, section = 0) {
   return text.split(/(\[\d\])/g).map((part, i) => {
     const m = part.match(/^\[(\d)\]$/);
     if (!m)
       return <React.Fragment key={i}>{withHonorifics(part)}</React.Fragment>;
     return (
       <sup key={i} className="ms-0.5 text-[11px] text-[#7A4B2B]">
-        <a href={`#fn-${m[1]}`} className="no-underline">
+        <a href={`#fn-${section}-${m[1]}`} className="no-underline">
           {m[1]}
         </a>
       </sup>
@@ -69,12 +69,22 @@ const sectionId = (text) =>
    attributed. */
 function ArticleBody({ article }) {
   let lastSpeaker = null;
+  /* Which section we're in, so a marker links to the notes under its own
+     heading rather than to a single list at the foot of the page.
+
+     Only counts up in pieces that actually carry per-section notes. The
+     interview has headings but one list at the foot, and counting its
+     sections would have pointed its markers at #fn-1-… while its notes sat
+     at #fn-0-… — every footnote link dead. */
+  const perSection = article.body.some((b) => b.type === "notes");
+  let section = 0;
 
   return (
     <div className="flex flex-col gap-5">
       {article.body.map((block, i) => {
         if (block.type === "h2") {
           lastSpeaker = null;
+          if (perSection) section += 1;
           return (
             <h2
               key={i}
@@ -135,7 +145,7 @@ function ArticleBody({ article }) {
                   {block.speaker}{" "}
                 </span>
               )}
-              {withMarkers(block.text)}
+              {withMarkers(block.text, section)}
             </p>
           );
         }
@@ -154,10 +164,37 @@ function ArticleBody({ article }) {
                   className="flex gap-3 text-[16px] leading-relaxed text-[#292524]"
                 >
                   <span className="tabular-nums text-[#7B2833]">{j + 1}.</span>
-                  <span>{withMarkers(item)}</span>
+                  <span>{withMarkers(item, section)}</span>
                 </li>
               ))}
             </ol>
+          );
+        }
+
+        /* Footnotes for the section above. Kept with their section rather
+           than pooled at the foot of the page: this piece is four separate
+           translations, and a reader following a marker in the first should
+           not land among notes belonging to the fourth. */
+        if (block.type === "notes") {
+          return (
+            <div
+              key={i}
+              className="mt-2 border-t border-[#E7E1DC] pt-4"
+            >
+              <ol className="flex flex-col gap-2">
+                {block.items.map((note, j) => (
+                  <li
+                    key={j}
+                    id={`fn-${section}-${j + 1}`}
+                    style={{ scrollMarginTop: "150px" }}
+                    className="flex gap-3 text-[13px] leading-relaxed text-[#78716C]"
+                  >
+                    <span className="tabular-nums text-[#A8A29E]">{j + 1}</span>
+                    <span>{withHonorifics(note)}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
           );
         }
 
@@ -179,7 +216,7 @@ function ArticleBody({ article }) {
 
         return (
           <p key={i} className="text-[16px] leading-relaxed text-[#292524]">
-            {withMarkers(block.text)}
+            {withMarkers(block.text, section)}
           </p>
         );
       })}
@@ -256,6 +293,12 @@ export function ArticleDetail({ article }) {
         <ArticleBody article={article} />
       </div>
 
+      {/* Page-level references, for pieces that keep one list at the foot
+          rather than notes under each section. A body with `notes` blocks
+          uses those instead and omits `footnotes` entirely.
+
+          The ids carry section 0, which no h2 can produce — sections are
+          numbered from 1 — so these can't collide with per-section notes. */}
       {article.footnotes?.length > 0 && (
         <div className="mt-12 border-t border-[#E7E1DC] pt-6">
           <h2 className="mb-3 text-[15px] font-medium text-[#1C1917]">
@@ -265,11 +308,12 @@ export function ArticleDetail({ article }) {
             {article.footnotes.map((note, i) => (
               <li
                 key={i}
-                id={`fn-${i + 1}`}
+                id={`fn-0-${i + 1}`}
+                style={{ scrollMarginTop: "150px" }}
                 className="flex gap-3 text-[13px] leading-relaxed text-[#78716C]"
               >
                 <span className="tabular-nums text-[#A8A29E]">{i + 1}</span>
-                <span>{note}</span>
+                <span>{withHonorifics(note)}</span>
               </li>
             ))}
           </ol>

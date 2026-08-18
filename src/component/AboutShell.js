@@ -49,6 +49,12 @@ export default function AboutShell({ children }) {
             <Link
               key={href}
               href={href}
+              /* Explicit prefetch. Without it the tab fetched its route on
+                 click, which showed as a blank beat before the new page
+                 appeared — most visible on Timelines, whose content is
+                 taller than the others. Prefetching pulls the payload while
+                 the tab is merely in view, so the click swaps instantly. */
+              prefetch
               className={`text-[15px] pb-3 -mb-px transition-colors no-underline ${
                 isActive
                   ? 'text-[#1C1917] border-b-2 border-[#523230]'

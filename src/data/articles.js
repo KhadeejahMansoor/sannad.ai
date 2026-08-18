@@ -531,5 +531,39 @@ const worksByAzami = {
   ],
 };
 
+const credentialsAzami = {
+  slug: 'credentials-of-shaykh-azami',
+  title: 'Credentials of Shaykh Azami',
+  subtitle: 'About the author, summarized from Jami al-Kamil',
+  author: 'Muhammad Qassam',
+  date: 'February 5, 2025',
+  sourceUrl: 'https://akhlaq.substack.com/p/credentials-of-shaykh-azami',
+
+  body: [
+    {
+      type: 'p',
+      text: 'He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at Masjid al-Nabawi.',
+    },
+    {
+      type: 'p',
+      text: 'He received his qiraah[1] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
+    },
+    {
+      type: 'p',
+      text: 'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[2] in the introduction of the book.',
+    },
+  ],
+
+  footnotes: [
+    'Qiraah is a reading certification. A more precise translation might be "direct reading," implying that the student read the text under the teacher\u2019s supervision.',
+    'The thabat (with fatha on ba) is where a hadith scholar mentions what he has heard from hadith teachers. The thabat is called barnamaj by Andalusian scholars.',
+  ],
+};
+
 /* Newest first — this is the order the cards render in. */
-export const ARTICLES = [interviewAzami, jamiAlKamilIntro, worksByAzami];
+export const ARTICLES = [
+  credentialsAzami,
+  interviewAzami,
+  jamiAlKamilIntro,
+  worksByAzami,
+];

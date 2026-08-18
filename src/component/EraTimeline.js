@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { ERA_SLUGS, DEFAULT_ERA } from "../data/eras";
 
 /* ------------------------------------------------------------------ *
  * Timeline data
@@ -123,22 +124,9 @@ const TIMELINES = {
 
 const CATEGORIES = Object.keys(TIMELINES);
 
-/* Each era has its own address: /timelines/companions and so on. The era
-   used to be useState, so all five shared the /timelines URL — one
-   couldn't be linked to, bookmarked, or reached with the back button. */
-export const ERA_SLUGS = {
-  Companions: "companions",
-  "After the Companions": "after-the-companions",
-  "Hadith compilers": "hadith-compilers",
-  "Classical scholars": "classical-scholars",
-  "Contemporary scholars": "contemporary-scholars",
-};
-
-export const ERA_BY_SLUG = Object.fromEntries(
-  Object.entries(ERA_SLUGS).map(([name, slug]) => [slug, name]),
-);
-
-export const DEFAULT_ERA = "Companions";
+/* Slugs come from data/eras.js — a plain module with no 'use client'
+   directive, so the route files can import them without pulling this
+   client component into a server context. */
 
 /* The Prophet ﷺ passed away in 632 CE. Clicking a name in the three eras
    below shows how long after that they died — a Companion who died in 634

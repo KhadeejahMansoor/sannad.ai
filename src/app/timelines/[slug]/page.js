@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import AboutShell from '../../../component/AboutShell';
-import EraTimeline, { ERA_SLUGS, ERA_BY_SLUG } from '../../../component/EraTimeline';
+import EraTimeline from '../../../component/EraTimeline';
+import { ERA_SLUGS, ERA_BY_SLUG } from '../../../data/eras';
 
 // Every era is known ahead of time, so each renders as a static page.
 export function generateStaticParams() {

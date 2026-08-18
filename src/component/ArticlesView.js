@@ -97,13 +97,8 @@ export default function ArticlesView() {
           {article.title}
         </h1>
 
-        {article.subtitle && (
-          <p className="mt-2 text-[17px] text-[#78716C]">
-            {article.subtitle}
-            {article.interviewDate && (
-              <span className="text-[#A8A29E]"> · {article.interviewDate}</span>
-            )}
-          </p>
+        {article.interviewDate && (
+          <p className="mt-2 text-sm text-[#A8A29E]">{article.interviewDate}</p>
         )}
 
         {/* Video sits above the text: it's the primary artefact here and

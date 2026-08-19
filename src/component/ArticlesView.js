@@ -228,7 +228,7 @@ export function ArticleDetail({ article }) {
   if (!article) return null;
 
   return (
-    <div className="w-full max-w-[760px]">
+    <div className="w-full max-w-[1000px]">
       {/* A real link, so it can be opened in a new tab and so the
             browser's own back button lands where the reader expects. */}
       <Link
@@ -358,7 +358,7 @@ export default function ArticlesView() {
      Subtitles sit in the site maroon rather than grey: at this size the
      colour does the separating that a border used to. */
   return (
-    <div className="w-full max-w-[760px]">
+    <div className="w-full max-w-[1000px]">
       {ARTICLES.map((a) => (
         <Link
           key={a.slug}

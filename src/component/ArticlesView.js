@@ -53,23 +53,38 @@ function Honorific({ code }) {
   );
 }
 
-function withHonorifics(text) {
+function withHonorifics(text, keyBase = "h") {
   return text.split(/(\[\[r\d\]\])/g).map((part, i) =>
     /^\[\[r\d\]\]$/.test(part) ? (
-      <Honorific key={i} code={part} />
+      <Honorific key={`${keyBase}-${i}`} code={part} />
     ) : (
-      part
+      withEmphasis(part, `${keyBase}-${i}`)
+    ),
+  );
+}
+
+/* Book titles are wrapped in *asterisks* in the source and render italic.
+   A convention rather than markup in the data, so a title reads as a title
+   while editing and the styling stays in one place here. */
+function withEmphasis(text, keyBase) {
+  return text.split(/(\*[^*]+\*)/g).map((part, i) =>
+    /^\*[^*]+\*$/.test(part) ? (
+      <em key={`${keyBase}-e${i}`}>{part.slice(1, -1)}</em>
+    ) : (
+      <React.Fragment key={`${keyBase}-t${i}`}>{part}</React.Fragment>
     ),
   );
 }
 
 /* Footnote markers are written as [1], [2] … in the source. They render
-   as small raised numbers linking to the list at the foot of the piece. */
+   as small raised numbers linking to the list for their section. */
 function withMarkers(text, section = 0) {
   return text.split(/(\[\d\])/g).map((part, i) => {
     const m = part.match(/^\[(\d)\]$/);
     if (!m)
-      return <React.Fragment key={i}>{withHonorifics(part)}</React.Fragment>;
+      return (
+        <React.Fragment key={i}>{withHonorifics(part, `m${i}`)}</React.Fragment>
+      );
     return (
       <sup key={i} className="ms-0.5 text-[11px] text-[#7A4B2B]">
         <a href={`#fn-${section}-${m[1]}`} className="no-underline">
@@ -325,7 +340,7 @@ export function ArticleDetail({ article }) {
                 href={`#${sectionId(b.text)}`}
                 className="text-[15px] text-[#7B2833] no-underline hover:underline"
               >
-                {b.text}
+                {withHonorifics(b.text, `toc-${sectionId(b.text)}`)}
               </a>
             ))}
           </nav>
@@ -402,7 +417,7 @@ export default function ArticlesView() {
           </h2>
           {a.subtitle && (
             <p className="mt-2 text-[14px] leading-relaxed text-[#7B2833]">
-              {a.subtitle}
+              {withHonorifics(a.subtitle, a.slug)}
             </p>
           )}
         </Link>

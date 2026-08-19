@@ -326,7 +326,7 @@ const jamiAlKamil = {
   slug: 'jami-al-kamil',
   title: 'About Shaykh Azami',
   subtitle:
-    'The Complete Collection of Sahih Hadith by Zia-ur-Rahman Azami',
+    '*The Complete Collection of Sahih Hadith* by Zia-ur-Rahman Azami',
   author: 'Muhammad Qassam',
   date: 'February 5, 2025',
   sourceUrl:
@@ -337,9 +337,9 @@ const jamiAlKamil = {
      section of their own. They read as background rather than as one of the
      author's own notes, so they sit above the contents list. */
   intro: [
-    'Shaykh Zia-ur-Rahman Azami authored Jami al-Kamil, which seeks to be a comprehensive collection of sahih and hasan hadith. This page includes introductions written by Shaykh Azami himself, as well as a list of his works and credentials.',
+    'Shaykh Zia-ur-Rahman Azami authored *Jami al-Kamil*, which seeks to be a comprehensive collection of sahih and hasan hadith. This page includes introductions written by Shaykh Azami himself, as well as a list of his works and credentials.',
     'He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at the Prophet\u2019s Masjid.',
-    'He received his qiraah[1] and ijaza for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
+    'He received his qiraah[1] and ijaza for *Sahih Bukhari* in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for *Sahih Muslim* from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for *Sunan Abu Dawud* in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
     'He holds several general ijaza in hadith studies. He reports he has granted approximately 800 general ijaza in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[2] in the introduction of the book.',
   ],
 
@@ -357,7 +357,7 @@ const jamiAlKamil = {
      subsection is h3, and individual work titles are h4. Credentials'
      footnotes renumbered to 4 and 5 to sit behind the introduction's. */
   body: [
-    { type: 'h2', text: 'Author\u2019s note to the first edition of Jami al-Kamil' },
+    { type: 'h2', text: 'Author\u2019s note to the first edition of *Jami al-Kamil*' },
 
     {
       type: 'p',
@@ -369,7 +369,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'Indeed, Allah — exalted be His praise — has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqidah, religions, and other subjects. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, which is: The Complete Collection of Sahih Hadith.',
+      text: 'Indeed, Allah — exalted be His praise — has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqidah, religions, and other subjects. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, which is: *The Complete Collection of Sahih Hadith*.',
     },
     {
       type: 'p',
@@ -426,7 +426,7 @@ const jamiAlKamil = {
       ],
     },
 
-    { type: 'h2', text: 'Author\u2019s note to the second edition of Jami al-Kamil' },
+    { type: 'h2', text: 'Author\u2019s note to the second edition of *Jami al-Kamil*' },
     {
       type: 'p',
       text: 'الحمد لله رب العالمين والصلاة والسلام على سيد المرسلين، وإمام المتقين، وخاتم النبيين، وعلى آله وأصحابه، وعلى متبعي سنته إلى يوم الدين.',
@@ -449,11 +449,11 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'I have presented the hadith with its chain of transmission from the author to the Messenger of Allah [[r9]]. Then, I discussed the chains that have been criticized. I avoided including biographies of reliable narrators to prevent the book from becoming too lengthy. I interpret the meaning and fiqh of the hadith according to my book Minnah al-Kubra, which is an explanation and authentication of Bayhaqi\u2019s Sunan al-Sughra. Sometimes I mention hadith-related and useful points for fiqh briefly.',
+      text: 'I have presented the hadith with its chain of transmission from the author to the Messenger of Allah [[r9]]. Then, I discussed the chains that have been criticized. I avoided including biographies of reliable narrators to prevent the book from becoming too lengthy. I interpret the meaning and fiqh of the hadith according to my book *Minnah al-Kubra*, which is an explanation and authentication of Bayhaqi\u2019s *Sunan al-Sughra*. Sometimes I mention hadith-related and useful points for fiqh briefly.',
     },
     {
       type: 'p',
-      text: 'Allah has granted acceptance to Jami al-Kamil, as the first edition was sold out in record time. Here is the second edition of the book.',
+      text: 'Allah has granted acceptance to *Jami al-Kamil*, as the first edition was sold out in record time. Here is the second edition of the book.',
     },
     {
       type: 'p',
@@ -465,7 +465,7 @@ const jamiAlKamil = {
         'Numbering of hadith and adding tashkil where needed.[2]',
         'Rearranging some chapters to better suit the fiqh of each chapter.',
         'Adding hadith fiqh commentary in certain topics where I deemed necessary.',
-        'Adding some new hadith-related discussions in the \u201cIntroduction\u201d that I found beneficial for students of knowledge, some of which I was asked about while teaching Sahih Bukhari and Sahih Muslim in the Prophet\u2019s Masjid.',
+        'Adding some new hadith-related discussions in the \u201cIntroduction\u201d that I found beneficial for students of knowledge, some of which I was asked about while teaching *Sahih Bukhari* and *Sahih Muslim* in the Prophet\u2019s Masjid.',
         'Revising previous grading where I had ruled some hadith as weak.',
         'Identifying critical defects in some hadith that I had previously graded sahih.',
         'Adding several authentic hadith that I discovered after submitting the first edition for publication.',
@@ -497,22 +497,22 @@ const jamiAlKamil = {
 
     {
       type: 'p',
-      text: 'Shaykh Zia-ur-Rahman Azami (d. 2020) wrote several books in his life. This is a selection of works he highlighted in his magnum opus, Jami al-Kamil. He also wrote books in foreign languages on the translation and tafsir of the Quran.',
+      text: 'Shaykh Zia-ur-Rahman Azami (d. 2020) wrote several books in his life. This is a selection of works he highlighted in his magnum opus, *Jami al-Kamil*. He also wrote books in foreign languages on the translation and tafsir of the Quran.',
     },
 
-    { type: 'h4', text: 'Jami al-Kamil: The Complete Collection of Sahih Hadith' },
+    { type: 'h4', text: '*Jami al-Kamil: The Complete Collection of Sahih Hadith*' },
     {
       type: 'p',
       text: 'He compiled all of the sahih hadith, from all of the books of hadith, in one book. The first edition was published in 2016. The second (and final) edition was published in 2019. The second edition includes further verification and corrections of what was missed in the first edition. The final work is 16,546 hadith in 19 volumes.',
     },
 
-    { type: 'h4', text: 'Abu Huraira [[r1]] in the Light of his Narrations' },
+    { type: 'h4', text: '*Abu Huraira [[r1]] in the Light of his Narrations*' },
     {
       type: 'p',
       text: 'He wrote this 800-page work which provides an analytical refutation of criticisms against Abu Huraira [[r1]], one of the most knowledgeable companions of the Prophet [[r9]], alongside his biography. The summary was published in 1978 by Dar al-Kitab al-Masri in Cairo, and a further condensed version was published in 1991 by Ghuraba Library in Madinah.',
     },
 
-    { type: 'h4', text: 'Studies of Reliability and Criticism of Hadith Narrators' },
+    { type: 'h4', text: '*Studies of Reliability and Criticism of Hadith Narrators*' },
     {
       type: 'p',
       text: 'The first edition was published in 1981 by Salafi University in India, followed by the second edition in 1994 by Ghuraba Library in Madinah. A third edition, printed without the author\u2019s knowledge, was published in 1994 by The World of Books in Beirut. The fourth edition was released in 1998 by Ghuraba Library in Madinah.',
@@ -520,7 +520,7 @@ const jamiAlKamil = {
 
     {
       type: 'h4',
-      text: 'Dictionary of Hadith Terminology and Fine Points of Narration Chains',
+      text: '*Dictionary of Hadith Terminology and Fine Points of Narration Chains*',
     },
     {
       type: 'p',
@@ -529,26 +529,26 @@ const jamiAlKamil = {
 
     {
       type: 'h4',
-      text: 'Gift of the Righteous: Authentic Dua, Dhikr, Ruqya, and Medicine from the Leader of the Messengers [[r9]]',
+      text: '*Gift of the Righteous: Authentic Dua, Dhikr, Ruqya, and Medicine from the Leader of the Messengers [[r9]]*',
     },
     {
       type: 'p',
       text: 'This was first published in Pakistan in 2014, followed by a second edition in India in the same year. The book is now being printed by multiple publishers and has been translated into Urdu, with several printings.',
     },
 
-    { type: 'h4', text: 'The Superior Manners' },
+    { type: 'h4', text: '*The Superior Manners*' },
     {
       type: 'p',
       text: 'This was first published by Dar al-Salam University in India in 2016.',
     },
 
-    { type: 'h4', text: 'Adherence to the Sunnah in Beliefs and Rulings' },
+    { type: 'h4', text: '*Adherence to the Sunnah in Beliefs and Rulings*' },
     {
       type: 'p',
       text: 'The first edition was published in 1996 by Ghuraba Library in Madinah. An Urdu translation was done in 1997 by Dr. Abu Hassan Taher Mahmoud, a professor at the International Islamic University in Islamabad. This edition was later published by Darussalam Library in Riyadh. Several more editions were subsequently released.',
     },
 
-    { type: 'h4', text: 'Judaism and Christianity' },
+    { type: 'h4', text: '*Judaism and Christianity*' },
     {
       type: 'p',
       text: 'The author wrote this book, and the first edition was published in 1988 by Dar Library in Madinah.',
@@ -556,18 +556,18 @@ const jamiAlKamil = {
 
     {
       type: 'h4',
-      text: 'Chapters on the Religions of India (Hinduism, Buddhism, Jainism, and Sikhism)',
+      text: '*Chapters on the Religions of India (Hinduism, Buddhism, Jainism, and Sikhism)*',
     },
     {
       type: 'p',
-      text: 'This book was written by the author. The first edition, titled Studies in Judaism, Christianity, and Indian Religions, was published in 1996 by Bukhari Library in Madinah. Subsequent editions were released by Rashid Library in Riyadh, with the second edition in 2001, the third in 2003, the fourth in 2008, the fifth in 2012, the sixth in 2014, and the seventh in 2015.',
+      text: 'This book was written by the author. The first edition, titled *Studies in Judaism, Christianity, and Indian Religions*, was published in 1996 by Bukhari Library in Madinah. Subsequent editions were released by Rashid Library in Riyadh, with the second edition in 2001, the third in 2003, the fourth in 2008, the fifth in 2012, the sixth in 2014, and the seventh in 2015.',
     },
 
     { type: 'h3', text: 'Building on the works of other authors' },
 
     {
       type: 'h4',
-      text: 'Judgments of the Messenger of Allah [[r9]] by Ibn al-Tala Qurtubi (d. 1103)',
+      text: '*Judgments of the Messenger of Allah [[r9]]* by Ibn al-Tala Qurtubi (d. 1103)',
     },
     {
       type: 'p',
@@ -578,7 +578,7 @@ const jamiAlKamil = {
       text: 'A team of Pakistani scholars translated the book into Urdu to meet the needs of judges and lawyers in Sharia courts, as it is considered one of the most important judicial documents from the Prophetic era. The Urdu editions were released in 1987, 1991, 2002, and several others thereafter.',
     },
 
-    { type: 'h4', text: 'Introduction to Sunan al-Kubra by Bayhaqi (d. 1066)' },
+    { type: 'h4', text: '*Introduction to Sunan al-Kubra* by Bayhaqi (d. 1066)' },
     {
       type: 'p',
       text: 'He conducted an analysis and verification of the book Introduction to Sunan al-Kubra by Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing Bayhaqi\u2019s efforts to preserve the pure Sunnah.',
@@ -590,14 +590,14 @@ const jamiAlKamil = {
 
     {
       type: 'h4',
-      text: 'Minnah al-Kubra: The Greatest Favor in the Evidence of the Four Schools',
+      text: '*Minnah al-Kubra: The Greatest Favor in the Evidence of the Four Schools*',
     },
     {
       type: 'p',
-      text: 'This book was written by the author as an authentication, verification, and expansion of Bayhaqi\u2019s work Sunan al-Sughra. He compiles authentic evidence for the Shafii school, as well as the other three schools of thought, making it a reference for all four schools. The first edition was published in 2001, and the second edition in 2005, both by Rashid Library in Riyadh.',
+      text: 'This book was written by the author as an authentication, verification, and expansion of Bayhaqi\u2019s work *Sunan al-Sughra*. He compiles authentic evidence for the Shafii school, as well as the other three schools of thought, making it a reference for all four schools. The first edition was published in 2001, and the second edition in 2005, both by Rashid Library in Riyadh.',
     },
 
-    { type: 'h4', text: 'The Amali by Ibn Mardawayh (d. 1019)' },
+    { type: 'h4', text: '*The Amali* by Ibn Mardawayh (d. 1019)' },
     {
       type: 'p',
       text: 'He conducted an analysis and verification of this book and wrote a detailed introduction to Ibn Mardawayh\u2019s efforts in preserving the pure Sunnah. The first edition was published in 1989 by Dar al-Uloom al-Hadith in the United Arab Emirates.',
@@ -605,7 +605,7 @@ const jamiAlKamil = {
 
     {
       type: 'h4',
-      text: 'Fath al-Ghafoor: Placement of the Hands on the Chest by Shaykh Muhammad Hayat Sindi (d. 1749)',
+      text: '*Fath al-Ghafoor: Placement of the Hands on the Chest* by Shaykh Muhammad Hayat Sindi (d. 1749)',
     },
     {
       type: 'p',

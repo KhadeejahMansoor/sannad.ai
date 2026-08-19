@@ -53,25 +53,35 @@ function Honorific({ code }) {
   );
 }
 
+/* Honorifics are replaced inside a run of plain text. Called from
+   withEmphasis, so it only ever sees text with the asterisks stripped. */
 function withHonorifics(text, keyBase = "h") {
   return text.split(/(\[\[r\d\]\])/g).map((part, i) =>
     /^\[\[r\d\]\]$/.test(part) ? (
       <Honorific key={`${keyBase}-${i}`} code={part} />
     ) : (
-      withEmphasis(part, `${keyBase}-${i}`)
+      <React.Fragment key={`${keyBase}-${i}`}>{part}</React.Fragment>
     ),
   );
 }
 
-/* Book titles are wrapped in *asterisks* in the source and render italic.
-   A convention rather than markup in the data, so a title reads as a title
-   while editing and the styling stays in one place here. */
-function withEmphasis(text, keyBase) {
+/* Book titles and technical terms are wrapped in *asterisks* in the source
+   and render italic. A convention rather than markup in the data, so a title
+   reads as a title while editing and the styling stays in one place here.
+
+   This runs BEFORE honorifics: a span like "*Judgments of the Messenger of
+   Allah [[r9]]*" has to be matched whole, and splitting on the honorific
+   first would leave each half with one unpaired asterisk. */
+function withEmphasis(text, keyBase = "e") {
   return text.split(/(\*[^*]+\*)/g).map((part, i) =>
     /^\*[^*]+\*$/.test(part) ? (
-      <em key={`${keyBase}-e${i}`}>{part.slice(1, -1)}</em>
+      <em key={`${keyBase}-${i}`}>
+        {withHonorifics(part.slice(1, -1), `${keyBase}-${i}`)}
+      </em>
     ) : (
-      <React.Fragment key={`${keyBase}-t${i}`}>{part}</React.Fragment>
+      <React.Fragment key={`${keyBase}-${i}`}>
+        {withHonorifics(part, `${keyBase}-${i}`)}
+      </React.Fragment>
     ),
   );
 }
@@ -83,7 +93,7 @@ function withMarkers(text, section = 0) {
     const m = part.match(/^\[(\d)\]$/);
     if (!m)
       return (
-        <React.Fragment key={i}>{withHonorifics(part, `m${i}`)}</React.Fragment>
+        <React.Fragment key={i}>{withEmphasis(part, `m${i}`)}</React.Fragment>
       );
     return (
       <sup key={i} className="ms-0.5 text-[11px] text-[#7A4B2B]">
@@ -142,7 +152,7 @@ function ArticleBody({ article }) {
               style={{ scrollMarginTop: "150px" }}
               className="mt-8 text-[21px] font-medium text-[#1C1917] first:mt-0"
             >
-              {withHonorifics(block.text)}
+              {withEmphasis(block.text)}
             </h2>
           );
         }
@@ -156,7 +166,7 @@ function ArticleBody({ article }) {
               key={i}
               className="mt-5 text-[17px] font-medium leading-snug text-[#1C1917] first:mt-0"
             >
-              {withHonorifics(block.text)}
+              {withEmphasis(block.text)}
             </h3>
           );
         }
@@ -171,7 +181,7 @@ function ArticleBody({ article }) {
               key={i}
               className="mt-3 text-[16px] font-medium leading-snug text-[#7B2833] first:mt-0"
             >
-              {withHonorifics(block.text)}
+              {withEmphasis(block.text)}
             </h4>
           );
         }
@@ -234,7 +244,7 @@ function ArticleBody({ article }) {
                     className="flex gap-3 text-[13px] leading-relaxed text-[#78716C]"
                   >
                     <span className="tabular-nums text-[#A8A29E]">{j + 1}</span>
-                    <span>{withHonorifics(note)}</span>
+                    <span>{withEmphasis(note)}</span>
                   </li>
                 ))}
               </ol>
@@ -318,7 +328,7 @@ export function ArticleDetail({ article }) {
               className="flex gap-3 text-[13px] leading-relaxed text-[#78716C]"
             >
               <span className="tabular-nums text-[#A8A29E]">{i + 1}</span>
-              <span>{withHonorifics(note)}</span>
+              <span>{withEmphasis(note)}</span>
             </li>
           ))}
         </ol>
@@ -340,7 +350,7 @@ export function ArticleDetail({ article }) {
                 href={`#${sectionId(b.text)}`}
                 className="text-[15px] text-[#7B2833] no-underline hover:underline"
               >
-                {withHonorifics(b.text, `toc-${sectionId(b.text)}`)}
+                {withEmphasis(b.text, `toc-${sectionId(b.text)}`)}
               </a>
             ))}
           </nav>
@@ -380,7 +390,7 @@ export function ArticleDetail({ article }) {
                 className="flex gap-3 text-[13px] leading-relaxed text-[#78716C]"
               >
                 <span className="tabular-nums text-[#A8A29E]">{i + 1}</span>
-                <span>{withHonorifics(note)}</span>
+                <span>{withEmphasis(note)}</span>
               </li>
             ))}
           </ol>
@@ -417,7 +427,7 @@ export default function ArticlesView() {
           </h2>
           {a.subtitle && (
             <p className="mt-2 text-[14px] leading-relaxed text-[#7B2833]">
-              {withHonorifics(a.subtitle, a.slug)}
+              {withEmphasis(a.subtitle, a.slug)}
             </p>
           )}
         </Link>

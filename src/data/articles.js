@@ -385,11 +385,11 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: '\u201cTakhrij\u201d is considered one of the most difficult Islamic sciences, as it requires knowledge of jarh and tadil (criticism and validation of narrators), what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and mursal chains, Prophetic and mawquf narrations, chains with narrators that did not meet, chains with missing narrators, tashif and tahrif, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
+      text: '\u201cTakhrij\u201d is considered one of the most difficult Islamic sciences, as it requires knowledge of *jarh* and *tadil* (criticism and validation of narrators), what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and *mursal* chains, Prophetic and *mawquf* narrations, chains with narrators that did not meet, chains with missing narrators, tashif and tahrif, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
     },
     {
       type: 'p',
-      text: 'Praise be to Allah, by whose favor righteous deeds are completed. This blessed work began and was completed, with Allah\u2019s praise and facilitation, in the City of the Prophet\u2019s [[r9]] Migration [[r9]], which is also called the Home of the Sunnah, in an atmosphere filled with knowledge and faith during the prosperous and blessed Saudi era.[3]',
+      text: 'Praise be to Allah, by whose favor righteous deeds are completed. This blessed work began and was completed, with Allah\u2019s praise and facilitation, in the City of the Prophet\u2019s Migration, which is also called the Home of the Sunnah, in an atmosphere filled with knowledge and faith during the prosperous and blessed Saudi era.[3]',
     },
     {
       type: 'p',
@@ -421,7 +421,7 @@ const jamiAlKamil = {
       type: 'notes',
       items: [
         'I borrowed this saying from Imam Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
-        'Translator\u2019s note. Takhrij refers to identifying and documenting the sources of hadith narrations. A mursal chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
+        'Translator\u2019s note. *Takhrij* refers to identifying and documenting the sources of hadith narrations. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *mawquf* chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
         'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
       ],
     },
@@ -445,7 +445,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'I have also presented what a student of hadith needs to know, such as tadlis and mudallis, consideration of supporting evidence or narrations, connected and broken chains, mawquf and marfu, mursal and muadal, irregular and rejected narrations, the reliability of a narrator, the narrator\u2019s attributes in transmission, reconciliation between apparently contradicting hadith, knowledge of narrators about whom hadith scholars differed regarding their reliability or unreliability, and other matters.[1]',
+      text: 'I have also presented what a student of hadith needs to know, such as *tadlis* and *mudallis*, consideration of supporting evidence or narrations, connected and broken chains, *mawquf* and *marfu*, *mursal* and *muadal*, irregular and rejected narrations, the reliability of a narrator, the narrator\u2019s attributes in transmission, reconciliation between apparently contradicting hadith, knowledge of narrators about whom hadith scholars differed regarding their reliability or unreliability, and other matters.[1]',
     },
     {
       type: 'p',
@@ -462,7 +462,7 @@ const jamiAlKamil = {
     {
       type: 'ol',
       items: [
-        'Numbering of hadith and adding tashkil where needed.[2]',
+        'Numbering of hadith and adding *tashkil* where needed.[2]',
         'Rearranging some chapters to better suit the fiqh of each chapter.',
         'Adding hadith fiqh commentary in certain topics where I deemed necessary.',
         'Adding some new hadith-related discussions in the \u201cIntroduction\u201d that I found beneficial for students of knowledge, some of which I was asked about while teaching *Sahih Bukhari* and *Sahih Muslim* in the Prophet\u2019s Masjid.',
@@ -488,8 +488,8 @@ const jamiAlKamil = {
     {
       type: 'notes',
       items: [
-        'Translator\u2019s note. Tadlis refers to concealment in the chain of narration, and mudallis are those deficient narrators who practice tadlis. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. A marfu chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A mursal chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A muadal chain is when two or more consecutive narrators are missing from the chain of transmission.',
-        'Translator\u2019s note. Tashkil refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include: fatha, kasra, damma, sukun, and shadda.',
+        'Translator\u2019s note. *Tadlis* refers to concealment in the chain of narration, and *mudallis* are those deficient narrators who practice *tadlis*. A *mawquf* chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. A *marfu* chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *muadal* chain is when two or more consecutive narrators are missing from the chain of transmission.',
+        'Translator\u2019s note. *Tashkil* refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include: *fatha*, *kasra*, *damma*, *sukun*, and *shadda*.',
       ],
     },
 
@@ -581,7 +581,7 @@ const jamiAlKamil = {
     { type: 'h4', text: '*Introduction to Sunan al-Kubra* by Bayhaqi (d. 1066)' },
     {
       type: 'p',
-      text: 'He conducted an analysis and verification of the book Introduction to Sunan al-Kubra by Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing Bayhaqi\u2019s efforts to preserve the pure Sunnah.',
+      text: 'He conducted an analysis and verification of the book Introduction to *Sunan al-Kubra* by Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing Bayhaqi\u2019s efforts to preserve the pure Sunnah.',
     },
     {
       type: 'p',

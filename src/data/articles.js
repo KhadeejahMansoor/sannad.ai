@@ -324,7 +324,7 @@ const interviewAzami = {
 
 const jamiAlKamil = {
   slug: 'jami-al-kamil',
-  title: 'Jami al-Kamil',
+  title: 'About Shaykh Azami',
   subtitle:
     'The Complete Collection of Sahih Hadith by Zia-ur-Rahman al-Azami',
   author: 'Muhammad Qassam',
@@ -333,8 +333,20 @@ const jamiAlKamil = {
     'https://akhlaq.substack.com/p/translation-to-the-introduction-to',
 
   /* A standfirst, shown above the contents list at the head of the piece. */
-  intro:
-    'Shaykh Zia-ur-Rahman Azami authored Jami al-Kamil, which seeks to be a comprehensive collection of sahih and hasan hadith. This page includes introductions written by Shaykh Azami himself, as well as a list of his works and credentials.',
+  /* Standfirst plus the three credentials paragraphs, which used to be a
+     section of their own. They read as background rather than as one of the
+     author's own notes, so they sit above the contents list. */
+  intro: [
+    'Shaykh Zia-ur-Rahman al-Azami authored Jami al-Kamil, which seeks to be a comprehensive collection of sahih and hasan hadith. This page includes introductions written by Shaykh Azami himself, as well as a list of his works and credentials.',
+    'He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at the Prophet\u2019s Masjid.',
+    'He received his qiraah[1] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
+    'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[2] in the introduction of the book.',
+  ],
+
+  introNotes: [
+    'Qiraah is a reading certification. A more precise translation might be "direct reading," implying that the student read the text under the teacher\u2019s supervision.',
+    'The thabat (with fatha on ba) is where a hadith scholar mentions what he has heard from hadith teachers. The thabat is called barnamaj by Andalusian scholars.',
+  ],
 
   /* Three pieces folded into one: the translated introduction, then the
      compiler's credentials, then his works. They were separate articles
@@ -345,12 +357,8 @@ const jamiAlKamil = {
      subsection is h3, and individual work titles are h4. Credentials'
      footnotes renumbered to 4 and 5 to sit behind the introduction's. */
   body: [
-    { type: 'h2', text: 'Introduction to the first edition' },
+    { type: 'h2', text: "Author's note to the first edition of Jami al-Kamil" },
 
-    {
-      type: 'p',
-      text: 'From the writing of Shaykh Zia-ur-Rahman al-Azami, compiler of Jami al-Kamil.',
-    },
     {
       type: 'p',
       text: 'الحمدُ لله ربِّ العالمين، والصلاةُ والسلامُ على سيِّد المُرْسَلين، وعلى آلِه وصَحْبِه أجمعين',
@@ -361,11 +369,11 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'Indeed, Allah — exalted be His praise — has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqeedah, religions, and other subjects. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, which is: The Complete Collection of Sahih Hadith.',
+      text: 'Indeed, Allah — exalted be His praise — has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqidah, religions, and other subjects. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, which is: The Complete Collection of Sahih Hadith.',
     },
     {
       type: 'p',
-      text: 'This book aims to gather all sahih Hadith in a single collection, arranged according to chapters of fiqh. I spent several consecutive years to compile it. This involved working day and night, isolating myself from visits and meetings, abandoning travels and journeys, and excusing myself from attending seminars and conferences.',
+      text: 'This book aims to gather all sahih hadith in a single collection, arranged according to chapters of fiqh. I spent several consecutive years to compile it. This involved working day and night, isolating myself from visits and meetings, abandoning travels and journeys, and excusing myself from attending seminars and conferences.',
     },
     {
       type: 'p',
@@ -377,7 +385,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: '\u201cTakhreej\u201d is considered one of the most difficult Islamic sciences, as it requires knowledge of jarh and ta\u2019dil (criticism and validation of narrators), what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and mursal chains, Prophetic and mauquf narrations, chains with narrators that did not meet, chains with missing narrators, tashif and tahrif, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
+      text: '\u201cTakhrij\u201d is considered one of the most difficult Islamic sciences, as it requires knowledge of jarh and ta\u2019dil (criticism and validation of narrators), what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and mursal chains, Prophetic and mawquf narrations, chains with narrators that did not meet, chains with missing narrators, tashif and tahrif, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
     },
     {
       type: 'p',
@@ -393,7 +401,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'InshaAllah, there will be future editions. The lack of resources may have indeed impacted the quality and perfection of our work. I also ask Allah سبحانه وتعالى to make this blessed work purely for His noble face and to make it one of the reasons for unifying the Ummah upon the Quran and Sunnah, as our beloved Prophet [[r9]], our intercessor, urges us to follow.',
+      text: 'There will be future editions, inshaAllah. The lack of resources may have indeed impacted the quality and perfection of our work. I also ask Allah سبحانه وتعالى to make this blessed work purely for His noble face and to make it one of the reasons for unifying the Ummah upon the Quran and Sunnah, as our beloved Prophet [[r9]], our intercessor, urges us to follow.',
     },
     {
       type: 'p',
@@ -413,12 +421,12 @@ const jamiAlKamil = {
       type: 'notes',
       items: [
         'I borrowed this saying from Imam al-Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
-        'Translator\u2019s note. Takhreej refers to identifying and documenting the sources of Hadith narrations. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
+        'Translator\u2019s note. Takhrij refers to identifying and documenting the sources of hadith narrations. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
         'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
       ],
     },
 
-    { type: 'h2', text: 'Introduction to the second edition' },
+    { type: 'h2', text: "Author's note to the second edition of Jami al-Kamil" },
     {
       type: 'p',
       text: 'الحمد لله رب العالمين والصلاة والسلام على سيد المرسلين، وإمام المتقين، وخاتم النبيين، وعلى آله وأصحابه، وعلى متبعي سنته إلى يوم الدين.',
@@ -429,19 +437,19 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'To proceed: indeed, pursuing knowledge is among the best forms of drawing near to Allah and the most noble acts of obedience. Among the most important types of expertise is verifying the authenticity of the Hadith — distinguishing between its authentic and weak narrations.',
+      text: 'To proceed: indeed, pursuing knowledge is among the best forms of drawing near to Allah and the most noble acts of obedience. Among the most important types of expertise is verifying the authenticity of the hadith — distinguishing between its authentic and weak narrations.',
     },
     {
       type: 'p',
-      text: 'I have presented at the beginning of the book a detailed introduction in which I mentioned my chain of transmission to the books of Hadith, my scholarly authorizations from the scholars of Hadith, and the history of Hadith documentation and its authentication.',
+      text: 'I have presented at the beginning of the book a detailed introduction in which I mentioned my chain of transmission to the books of hadith, my scholarly authorizations from the scholars of hadith, and the history of hadith documentation and its authentication.',
     },
     {
       type: 'p',
-      text: 'I have also presented what a student of Hadith needs to know, such as tadlees and mudallis, consideration of supporting evidence or narrations, connected and broken chains, mawquf and marfu, mursal and muadal, irregular and rejected narrations, the reliability of a narrator, the narrator\u2019s attributes in transmission, reconciliation between apparently contradicting Hadiths, knowledge of narrators about whom Hadith scholars differed regarding their reliability or unreliability, and other matters.[1]',
+      text: 'I have also presented what a student of hadith needs to know, such as tadlis and mudallis, consideration of supporting evidence or narrations, connected and broken chains, mawquf and marfu, mursal and muadal, irregular and rejected narrations, the reliability of a narrator, the narrator\u2019s attributes in transmission, reconciliation between apparently contradicting hadith, knowledge of narrators about whom hadith scholars differed regarding their reliability or unreliability, and other matters.[1]',
     },
     {
       type: 'p',
-      text: 'I have presented the Hadith with its chain of transmission from the author to the Messenger of Allah [[r9]]. Then, I discussed the chains that have been criticized. I avoided including biographies of reliable narrators to prevent the book from becoming too lengthy. I interpret the meaning and fiqh of the Hadith according to my book Al-Minnah Al-Kubra, which is an explanation and authentication of Al-Bayhaqi\u2019s Al-Sunan Al-Sughra. Sometimes I mention Hadith-related and useful points for fiqh briefly.',
+      text: 'I have presented the hadith with its chain of transmission from the author to the Messenger of Allah [[r9]]. Then, I discussed the chains that have been criticized. I avoided including biographies of reliable narrators to prevent the book from becoming too lengthy. I interpret the meaning and fiqh of the hadith according to my book Minnah al-Kubra, which is an explanation and authentication of Bayhaqi\u2019s Sunan al-Sughra. Sometimes I mention hadith-related and useful points for fiqh briefly.',
     },
     {
       type: 'p',
@@ -454,10 +462,10 @@ const jamiAlKamil = {
     {
       type: 'ol',
       items: [
-        'Numbering of hadiths and adding tashkeel where needed.[2]',
+        'Numbering of hadiths and adding tashkil where needed.[2]',
         'Rearranging some chapters to better suit the fiqh of each chapter.',
         'Adding hadith fiqh commentary in certain topics where I deemed necessary.',
-        'Adding some new hadith-related discussions in the \u201cIntroduction\u201d that I found beneficial for students of knowledge, some of which I was asked about while teaching Sahih al-Bukhari and Sahih Muslim in the Prophet\u2019s Masjid.',
+        'Adding some new hadith-related discussions in the \u201cIntroduction\u201d that I found beneficial for students of knowledge, some of which I was asked about while teaching Sahih Bukhari and Sahih Muslim in the Prophet\u2019s Masjid.',
         'Revising previous grading where I had ruled some hadiths as weak.',
         'Identifying critical defects in some hadiths that I had previously graded sahih.',
         'Adding several authentic hadiths that I discovered after submitting the first edition for publication.',
@@ -480,42 +488,19 @@ const jamiAlKamil = {
     {
       type: 'notes',
       items: [
-        'Translator\u2019s note. Tadlees refers to concealment in the chain of narration, and mudallis are those deficient narrators who practice tadlees. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. A marfu chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A muadal chain is when two or more consecutive narrators are missing from the chain of transmission.',
-        'Translator\u2019s note. Tashkeel refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include: fatha, kasra, damma, sukoon, and shadda.',
+        'Translator\u2019s note. Tadlis refers to concealment in the chain of narration, and mudallis are those deficient narrators who practice tadlis. A mawquf chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. A marfu chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A mursal chain is when a tabi\u2019i quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A muadal chain is when two or more consecutive narrators are missing from the chain of transmission.',
+        'Translator\u2019s note. Tashkil refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include: fatha, kasra, damma, sukun, and shadda.',
       ],
     },
 
-    { type: 'h2', text: 'Credentials of Shaykh Azami' },
+    { type: 'h2', text: "Author's works" },
 
     {
       type: 'p',
-      text: 'He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at Masjid al-Nabawi.',
-    },
-    {
-      type: 'p',
-      text: 'He received his qiraah[1] and ijazah for Sahih Bukhari in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for Sahih Muslim from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for Sunan Abu Dawud in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
-    },
-    {
-      type: 'p',
-      text: 'He holds several general ijazah in hadith studies. He reports he has granted approximately 800 general ijazah in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[2] in the introduction of the book.',
+      text: 'Shaykh Zia-ur-Rahman al-Azami (d. 2020) wrote several books in his life. This is a selection of works he highlighted in his magnum opus, Jami al-Kamil. He also wrote books in foreign languages on the translation and tafsir of the Quran.',
     },
 
-    {
-      type: 'notes',
-      items: [
-        'Qiraah is a reading certification. A more precise translation might be "direct reading," implying that the student read the text under the teacher\u2019s supervision.',
-        'The thabat (with fatha on ba) is where a hadith scholar mentions what he has heard from hadith teachers. The thabat is called barnamaj by Andalusian scholars.',
-      ],
-    },
-
-    { type: 'h2', text: 'His works' },
-
-    {
-      type: 'p',
-      text: 'Shaykh Zia-ur-Rahman al-Azami (d. 2020) wrote several books in his life. This is a selection of works he highlighted in his magnum opus, Jami ul Kamil. He also wrote books in foreign languages on the translation and tafseer of the Quran.',
-    },
-
-    { type: 'h4', text: 'Jami ul Kamil: The Complete Collection of Sahih Hadith' },
+    { type: 'h4', text: 'Jami al-Kamil: The Complete Collection of Sahih Hadith' },
     {
       type: 'p',
       text: 'He compiled all of the sahih hadith, from all of the books of hadith, in one book. The first edition was published in 2016. The second (and final) edition was published in 2019. The second edition includes further verification and corrections of what was missed in the first edition. The final work is 16,546 hadith in 19 volumes.',
@@ -524,13 +509,13 @@ const jamiAlKamil = {
     { type: 'h4', text: 'Abu Huraira (R) in the Light of his Narrations' },
     {
       type: 'p',
-      text: 'He wrote this 800-page work which provides an analytical refutation of criticisms against Abu Huraira (R), one of the most knowledgeable companions of the Prophet [[r9]], alongside his biography. The summary was published in 1978 by Dar al-Kitab al-Masri in Cairo, and a further condensed version was published in 1991 by Maktabat al-Ghuraba\u2019 in Medina.',
+      text: 'He wrote this 800-page work which provides an analytical refutation of criticisms against Abu Huraira (R), one of the most knowledgeable companions of the Prophet [[r9]], alongside his biography. The summary was published in 1978 by Dar al-Kitab al-Masri in Cairo, and a further condensed version was published in 1991 by Ghuraba Library in Madinah.',
     },
 
     { type: 'h4', text: 'Studies of Reliability and Criticism of Hadith Narrators' },
     {
       type: 'p',
-      text: 'The first edition was published in 1981 by Salafi University in India, followed by the second edition in 1994 by Al Ghuraba\u2019 Library in Madinah. A third edition, printed without the author\u2019s knowledge, was published in 1994 by The World of Books in Beirut. The fourth edition was released in 1998 by Al Ghuraba\u2019 Library in Madinah.',
+      text: 'The first edition was published in 1981 by Salafi University in India, followed by the second edition in 1994 by Ghuraba Library in Madinah. A third edition, printed without the author\u2019s knowledge, was published in 1994 by The World of Books in Beirut. The fourth edition was released in 1998 by Ghuraba Library in Madinah.',
     },
 
     {
@@ -539,7 +524,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'The first edition was published in 1999 by Adwa Al-Salaf in Riyadh. The second edition, with major additions, was released in 2004, also by Adwa\u2019 Al-Salaf in Riyadh. The third edition, with further additions, was published in 2016 by Dar Muslim in Medina. The book was reportedly printed more than three times in Egypt by other publishers.',
+      text: 'The first edition was published in 1999 by Adwa al-Salaf in Riyadh. The second edition, with major additions, was released in 2004, also by Adwa al-Salaf in Riyadh. The third edition, with further additions, was published in 2016 by Dar Muslim in Madinah. The book was reportedly printed more than three times in Egypt by other publishers.',
     },
 
     {
@@ -560,13 +545,13 @@ const jamiAlKamil = {
     { type: 'h4', text: 'Adherence to the Sunnah in Beliefs and Rulings' },
     {
       type: 'p',
-      text: 'The first edition was published in 1996 by Al-Ghuraba Library in Medina. An Urdu translation was done in 1997 by Dr. Abu Hassan Taher Mahmoud, a professor at the International Islamic University in Islamabad. This edition was later published by Darussalam Library in Riyadh. Several more editions were subsequently released.',
+      text: 'The first edition was published in 1996 by Ghuraba Library in Madinah. An Urdu translation was done in 1997 by Dr. Abu Hassan Taher Mahmoud, a professor at the International Islamic University in Islamabad. This edition was later published by Darussalam Library in Riyadh. Several more editions were subsequently released.',
     },
 
     { type: 'h4', text: 'Judaism and Christianity' },
     {
       type: 'p',
-      text: 'The author wrote this book, and the first edition was published in 1988 by Al-Daar Library in Medina.',
+      text: 'The author wrote this book, and the first edition was published in 1988 by Daar Library in Madinah.',
     },
 
     {
@@ -575,7 +560,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'This book was written by the author. The first edition, titled Studies in Judaism, Christianity, and Indian Religions, was published in 1996 by Al-Bukhari Library in Madinah. Subsequent editions were released by Al-Rashid Library in Riyadh, with the second edition in 2001, the third in 2003, the fourth in 2008, the fifth in 2012, the sixth in 2014, and the seventh in 2015.',
+      text: 'This book was written by the author. The first edition, titled Studies in Judaism, Christianity, and Indian Religions, was published in 1996 by Bukhari Library in Madinah. Subsequent editions were released by Rashid Library in Riyadh, with the second edition in 2001, the third in 2003, the fourth in 2008, the fifth in 2012, the sixth in 2014, and the seventh in 2015.',
     },
 
     { type: 'h3', text: 'Building on the works of other authors' },
@@ -593,38 +578,38 @@ const jamiAlKamil = {
       text: 'A team of Pakistani scholars translated the book into Urdu to meet the needs of judges and lawyers in Sharia courts, as it is considered one of the most important judicial documents from the Prophetic era. The Urdu editions were released in 1987, 1991, 2002, and several others thereafter.',
     },
 
-    { type: 'h4', text: 'Introduction to Al Sunan al Kubra by al-Bayhaqi (d. 1066)' },
+    { type: 'h4', text: 'Introduction to Sunan al-Kubra by Bayhaqi (d. 1066)' },
     {
       type: 'p',
-      text: 'He conducted an analysis and verification of the book Introduction to Al Sunan al Kubra by al-Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing al-Bayhaqi\u2019s efforts to preserve the pure Sunnah.',
+      text: 'He conducted an analysis and verification of the book Introduction to Sunan al-Kubra by Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing Bayhaqi\u2019s efforts to preserve the pure Sunnah.',
     },
     {
       type: 'p',
-      text: 'The first edition was published in 1983 by Dar Al-Khalifah in Kuwait, and the second edition was released in 1999 by Adwa Al-Salaf Library in Riyadh. Shaykh al-Hakim Muhammad Yahya Khan translated the book into Urdu, which was printed in Lahore in 1992.',
+      text: 'The first edition was published in 1983 by Dar al-Khalifah in Kuwait, and the second edition was released in 1999 by Adwa al-Salaf Library in Riyadh. Shaykh al-Hakim Muhammad Yahya Khan translated the book into Urdu, which was printed in Lahore in 1992.',
     },
 
     {
       type: 'h4',
-      text: 'Al-Minnah Al-Kubra: The Greatest Favor in the Evidence of the Four Schools',
+      text: 'Minnah al-Kubra: The Greatest Favor in the Evidence of the Four Schools',
     },
     {
       type: 'p',
-      text: 'This book was written by the author as an authentication, verification, and expansion of Bayhaqi\u2019s work Al-Sunan Al-Sughra. He compiles authentic evidence for the Shafi\u2019i school, as well as the other three schools of thought, making it a reference for all four schools. The first edition was published in 2001, and the second edition in 2005, both by Al Rashid Library in Riyadh.',
+      text: 'This book was written by the author as an authentication, verification, and expansion of Bayhaqi\u2019s work Sunan al-Sughra. He compiles authentic evidence for the Shafi\u2019i school, as well as the other three schools of thought, making it a reference for all four schools. The first edition was published in 2001, and the second edition in 2005, both by Rashid Library in Riyadh.',
     },
 
     { type: 'h4', text: 'The Amali by Ibn Mardawayh (d. 1019)' },
     {
       type: 'p',
-      text: 'He conducted an analysis and verification of this book and wrote a detailed introduction to Ibn Mardawayh\u2019s efforts in preserving the pure Sunnah. The first edition was published in 1989 by Dar Al-Uloom Al-Hadith in the United Arab Emirates.',
+      text: 'He conducted an analysis and verification of this book and wrote a detailed introduction to Ibn Mardawayh\u2019s efforts in preserving the pure Sunnah. The first edition was published in 1989 by Dar al-Uloom al-Hadith in the United Arab Emirates.',
     },
 
     {
       type: 'h4',
-      text: 'Fath El Ghafoor: Placement of the Hands on the Chest by Shaykh Muhammad Hayat al-Sindi (d. 1749)',
+      text: 'Fath al-Ghafoor: Placement of the Hands on the Chest by Shaykh Muhammad Hayat al-Sindi (d. 1749)',
     },
     {
       type: 'p',
-      text: 'He wrote an analysis and verification of this work. The first edition was published in 1988 in Egypt, followed by a second edition in 1997 in Pakistan. The third edition was released in 1998 by Al-Ghuraba Library in Medina, with later editions printed by various other publishers.',
+      text: 'He wrote an analysis and verification of this work. The first edition was published in 1988 in Egypt, followed by a second edition in 1997 in Pakistan. The third edition was released in 1998 by Ghuraba Library in Madinah, with later editions printed by various other publishers.',
     },
   ],
 

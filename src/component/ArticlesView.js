@@ -251,10 +251,33 @@ export function ArticleDetail({ article }) {
         <p className="mt-2 text-sm text-[#A8A29E]">{article.interviewDate}</p>
       )}
 
-      {article.intro && (
-        <p className="mt-5 text-[16px] leading-relaxed text-[#44403C]">
-          {withHonorifics(article.intro)}
-        </p>
+      {/* Opening paragraphs, above the contents list. Markers here use
+          section 0, which no heading can produce, so they resolve to
+          introNotes below rather than to any section's own list. */}
+      {article.intro?.length > 0 && (
+        <div className="mt-5 flex flex-col gap-4">
+          {article.intro.map((para, i) => (
+            <p key={i} className="text-[16px] leading-relaxed text-[#44403C]">
+              {withMarkers(para, 0)}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {article.introNotes?.length > 0 && (
+        <ol className="mt-4 flex flex-col gap-2 border-t border-[#E7E1DC] pt-4">
+          {article.introNotes.map((note, i) => (
+            <li
+              key={i}
+              id={`fn-0-${i + 1}`}
+              style={{ scrollMarginTop: "150px" }}
+              className="flex gap-3 text-[13px] leading-relaxed text-[#78716C]"
+            >
+              <span className="tabular-nums text-[#A8A29E]">{i + 1}</span>
+              <span>{withHonorifics(note)}</span>
+            </li>
+          ))}
+        </ol>
       )}
 
       {/* Contents, built from the h2 blocks in the body rather than a

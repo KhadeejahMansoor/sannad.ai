@@ -20,24 +20,40 @@ import { ARTICLES } from "../data/articles";
  * ------------------------------------------------------------------ */
 
 /* Honorifics are written as [[rN]] in the source text, matching the
-   convention the rest of the site uses. Rendered as Unicode rather than the
-   SVGs in /public/honorifics, so they scale with the surrounding type and
-   need no image request.
+   convention the rest of the site uses.
 
-   r9 — ﷺ, for the Prophet
-   r1 — ؓ, for a Companion
-*/
-const HONORIFICS = {
-  "[[r9]]": "\uFDFA",
-  "[[r1]]": "\u0613",
-};
+   r9 is the Unicode glyph ﷺ — it scales with the type and needs no image
+   request. r1 has no single Unicode character that renders reliably, so it
+   uses the SVG in /public/honorifics.
+
+   The image is constrained to 1em and baseline-aligned: left at its natural
+   size an SVG towers over the surrounding text, which is the same problem
+   the honorific system hit elsewhere on the site. Its aspect ratio is
+   275:193, so the width follows from the height. */
+function Honorific({ code }) {
+  if (code === "[[r9]]") {
+    return <span lang="ar">{"\uFDFA"}</span>;
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/honorifics/r1.svg"
+      alt="radiyallahu anhu"
+      style={{
+        height: "1em",
+        width: "auto",
+        display: "inline",
+        verticalAlign: "baseline",
+      }}
+    />
+  );
+}
 
 function withHonorifics(text) {
   return text.split(/(\[\[r\d\]\])/g).map((part, i) =>
-    HONORIFICS[part] ? (
-      <span key={i} lang="ar">
-        {HONORIFICS[part]}
-      </span>
+    /^\[\[r\d\]\]$/.test(part) ? (
+      <Honorific key={i} code={part} />
     ) : (
       part
     ),
@@ -238,7 +254,7 @@ export function ArticleDetail({ article }) {
   if (!article) return null;
 
   return (
-    <div className="w-full max-w-[1000px]">
+    <div className="mx-auto w-full max-w-[1000px]">
       {/* A real link, so it can be opened in a new tab and so the
             browser's own back button lands where the reader expects. */}
       <Link
@@ -368,7 +384,7 @@ export default function ArticlesView() {
      Subtitles sit in the site maroon rather than grey: at this size the
      colour does the separating that a border used to. */
   return (
-    <div className="w-full max-w-[1000px]">
+    <div className="mx-auto w-full max-w-[1000px]">
       {ARTICLES.map((a) => (
         <Link
           key={a.slug}

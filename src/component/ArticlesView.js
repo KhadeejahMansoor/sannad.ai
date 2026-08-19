@@ -19,14 +19,24 @@ import { ARTICLES } from "../data/articles";
  * adding an object there; the route picks it up automatically.
  * ------------------------------------------------------------------ */
 
-/* The honorific ﷺ is written as [[r9]] in the source text, matching the
-   convention the rest of the site uses. Rendered as the Unicode glyph
-   (U+FDFA) so it scales with the surrounding type. */
+/* Honorifics are written as [[rN]] in the source text, matching the
+   convention the rest of the site uses. Rendered as Unicode rather than the
+   SVGs in /public/honorifics, so they scale with the surrounding type and
+   need no image request.
+
+   r9 — ﷺ, for the Prophet
+   r1 — ؓ, for a Companion
+*/
+const HONORIFICS = {
+  "[[r9]]": "\uFDFA",
+  "[[r1]]": "\u0613",
+};
+
 function withHonorifics(text) {
-  return text.split(/(\[\[r9\]\])/g).map((part, i) =>
-    part === "[[r9]]" ? (
+  return text.split(/(\[\[r\d\]\])/g).map((part, i) =>
+    HONORIFICS[part] ? (
       <span key={i} lang="ar">
-        {"\uFDFA"}
+        {HONORIFICS[part]}
       </span>
     ) : (
       part

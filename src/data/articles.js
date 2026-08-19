@@ -345,12 +345,9 @@ const jamiAlKamil = {
      subsection is h3, and individual work titles are h4. Credentials'
      footnotes renumbered to 4 and 5 to sit behind the introduction's. */
   body: [
-    { type: 'h2', text: 'Introduction to the first edition' },
+    { type: 'h2', text: 'Authors note to the first edition of Jami al-Kamil' },
 
-    {
-      type: 'p',
-      text: 'From the writing of Shaykh Zia-ur-Rahman al-Azami, compiler of Jami al-Kamil.',
-    },
+    
     {
       type: 'p',
       text: 'الحمدُ لله ربِّ العالمين، والصلاةُ والسلامُ على سيِّد المُرْسَلين، وعلى آلِه وصَحْبِه أجمعين',
@@ -418,7 +415,7 @@ const jamiAlKamil = {
       ],
     },
 
-    { type: 'h2', text: 'Introduction to the second edition' },
+    { type: 'h2', text: 'Authors note to the second edition of Jami al-Kamil'},
     {
       type: 'p',
       text: 'الحمد لله رب العالمين والصلاة والسلام على سيد المرسلين، وإمام المتقين، وخاتم النبيين، وعلى آله وأصحابه، وعلى متبعي سنته إلى يوم الدين.',
@@ -485,7 +482,7 @@ const jamiAlKamil = {
       ],
     },
 
-    { type: 'h2', text: 'Credentials of Shaykh Azami' },
+    
 
     {
       type: 'p',
@@ -508,7 +505,7 @@ const jamiAlKamil = {
       ],
     },
 
-    { type: 'h2', text: 'His works' },
+    { type: 'h2', text: 'Authors works' },
 
     {
       type: 'p',

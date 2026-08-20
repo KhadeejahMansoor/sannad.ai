@@ -188,7 +188,7 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'My thesis was titled “Defending Abu Huraira”. At that time, many criticized the companion Abu Huraira, pointing out that he only lived with the Prophet [[r9]] for three to four years yet narrated 5,370 hadiths. Critics questioned how this could be possible.',
+      text: 'My thesis was titled “Defending Abu Hurairah”. At that time, many criticized the companion Abu Hurairah, pointing out that he only lived with the Prophet [[r9]] for three to four years yet narrated 5,370 hadiths. Critics questioned how this could be possible.',
     },
     {
       type: 'qa',
@@ -198,7 +198,7 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'When I analyzed the Six Books and the Musnad of Imam Ahmad, and compiled all the hadiths narrated by Abu Huraira from various books, I concluded that he actually narrated about 1,500 hadiths. With great effort, one might find another 500, but in no case do his hadiths exceed 2,000. Dividing these 2,000 hadiths over the three to four years he spent with the Prophet [[r9]] results in roughly two hadiths per day.',
+      text: 'When I analyzed the Six Books and the Musnad of Imam Ahmad, and compiled all the hadiths narrated by Abu Hurairah from various books, I concluded that he actually narrated about 1,500 hadiths. With great effort, one might find another 500, but in no case do his hadiths exceed 2,000. Dividing these 2,000 hadiths over the three to four years he spent with the Prophet [[r9]] results in roughly two hadiths per day.',
     },
     { type: 'qa', speaker: 'Qadhi', text: 'So, no one before you thought to calculate it this way?' },
     { type: 'qa', speaker: 'Azami', text: 'No, nobody ever did this before.' },
@@ -210,13 +210,13 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'What’s the problem with two hadiths a day? Abu Huraira was a Companion who dedicated all 24 hours of his days entirely to the Prophet [[r9]]. He would often go hungry while waiting at his door to learn hadiths. When people criticized him for narrating so many hadiths, he would reply, “While you were occupied with business and agriculture, I was with the Prophet [[r9]], all day, every day, learning from him.” How is it surprising then that he managed to narrate just two hadiths per day?',
+      text: 'What’s the problem with two hadiths a day? Abu Hurairah was a Companion who dedicated all 24 hours of his days entirely to the Prophet [[r9]]. He would often go hungry while waiting at his door to learn hadiths. When people criticized him for narrating so many hadiths, he would reply, “While you were occupied with business and agriculture, I was with the Prophet [[r9]], all day, every day, learning from him.” How is it surprising then that he managed to narrate just two hadiths per day?',
     },
     { type: 'qa', speaker: 'Qadhi', text: 'Yes, that’s a valid point.' },
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'Alhamdulillah, my dissertation became very popular. Many scholars praised it and even based lectures on it. It was even featured on television programs as the definitive response to criticisms against Abu Huraira. No student had done this before me, which is why it became so famous. After this, I was employed by The Muslim World League, and they sponsored my Ph.D. studies at Al-Azhar.',
+      text: 'Alhamdulillah, my dissertation became very popular. Many scholars praised it and even based lectures on it. It was even featured on television programs as the definitive response to criticisms against Abu Hurairah. No student had done this before me, which is why it became so famous. After this, I was employed by The Muslim World League, and they sponsored my Ph.D. studies at Al-Azhar.',
     },
     {
       type: 'qa',
@@ -338,9 +338,9 @@ const jamiAlKamil = {
      author's own notes, so they sit above the contents list. */
   intro: [
     'Shaykh Zia-ur-Rahman Azami authored *Jami al-Kamil*, which seeks to be a comprehensive collection of sahih hadith. He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at the Prophet’s Masjid.',
-    'He completed his BA in Shariah at the Islamic University of Madinah in 1971. He then completed his master’s degree in Hadith at Umm al-Qura University, where his thesis was titled *Defending Abu Hurairah*. He completed his doctorate at al-Azhar University in 1977 while working at the Muslim World League, which sponsored his studies.',
-    'He received his *qiraah*[1] and *ijaza* for *Sahih Bukhari* in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for *Sahih Muslim* from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for *Sunan Abu Dawud* in 1965 from Shaykh Muhammad Zuhayr Din Rahmani (d. 2016).',
-    'He held several general *ijaza* in hadith studies. He reports he has granted approximately 800 general *ijaza* in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable *thabat*[2] in the introduction of the book.',
+    'He completed his bachelor’s degree in Shariah at the Islamic University of Madinah in 1971. He then completed his master’s degree in Hadith at Umm al-Qura University, where his thesis was titled *Defending Abu Hurairah*. He completed his doctorate at al-Azhar University in 1977 while working at the Muslim World League, which sponsored his studies.',
+    'He received his *qiraah*[1] and *ijaza* for *Sahih Bukhari* in 1966 from Shaykh Abdul-Wahhab bin Abdullah Rahmani (d. 1988). He received similar credentials for *Sahih Muslim* from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for *Sunan Abu Dawud* in 1965 from Shaykh Muhammad Zuhayr Din Rahmani (d. 2016).',
+    'He held several general *ijaza* in hadith studies. He reported he has granted approximately 800 general *ijaza* in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable *thabat*[2] in the introduction of the book.',
   ],
 
   introNotes: [
@@ -405,7 +405,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'Finally, I must thank everyone who contributed to the completion of this blessed project, whether through financial or academic support. I pray to Allah سبحانه وتعالى to grant everyone success and guidance.',
+      text: 'Finally, I must thank everyone who contributed to the completion of this blessed project, whether through financial or academic support. I pray to Allah [[r6]] to grant everyone success and guidance.',
     },
     {
       type: 'p',
@@ -421,7 +421,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'I also ask Allah سبحانه وتعالى to accept this blessed work sincerely for His sake. May He make it a means of uniting the Ummah upon the Quran and Sunnah, as our beloved Prophet [[r9]], our intercessor, urged us to follow.',
+      text: 'I also ask Allah [[r6]] to accept this blessed work sincerely for His sake. May He make it a means of uniting the Ummah upon the Quran and Sunnah, as our beloved Prophet [[r9]], our intercessor, urged us to follow.',
     },
     {
       type: 'p',
@@ -457,7 +457,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'Pursuing knowledge is among the best ways to draw closer to Allah and one of the noblest acts of obedience. Among the most important areas of knowledge is verifying the authenticity of hadith and distinguishing between authentic and weak narrations.',
+      text: 'Pursuing knowledge is among the best ways to draw closer to Allah and one of the noblest acts of obedience. Among the most important areas of knowledge is verifying the authenticity of hadith and distinguishing between authentic and daif narrations.',
     },
     {
       type: 'p',
@@ -486,7 +486,7 @@ const jamiAlKamil = {
         'Rearranging some chapters to better suit the fiqh of each chapter.',
         'Adding hadith fiqh commentary in certain topics where I deemed necessary.',
         'Adding some new hadith-related discussions in the “Introduction” that I found beneficial for students of knowledge, some of which I was asked about while teaching *Sahih Bukhari* and *Sahih Muslim* in the Prophet’s Masjid.',
-        'Revising previous grading where I had ruled some hadith as weak.',
+        'Revising previous grading where I had ruled some hadith as daif.',
         'Identifying critical defects in some hadith that I had previously graded sahih.',
         'Adding several authentic hadith that I discovered after submitting the first edition for publication.',
         'The second edition is considered my “official version”. May Allah forgive me. If I find any authentic hadith after this, I will mention it in a separate supplementary volume, inshaAllah.',
@@ -494,7 +494,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'I ask Allah عز وجل for more beneficial knowledge and righteous deeds. He is the One who grants success and guides to the straight path.',
+      text: 'I ask Allah [[r4]] for more beneficial knowledge and righteous deeds. He is the One who grants success and guides to the straight path.',
     },
     {
       type: 'sig',
@@ -526,10 +526,10 @@ const jamiAlKamil = {
       text: 'He compiled all of the sahih hadith, from all of the books of hadith, in one book. The first edition was published in 2016. The second (and final) edition was published in 2019. The second edition includes further verification and corrections of what was missed in the first edition. The final work is 16,546 hadith in 19 volumes.',
     },
 
-    { type: 'h4', text: '*Abu Huraira [[r1]] in the Light of his Narrations*' },
+    { type: 'h4', text: '*Abu Hurairah [[r1]] in the Light of his Narrations*' },
     {
       type: 'p',
-      text: 'He wrote this 800-page work which provides an analytical refutation of criticisms against Abu Huraira [[r1]], one of the most knowledgeable companions of the Prophet [[r9]], alongside his biography. The summary was published in 1978 by Dar al-Kitab al-Masri in Cairo, and a further condensed version was published in 1991 by Ghuraba Library in Madinah.',
+      text: 'He wrote this 800-page work which provides an analytical refutation of criticisms against Abu Hurairah [[r1]], one of the most knowledgeable companions of the Prophet [[r9]], alongside his biography. The summary was published in 1978 by Dar al-Kitab al-Masri in Cairo, and a further condensed version was published in 1991 by Ghuraba Library in Madinah.',
     },
 
     { type: 'h4', text: '*Studies of Reliability and Criticism of Hadith Narrators*' },

@@ -36,7 +36,7 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'السلام عليكم ورحمة الله وبركاته. I\u2019m sitting now with Dr. Muhammad al-Azami, one of the greatest muhadditheen of our era. I had the honor and pleasure of studying with Shaykh al-Azami. He taught me from 1999 to 2000 in the College of Hadith. He was the dean of the College of Hadith. I was fortunate to get ijaza khasa[1] \u2014 he gave me ijaza in the books of hadith. I have mentioned Dr. Azami in several of my lectures.',
+      text: 'السلام عليكم ورحمة الله وبركاته. I’m sitting now with Dr. Muhammad al-Azami, one of the greatest muhadditheen of our era. I had the honor and pleasure of studying with Shaykh al-Azami. He taught me from 1999 to 2000 in the College of Hadith. He was the dean of the College of Hadith. I was fortunate to get ijaza khasa[1] — he gave me ijaza in the books of hadith. I have mentioned Dr. Azami in several of my lectures.',
     },
     {
       type: 'qa',
@@ -58,12 +58,12 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'Since that time, I have continuously served the sciences of the Quran and Hadith. I\u2019ve authored over 20 books on these subjects. My latest publication is a 12-volume series[2]. I have collected all of the sahih hadith of the Prophet [[r9]]. It is a compendium in which I have compiled 16,800 hadith[3]. I am only saying this to demonstrate Allah\u2019s blessing on me, not to boast.',
+      text: 'Since that time, I have continuously served the sciences of the Quran and Hadith. I’ve authored over 20 books on these subjects. My latest publication is a 12-volume series[2]. I have collected all of the sahih hadith of the Prophet [[r9]]. It is a compendium in which I have compiled 16,800 hadith[3]. I am only saying this to demonstrate Allah’s blessing on me, not to boast.',
     },
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'This work is the first in Islamic history to gather such a vast collection of sahih hadiths. While thousands of hadith books exist, none have compiled all the sahih hadiths as comprehensively as mine. And again, I mention this not to boast but to acknowledge Allah\u2019s blessings on me. I am grateful to Allah for enabling me to achieve this.',
+      text: 'This work is the first in Islamic history to gather such a vast collection of sahih hadiths. While thousands of hadith books exist, none have compiled all the sahih hadiths as comprehensively as mine. And again, I mention this not to boast but to acknowledge Allah’s blessings on me. I am grateful to Allah for enabling me to achieve this.',
     },
     {
       type: 'qa',
@@ -105,12 +105,12 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'I discovered a book titled \u201cThe Religion of Truth\u201d. The first verse that caught my attention stated, \u201cTruly, the religion in the sight of Allah is Islam.\u201d I read the translation. I was amazed. How is it possible that, in the eyes of God, only Islam is acceptable and all other faiths and traditions are not?',
+      text: 'I discovered a book titled “The Religion of Truth”. The first verse that caught my attention stated, “Truly, the religion in the sight of Allah is Islam.” I read the translation. I was amazed. How is it possible that, in the eyes of God, only Islam is acceptable and all other faiths and traditions are not?',
     },
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'I found this very strange. Because I had previously read the Geeta and Krishna\u2019s statements from the past. From it, they said, \u201cWhatever path you follow, you shall reach God. However you worship me, you shall all reach me in the end.\u201d I used to believe that all religions were valid and that their various paths, though different, were parallel and led to the same destination \u2014 each one ultimately guiding us to God.',
+      text: 'I found this very strange. Because I had previously read the Geeta and Krishna’s statements from the past. From it, they said, “Whatever path you follow, you shall reach God. However you worship me, you shall all reach me in the end.” I used to believe that all religions were valid and that their various paths, though different, were parallel and led to the same destination — each one ultimately guiding us to God.',
     },
     {
       type: 'qa',
@@ -120,7 +120,7 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'I approached some senior teachers and scholars in Hinduism and asked them, \u201cCan you explain to me how, if Hinduism is correct, I can refute Islam?\u201d As I posed my questions, they were unable to provide clear answers. At the same time, I was studying both Islam and Hinduism, to refute Islam.',
+      text: 'I approached some senior teachers and scholars in Hinduism and asked them, “Can you explain to me how, if Hinduism is correct, I can refute Islam?” As I posed my questions, they were unable to provide clear answers. At the same time, I was studying both Islam and Hinduism, to refute Islam.',
     },
     { type: 'qa', speaker: 'Qadhi', text: 'So you wanted to refute Islam?' },
     { type: 'qa', speaker: 'Azami', text: 'Yes.' },
@@ -138,12 +138,12 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'In terms of believing in a God, you can believe in one, in many, or none \u2014 it doesn\u2019t matter. Regardless of your belief, you are still considered a Hindu. Whether you don\u2019t believe at all, or believe in one, or many gods, you are still Hindu.',
+      text: 'In terms of believing in a God, you can believe in one, in many, or none — it doesn’t matter. Regardless of your belief, you are still considered a Hindu. Whether you don’t believe at all, or believe in one, or many gods, you are still Hindu.',
     },
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'Then, when you get to the stories of Ram Krishna, you find that there is no element of truth; it is all just mythology. When I asked certain Hindu sages about these stories, there was no actual history behind them. Consequently, Hinduism appeared to me as a complete fallacy \u2014 an imaginary theology. Meanwhile, I continued to explore Islam, learning more and more about it.',
+      text: 'Then, when you get to the stories of Ram Krishna, you find that there is no element of truth; it is all just mythology. When I asked certain Hindu sages about these stories, there was no actual history behind them. Consequently, Hinduism appeared to me as a complete fallacy — an imaginary theology. Meanwhile, I continued to explore Islam, learning more and more about it.',
     },
     {
       type: 'qa',
@@ -178,22 +178,22 @@ const interviewAzami = {
     },
     { type: 'qa', speaker: 'Qadhi', text: 'At that time there was one college?' },
     { type: 'qa', speaker: 'Azami', text: 'Yes, it was only the College of Shariah!' },
-    { type: 'qa', speaker: 'Qadhi', text: 'So in 1971, you finished your degree \u2014 BA in Shariah?' },
+    { type: 'qa', speaker: 'Qadhi', text: 'So in 1971, you finished your degree — BA in Shariah?' },
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'Yes. I had a strong desire to continue my studies, despite any job opportunities. At that time, people were being sent to Europe and America, but I chose to study further. I was accepted into the Master\u2019s program at Umm al-Qura University in Makkah, where I completed my Masters degree.',
+      text: 'Yes. I had a strong desire to continue my studies, despite any job opportunities. At that time, people were being sent to Europe and America, but I chose to study further. I was accepted into the Master’s program at Umm al-Qura University in Makkah, where I completed my Masters degree.',
     },
-    { type: 'qa', speaker: 'Qadhi', text: 'What was your Master\u2019s thesis about?' },
+    { type: 'qa', speaker: 'Qadhi', text: 'What was your Master’s thesis about?' },
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'My thesis was titled \u201cDefending Abu Huraira\u201d. At that time, many criticized the companion Abu Huraira, pointing out that he only lived with the Prophet [[r9]] for three to four years yet narrated 5,370 hadiths. Critics questioned how this could be possible.',
+      text: 'My thesis was titled “Defending Abu Huraira”. At that time, many criticized the companion Abu Huraira, pointing out that he only lived with the Prophet [[r9]] for three to four years yet narrated 5,370 hadiths. Critics questioned how this could be possible.',
     },
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'My response was that the number found in books doesn\u2019t represent different matan but rather isnad. The reason why this number is so large is because of the numerous chains of narrations.[5]',
+      text: 'My response was that the number found in books doesn’t represent different matan but rather isnad. The reason why this number is so large is because of the numerous chains of narrations.[5]',
     },
     {
       type: 'qa',
@@ -205,14 +205,14 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'SubhanAllah. It\u2019s so straightforward, yet no one had done it before. It requires a certain level of intelligence, and you\u2019re the only one who managed to do this.',
+      text: 'SubhanAllah. It’s so straightforward, yet no one had done it before. It requires a certain level of intelligence, and you’re the only one who managed to do this.',
     },
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'What\u2019s the problem with two hadiths a day? Abu Huraira was a Companion who dedicated all 24 hours of his days entirely to the Prophet [[r9]]. He would often go hungry while waiting at his door to learn hadiths. When people criticized him for narrating so many hadiths, he would reply, \u201cWhile you were occupied with business and agriculture, I was with the Prophet [[r9]], all day, every day, learning from him.\u201d How is it surprising then that he managed to narrate just two hadiths per day?',
+      text: 'What’s the problem with two hadiths a day? Abu Huraira was a Companion who dedicated all 24 hours of his days entirely to the Prophet [[r9]]. He would often go hungry while waiting at his door to learn hadiths. When people criticized him for narrating so many hadiths, he would reply, “While you were occupied with business and agriculture, I was with the Prophet [[r9]], all day, every day, learning from him.” How is it surprising then that he managed to narrate just two hadiths per day?',
     },
-    { type: 'qa', speaker: 'Qadhi', text: 'Yes, that\u2019s a valid point.' },
+    { type: 'qa', speaker: 'Qadhi', text: 'Yes, that’s a valid point.' },
     {
       type: 'qa',
       speaker: 'Azami',
@@ -221,7 +221,7 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'At that time, there weren\u2019t many Indians at Al-Azhar, were there?',
+      text: 'At that time, there weren’t many Indians at Al-Azhar, were there?',
     },
     {
       type: 'qa',
@@ -238,7 +238,7 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'When I applied for my Masters in Makkah, I was given a choice between three departments: Tafseer, Hadith, and Aqeeda. I hadn\u2019t memorized the entire Quran, so I felt Tafseer wasn\u2019t the right fit for me. In terms of Aqeedah, there were already massive volumes written, and I didn\u2019t see what I could add to that field. However, specializing in hadith seemed like it would bring me closer to the Prophet [[r9]] by studying his hadiths. This sparked a passion in me, so I chose the College of Hadith.',
+      text: 'When I applied for my Masters in Makkah, I was given a choice between three departments: Tafseer, Hadith, and Aqeeda. I hadn’t memorized the entire Quran, so I felt Tafseer wasn’t the right fit for me. In terms of Aqeedah, there were already massive volumes written, and I didn’t see what I could add to that field. However, specializing in hadith seemed like it would bring me closer to the Prophet [[r9]] by studying his hadiths. This sparked a passion in me, so I chose the College of Hadith.',
     },
     { type: 'qa', speaker: 'Qadhi', text: 'What was your dissertation about for your PhD?' },
     { type: 'qa', speaker: 'Azami', text: 'My dissertation was on the judgments of the Prophet [[r9]].' },
@@ -248,7 +248,7 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'After completing my dissertation, despite having a good administrative position at the League, I felt a strong urge to teach and to call people to the way of Allah. That\u2019s why I resigned from that position and moved to Madinah to teach.',
+      text: 'After completing my dissertation, despite having a good administrative position at the League, I felt a strong urge to teach and to call people to the way of Allah. That’s why I resigned from that position and moved to Madinah to teach.',
     },
     {
       type: 'qa',
@@ -258,18 +258,18 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Azami',
-      text: 'Yes, that was my retirement year. After I stopped teaching, I didn\u2019t seek an extension. I wanted to focus on a project that had been on my mind for a long time \u2014 the compilation of sahih hadith. I was often asked, \u201cYou call us to the Quran and Sunnah, but to which hadith book are you referring?\u201d People wanted a name of a book that was both authentic and comprehensive. At that time, no such book existed, which motivated my project.',
+      text: 'Yes, that was my retirement year. After I stopped teaching, I didn’t seek an extension. I wanted to focus on a project that had been on my mind for a long time — the compilation of sahih hadith. I was often asked, “You call us to the Quran and Sunnah, but to which hadith book are you referring?” People wanted a name of a book that was both authentic and comprehensive. At that time, no such book existed, which motivated my project.',
     },
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'So, you have essentially expanded on Imam Al-Bukhari\u2019s concept. You transformed his book Al-Jami Al-Sahih Al-Mukhtasar into Al-Jami Al-Sahih.',
+      text: 'So, you have essentially expanded on Imam Al-Bukhari’s concept. You transformed his book Al-Jami Al-Sahih Al-Mukhtasar into Al-Jami Al-Sahih.',
     },
-    { type: 'qa', speaker: 'Azami', text: 'Yes, that\u2019s what I did.' },
+    { type: 'qa', speaker: 'Azami', text: 'Yes, that’s what I did.' },
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'You\u2019ve taken the idea from Imam Al-Bukhari and applied it to all the hadith.',
+      text: 'You’ve taken the idea from Imam Al-Bukhari and applied it to all the hadith.',
     },
     { type: 'qa', speaker: 'Azami', text: 'Yes.' },
     { type: 'qa', speaker: 'Qadhi', text: 'How many books of hadith have you used?' },
@@ -283,12 +283,12 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'MashaAllah. Shaykh, hearing your story leaves me speechless. I\u2019m overwhelmed thinking about how Allah has chosen you and made you a role model and a leading example.',
+      text: 'MashaAllah. Shaykh, hearing your story leaves me speechless. I’m overwhelmed thinking about how Allah has chosen you and made you a role model and a leading example.',
     },
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'I\u2019m grateful to Allah that I was able to study with you, even if it was your last batch of students. It\u2019s truly a blessing from Allah that I am considered your student, and that I received ijaza from you. Your life makes me reflect on how little I have done, and how we have not done enough service to the religion.',
+      text: 'I’m grateful to Allah that I was able to study with you, even if it was your last batch of students. It’s truly a blessing from Allah that I am considered your student, and that I received ijaza from you. Your life makes me reflect on how little I have done, and how we have not done enough service to the religion.',
     },
     {
       type: 'qa',
@@ -298,12 +298,12 @@ const interviewAzami = {
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'It has been an immense honor to be your student. I learned not only knowledge but also manners from you, and I will never forget how you encouraged me to pursue a Master\u2019s and PhD at other institutions.',
+      text: 'It has been an immense honor to be your student. I learned not only knowledge but also manners from you, and I will never forget how you encouraged me to pursue a Master’s and PhD at other institutions.',
     },
     {
       type: 'qa',
       speaker: 'Qadhi',
-      text: 'It was a fortunate blessing from Allah that I had teachers like you. I had 110 professors at the University of Madinah, because I studied for 10 years. None of my other teachers have had the impact that Shaykh Azami has had. I often tell people about the impact you had on me \u2014 the manners, the humility, the knowledge, the incredible journey from where you started to where you are now.',
+      text: 'It was a fortunate blessing from Allah that I had teachers like you. I had 110 professors at the University of Madinah, because I studied for 10 years. None of my other teachers have had the impact that Shaykh Azami has had. I often tell people about the impact you had on me — the manners, the humility, the knowledge, the incredible journey from where you started to where you are now.',
     },
     {
       type: 'qa',
@@ -337,14 +337,14 @@ const jamiAlKamil = {
      section of their own. They read as background rather than as one of the
      author's own notes, so they sit above the contents list. */
   intro: [
-    'Shaykh Zia-ur-Rahman Azami authored *Jami al-Kamil*, which seeks to be a comprehensive collection of sahih hadith. He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at the Prophet\u2019s Masjid.',
-    'He completed his BA in Shariah at the Islamic University of Madinah in 1971. He then completed his master\u2019s degree in Hadith at Umm al-Qura University, where his thesis was titled *Defending Abu Hurairah*. He completed his doctorate at al-Azhar University in 1977 while working at the Muslim World League, which sponsored his studies.',
+    'Shaykh Zia-ur-Rahman Azami authored *Jami al-Kamil*, which seeks to be a comprehensive collection of sahih hadith. He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at the Prophet’s Masjid.',
+    'He completed his BA in Shariah at the Islamic University of Madinah in 1971. He then completed his master’s degree in Hadith at Umm al-Qura University, where his thesis was titled *Defending Abu Hurairah*. He completed his doctorate at al-Azhar University in 1977 while working at the Muslim World League, which sponsored his studies.',
     'He received his *qiraah*[1] and *ijaza* for *Sahih Bukhari* in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for *Sahih Muslim* from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for *Sunan Abu Dawud* in 1965 from Shaykh Muhammad Zuhayr Din Rahmani (d. 2016).',
     'He held several general *ijaza* in hadith studies. He reports he has granted approximately 800 general *ijaza* in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable *thabat*[2] in the introduction of the book.',
   ],
 
   introNotes: [
-    '*Qiraah* is a reading certification. A more precise translation might be “direct reading”, implying that the student read the text under the teacher\u2019s supervision.',
+    '*Qiraah* is a reading certification. A more precise translation might be “direct reading”, implying that the student read the text under the teacher’s supervision.',
     'The *thabat* (with *fatha* on *ba*) is where a hadith scholar mentions what he has heard from hadith teachers. The *thabat* is called *barnamaj* by Andalusian scholars.',
   ],
 
@@ -357,7 +357,7 @@ const jamiAlKamil = {
      subsection is h3, and individual work titles are h4. Credentials'
      footnotes renumbered to 4 and 5 to sit behind the introduction's. */
   body: [
-    { type: 'h2', text: 'Author\u2019s note to the first edition of *Jami al-Kamil*' },
+    { type: 'h2', text: 'Author’s note to the first edition of *Jami al-Kamil*' },
 
     {
       type: 'p',
@@ -369,39 +369,59 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'Indeed, Allah has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqidah, religions, and other subjects. Exalted be His praise. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, *The Complete Collection of Sahih Hadith*.',
+      text: 'Indeed, Allah has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqidah, religions, and other subjects. Exalted be His praise. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, *Jami al-Kamil*.',
     },
     {
       type: 'p',
-      text: 'This book aims to gather all sahih hadith in a single collection, arranged according to chapters of fiqh. I spent several consecutive years to compile it. This involved working day and night, isolating myself from visits and meetings, abandoning travels and journeys, and excusing myself from attending seminars and conferences.',
+      text: 'This book aims to gather all sahih hadith into a single collection. They are arranged according to the chapters of fiqh.',
     },
     {
       type: 'p',
-      text: 'By Allah\u2019s permission, may this collection serve as a beacon of guidance for those who love the Sunnah of Mustafa [[r9]], follow his exemplary path, delve into his fragrant biography, and emulate his excellent example. Having this book in your home is like having a Prophet speaking within its walls.[1]',
+      text: 'I spent several consecutive years compiling this work. I worked day and night. I kept myself away from visits and meetings. I also gave up travel and long journeys. I excused myself from attending seminars and conferences so that I could devote myself fully to this work.',
     },
     {
       type: 'p',
-      text: 'During my work, I faced several difficulties that can only be appreciated by someone who has prepared an academic encyclopedia like this and practiced the science of hadith authentication.',
+      text: 'By Allah’s permission, may this collection be a source of guidance for those who love the Sunnah of Mustafa [[r9]]. May it benefit those who follow his noble path, study his blessed biography, and strive to follow his excellent example.',
     },
     {
       type: 'p',
-      text: '*Takhrij* is considered one of the most difficult Islamic sciences, as it requires knowledge of *jarh* and *tadil* (criticism and validation of narrators), what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and *mursal* chains, Prophetic and *mawquf* narrations, chains with narrators that did not meet, chains with missing narrators, *tashif* and *tahrif*, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
+      text: 'Having this book in your home is like having the Prophet [[r9]] speaking within its walls.[1]',
     },
     {
       type: 'p',
-      text: 'Praise be to Allah, by whose favor righteous deeds are completed. This blessed work began and was completed, with Allah\u2019s praise and facilitation, in the City of the Prophet\u2019s Migration, which is also called the Home of the Sunnah, in an atmosphere filled with knowledge and faith during the prosperous and blessed Saudi era.[3]',
+      text: 'During my work, I faced many difficulties. Only someone who has prepared an academic encyclopedia like this and studied the science of hadith authentication can fully appreciate them.',
     },
     {
       type: 'p',
-      text: 'Finally, I must thank everyone who contributed to the completion of this blessed project materially and academically. Praying to Allah سبحانه وتعالى for everyone\u2019s success and guidance.',
+      text: '*Takhrij* is considered one of the most difficult Islamic sciences, as it requires knowledge of *jarh* and *tadil*, what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and *mursal* chains, *marfu* and *mawquf* narrations, chains with narrators that did not meet, chains with missing narrators, *tashif* and *tahrif*, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
     },
     {
       type: 'p',
-      text: 'I do not claim absolute perfection, as that is not for any human. Perfection belongs to Allah alone. However, what has been accomplished, I consider it magnificent in compiling authentic Sunnah in a single collection, by the grace and favor of Allah. If I have overlooked anything, I will rectify it.',
+      text: 'Praise be to Allah, by whose grace righteous deeds are completed.',
     },
     {
       type: 'p',
-      text: 'There will be future editions, inshaAllah. The lack of resources may have indeed impacted the quality and perfection of our work. I also ask Allah سبحانه وتعالى to make this blessed work purely for His noble face and to make it one of the reasons for unifying the Ummah upon the Quran and Sunnah, as our beloved Prophet [[r9]], our intercessor, urges us to follow.',
+      text: 'This blessed work was begun and completed by Allah’s grace and help in the City of the Prophet’s Migration. It is also known as the Home of the Sunnah. The work was completed in an atmosphere filled with knowledge and faith during the prosperous and blessed Saudi era.[3]',
+    },
+    {
+      type: 'p',
+      text: 'Finally, I must thank everyone who contributed to the completion of this blessed project, whether through financial or academic support. I pray to Allah سبحانه وتعالى to grant everyone success and guidance.',
+    },
+    {
+      type: 'p',
+      text: 'I do not claim absolute perfection, as no human being can attain it. Perfection belongs to Allah alone.',
+    },
+    {
+      type: 'p',
+      text: 'However, by the grace and favor of Allah, I consider this work a great achievement in bringing the authentic Sunnah together in a single collection. If I have overlooked anything, I will correct it.',
+    },
+    {
+      type: 'p',
+      text: 'There will be future editions, inshaAllah. The limited resources available to us may have affected the quality and completeness of this work.',
+    },
+    {
+      type: 'p',
+      text: 'I also ask Allah سبحانه وتعالى to accept this blessed work sincerely for His sake. May He make it a means of uniting the Ummah upon the Quran and Sunnah, as our beloved Prophet [[r9]], our intercessor, urged us to follow.',
     },
     {
       type: 'p',
@@ -421,12 +441,12 @@ const jamiAlKamil = {
       type: 'notes',
       items: [
         'I borrowed this saying from Imam Tirmidhi, may Allah have mercy on him. He said, “I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it.” And he said, “Whoever has this book in their house, it is as if they have a Prophet speaking in their house.” [Tadhkirat al-Huffaz (2/188)]',
-        'Translator\u2019s note. *Takhrij* refers to identifying and documenting the sources of hadith narrations. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *mawquf* chain transmits from a Companion and does not reach the Prophet \uFDFA. *Tashif* refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. *Tahrif* refers to alterations in the actual words themselves from the original manuscripts.',
+        'Translator’s note. *Takhrij* refers to identifying and documenting the sources of hadith narrations. *Jarh* refers to criticizing hadith narrators. *Tadil* refers to validating the reliability of hadith narrators. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *marfu* narration is one attributed directly to the Prophet \uFDFA. A *mawquf* narration is one attributed to a Companion and does not reach the Prophet \uFDFA. *Tashif* refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. *Tahrif* refers to alterations in the actual words themselves from the original manuscripts.',
         'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
       ],
     },
 
-    { type: 'h2', text: 'Author\u2019s note to the second edition of *Jami al-Kamil*' },
+    { type: 'h2', text: 'Author’s note to the second edition of *Jami al-Kamil*' },
     {
       type: 'p',
       text: 'الحمد لله رب العالمين والصلاة والسلام على سيد المرسلين، وإمام المتقين، وخاتم النبيين، وعلى آله وأصحابه، وعلى متبعي سنته إلى يوم الدين.',
@@ -437,19 +457,19 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'To proceed, pursuing knowledge is among the best forms of drawing near to Allah and the most noble acts of obedience. Among the most important types of expertise is verifying the authenticity of the hadith, distinguishing between its authentic and weak narrations.',
+      text: 'Pursuing knowledge is among the best ways to draw closer to Allah and one of the noblest acts of obedience. Among the most important areas of knowledge is verifying the authenticity of hadith and distinguishing between authentic and weak narrations.',
     },
     {
       type: 'p',
-      text: 'I have presented at the beginning of the book a detailed introduction in which I mentioned my chain of transmission to the books of hadith, my scholarly authorizations from the scholars of hadith, and the history of hadith documentation and its authentication.',
+      text: 'At the beginning of the book, I have included a detailed introduction. In it, I have mentioned my chains of transmission to the hadith books and my scholarly authorizations from hadith scholars. I have also discussed the history of hadith documentation and authentication.',
     },
     {
       type: 'p',
-      text: 'I have also presented what a student of hadith needs to know, such as *tadlis* and *mudallis*, consideration of supporting evidence or narrations, connected and broken chains, *mawquf* and *marfu*, *mursal* and *muadal*, irregular and rejected narrations, the reliability of a narrator, the narrator\u2019s attributes in transmission, reconciliation between apparently contradicting hadith, knowledge of narrators about whom hadith scholars differed regarding their reliability or unreliability, and other matters.[1]',
+      text: 'I have also presented what a student of hadith needs to know, such as *tadlis* and *mudallis*, consideration of supporting evidence or narrations, connected and broken chains, *mawquf* and *marfu*, *mursal* and *muadal*, irregular and rejected narrations, the reliability of a narrator, the narrator’s attributes in transmission, reconciliation between apparently contradicting hadith, knowledge of narrators about whom hadith scholars differed regarding their reliability or unreliability, and other matters.[1]',
     },
     {
       type: 'p',
-      text: 'I have presented the hadith with its chain of transmission from the author to the Messenger of Allah [[r9]]. Then, I discussed the chains that have been criticized. I avoided including biographies of reliable narrators to prevent the book from becoming too lengthy. I interpret the meaning and fiqh of the hadith according to my book *Minnah al-Kubra*, which is an explanation and authentication of Bayhaqi\u2019s *Sunan al-Sughra*. Sometimes I mention hadith-related and useful points for fiqh briefly.',
+      text: 'I have presented the hadith with its chain of transmission from the author to the Messenger of Allah [[r9]]. Then, I discussed the chains that have been criticized. I avoided including biographies of reliable narrators to prevent the book from becoming too lengthy. I interpret the meaning and fiqh of the hadith according to my book *Minnah al-Kubra*, which is an explanation and authentication of Bayhaqi’s *Sunan al-Sughra*. Sometimes I mention hadith-related and useful points for fiqh briefly.',
     },
     {
       type: 'p',
@@ -465,11 +485,11 @@ const jamiAlKamil = {
         'Numbering of hadith and adding *tashkil* where needed.[2]',
         'Rearranging some chapters to better suit the fiqh of each chapter.',
         'Adding hadith fiqh commentary in certain topics where I deemed necessary.',
-        'Adding some new hadith-related discussions in the \u201cIntroduction\u201d that I found beneficial for students of knowledge, some of which I was asked about while teaching *Sahih Bukhari* and *Sahih Muslim* in the Prophet\u2019s Masjid.',
+        'Adding some new hadith-related discussions in the “Introduction” that I found beneficial for students of knowledge, some of which I was asked about while teaching *Sahih Bukhari* and *Sahih Muslim* in the Prophet’s Masjid.',
         'Revising previous grading where I had ruled some hadith as weak.',
         'Identifying critical defects in some hadith that I had previously graded sahih.',
         'Adding several authentic hadith that I discovered after submitting the first edition for publication.',
-        'The second edition is considered my \u201cofficial version\u201d. May Allah forgive me. If I find any authentic hadith after this, I will mention it in a separate supplementary volume, inshaAllah.',
+        'The second edition is considered my “official version”. May Allah forgive me. If I find any authentic hadith after this, I will mention it in a separate supplementary volume, inshaAllah.',
       ],
     },
     {
@@ -488,12 +508,12 @@ const jamiAlKamil = {
     {
       type: 'notes',
       items: [
-        'Translator\u2019s note. *Tadlis* refers to concealment in the chain of narration, and *mudallis* are those deficient narrators who practice *tadlis*. A *mawquf* chain transmits from a Companion and does not reach the Prophet \uFDFA. A *marfu* chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *muadal* chain is when two or more consecutive narrators are missing from the chain of transmission.',
-        'Translator\u2019s note. *Tashkil* refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include *fatha*, *kasra*, *damma*, *sukun*, and *shadda*.',
+        'Translator’s note. *Tadlis* refers to concealment in the chain of narration, and *mudallis* are those deficient narrators who practice *tadlis*. A *mawquf* chain transmits from a Companion and does not reach the Prophet \uFDFA. A *marfu* chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *muadal* chain is when two or more consecutive narrators are missing from the chain of transmission.',
+        'Translator’s note. *Tashkil* refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include *fatha*, *kasra*, *damma*, *sukun*, and *shadda*.',
       ],
     },
 
-    { type: 'h2', text: 'Author\u2019s works' },
+    { type: 'h2', text: 'Author’s works' },
 
     {
       type: 'p',
@@ -515,7 +535,7 @@ const jamiAlKamil = {
     { type: 'h4', text: '*Studies of Reliability and Criticism of Hadith Narrators*' },
     {
       type: 'p',
-      text: 'The first edition was published in 1981 by Salafi University in India, followed by the second edition in 1994 by Ghuraba Library in Madinah. A third edition, printed without the author\u2019s knowledge, was published in 1994 by The World of Books in Beirut. The fourth edition was released in 1998 by Ghuraba Library in Madinah.',
+      text: 'The first edition was published in 1981 by Salafi University in India, followed by the second edition in 1994 by Ghuraba Library in Madinah. A third edition, printed without the author’s knowledge, was published in 1994 by The World of Books in Beirut. The fourth edition was released in 1998 by Ghuraba Library in Madinah.',
     },
 
     {
@@ -581,7 +601,7 @@ const jamiAlKamil = {
     { type: 'h4', text: '*Introduction to Sunan al-Kubra* by Bayhaqi (d. 1066)' },
     {
       type: 'p',
-      text: 'He conducted an analysis and verification of the book Introduction to *Sunan al-Kubra* by Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing Bayhaqi\u2019s efforts to preserve the pure Sunnah.',
+      text: 'He conducted an analysis and verification of the book Introduction to *Sunan al-Kubra* by Bayhaqi (d. 1066). Additionally, he wrote a detailed introduction discussing Bayhaqi’s efforts to preserve the pure Sunnah.',
     },
     {
       type: 'p',
@@ -594,13 +614,13 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'This book was written by the author as an authentication, verification, and expansion of Bayhaqi\u2019s work *Sunan al-Sughra*. He compiles authentic evidence for the Shafii school, as well as the other three schools of thought, making it a reference for all four schools. The first edition was published in 2001, and the second edition in 2005, both by Rashid Library in Riyadh.',
+      text: 'This book was written by the author as an authentication, verification, and expansion of Bayhaqi’s work *Sunan al-Sughra*. He compiles authentic evidence for the Shafii school, as well as the other three schools of thought, making it a reference for all four schools. The first edition was published in 2001, and the second edition in 2005, both by Rashid Library in Riyadh.',
     },
 
     { type: 'h4', text: '*The Amali* by Ibn Mardawayh (d. 1019)' },
     {
       type: 'p',
-      text: 'He conducted an analysis and verification of this book and wrote a detailed introduction to Ibn Mardawayh\u2019s efforts in preserving the pure Sunnah. The first edition was published in 1989 by Dar al-Uloom al-Hadith in the United Arab Emirates.',
+      text: 'He conducted an analysis and verification of this book and wrote a detailed introduction to Ibn Mardawayh’s efforts in preserving the pure Sunnah. The first edition was published in 1989 by Dar al-Uloom al-Hadith in the United Arab Emirates.',
     },
 
     {

@@ -337,15 +337,15 @@ const jamiAlKamil = {
      section of their own. They read as background rather than as one of the
      author's own notes, so they sit above the contents list. */
   intro: [
-    'Shaykh Zia-ur-Rahman Azami authored *Jami al-Kamil*, which seeks to be a comprehensive collection of sahih and hasan hadith. This page includes introductions written by Shaykh Azami himself, as well as a list of his works and credentials.',
-    'He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at the Prophet\u2019s Masjid.',
-    'He received his qiraah[1] and ijaza for *Sahih Bukhari* in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for *Sahih Muslim* from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for *Sunan Abu Dawud* in 1965 from Shaykh Muhammad Zuhair Din Rahmani (d. 2016).',
-    'He holds several general ijaza in hadith studies. He reports he has granted approximately 800 general ijaza in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable thabat[2] in the introduction of the book.',
+    'Shaykh Zia-ur-Rahman Azami authored *Jami al-Kamil*, which seeks to be a comprehensive collection of sahih hadith. He was Dean of the College of Hadith and Professor of Hadith at the Islamic University of Madinah. He also taught at the Prophet\u2019s Masjid.',
+    'He completed his BA in Shariah at the Islamic University of Madinah in 1971. He then completed his master\u2019s degree in Hadith at Umm al-Qura University, where his thesis was titled *Defending Abu Hurairah*. He completed his doctorate at al-Azhar University in 1977 while working at the Muslim World League, which sponsored his studies.',
+    'He received his *qiraah*[1] and *ijaza* for *Sahih Bukhari* in 1966 from Shaykh Abdul-Wahab bin Abdullah Rahmani (d. 1988). He received similar credentials for *Sahih Muslim* from Shaykh Abdul-Subhan bin Muhammad Numan Azami (d. 1990), and for *Sunan Abu Dawud* in 1965 from Shaykh Muhammad Zuhayr Din Rahmani (d. 2016).',
+    'He held several general *ijaza* in hadith studies. He reports he has granted approximately 800 general *ijaza* in hadith studies to professors and students of Islamic universities worldwide. Additionally, he has listed 15 of his most notable *thabat*[2] in the introduction of the book.',
   ],
 
   introNotes: [
-    'Qiraah is a reading certification. A more precise translation might be "direct reading," implying that the student read the text under the teacher\u2019s supervision.',
-    'The thabat (with fatha on ba) is where a hadith scholar mentions what he has heard from hadith teachers. The thabat is called barnamaj by Andalusian scholars.',
+    '*Qiraah* is a reading certification. A more precise translation might be “direct reading”, implying that the student read the text under the teacher\u2019s supervision.',
+    'The *thabat* (with *fatha* on *ba*) is where a hadith scholar mentions what he has heard from hadith teachers. The *thabat* is called *barnamaj* by Andalusian scholars.',
   ],
 
   /* Three pieces folded into one: the translated introduction, then the
@@ -369,7 +369,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'Indeed, Allah — exalted be His praise — has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqidah, religions, and other subjects. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, which is: *The Complete Collection of Sahih Hadith*.',
+      text: 'Indeed, Allah has granted success to this weak servant in writing various books in tafsir, hadith, fiqh, aqidah, religions, and other subjects. Exalted be His praise. And abundant praise is due to Allah for this. Then Allah the Most High granted me success in compiling this blessed book, *The Complete Collection of Sahih Hadith*.',
     },
     {
       type: 'p',
@@ -385,7 +385,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: '\u201cTakhrij\u201d is considered one of the most difficult Islamic sciences, as it requires knowledge of *jarh* and *tadil* (criticism and validation of narrators), what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and *mursal* chains, Prophetic and *mawquf* narrations, chains with narrators that did not meet, chains with missing narrators, tashif and tahrif, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
+      text: '*Takhrij* is considered one of the most difficult Islamic sciences, as it requires knowledge of *jarh* and *tadil* (criticism and validation of narrators), what is acceptable from it and what is not, the defects in hadith whether undermining or not, knowledge of connected and *mursal* chains, Prophetic and *mawquf* narrations, chains with narrators that did not meet, chains with missing narrators, *tashif* and *tahrif*, the occurrence of irregularities and inconsistencies in both chain and text, what was narrated verbatim and by meaning, and other hadith sciences.[2]',
     },
     {
       type: 'p',
@@ -397,7 +397,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'I do not claim absolute perfection, as that is not for any human — rather, that belongs to Allah alone. However, what has been accomplished, I consider it magnificent in compiling authentic Sunnah in a single collection, by the grace and favor of Allah. If I\u2019ve overlooked anything, I\u2019ll rectify it.',
+      text: 'I do not claim absolute perfection, as that is not for any human. Perfection belongs to Allah alone. However, what has been accomplished, I consider it magnificent in compiling authentic Sunnah in a single collection, by the grace and favor of Allah. If I have overlooked anything, I will rectify it.',
     },
     {
       type: 'p',
@@ -405,13 +405,13 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'Indeed He is All-Hearing, Near, and responsive to our duas. And praise be to Allah, from beginning to end.',
+      text: 'Indeed He is All-Hearing, Near, and responsive to our dua. And praise be to Allah, from beginning to end.',
     },
     {
       type: 'sig',
       lines: [
         'Madinah al-Munawwarah',
-        '5 Shawwal 1436 — July 22, 2015',
+        '5 Shawwal 1436 — July 21, 2015',
         'The Author, may Allah forgive him',
       ],
     },
@@ -420,8 +420,8 @@ const jamiAlKamil = {
     {
       type: 'notes',
       items: [
-        'I borrowed this saying from Imam Tirmidhi, may Allah have mercy on him. He said, "I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it." And he said: "Whoever has this book in their house, it\u2019s as if they have a Prophet speaking in their house." [Tadhkirat al-Huffaz (2/188)]',
-        'Translator\u2019s note. *Takhrij* refers to identifying and documenting the sources of hadith narrations. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *mawquf* chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. Tashif refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. Tahrif refers to alterations in the actual words themselves from the original manuscripts.',
+        'I borrowed this saying from Imam Tirmidhi, may Allah have mercy on him. He said, “I compiled this book and presented it to the scholars of Hijaz, Iraq, and Khorasan, and they were pleased with it.” And he said, “Whoever has this book in their house, it is as if they have a Prophet speaking in their house.” [Tadhkirat al-Huffaz (2/188)]',
+        'Translator\u2019s note. *Takhrij* refers to identifying and documenting the sources of hadith narrations. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *mawquf* chain transmits from a Companion and does not reach the Prophet \uFDFA. *Tashif* refers to mis-readings or errors in the written form or dots of words while maintaining the same letter shapes. *Tahrif* refers to alterations in the actual words themselves from the original manuscripts.',
         'Because the most suitable place for this blessed work is the city of the Prophet \uFDFA, which Allah the Most High honored with his arrival and made it his place of migration. From there, the caravans of Muslims set out to enlighten the world. This place is his final resting place, may the best prayers and most complete peace be upon him.',
       ],
     },
@@ -437,7 +437,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'To proceed: indeed, pursuing knowledge is among the best forms of drawing near to Allah and the most noble acts of obedience. Among the most important types of expertise is verifying the authenticity of the hadith — distinguishing between its authentic and weak narrations.',
+      text: 'To proceed, pursuing knowledge is among the best forms of drawing near to Allah and the most noble acts of obedience. Among the most important types of expertise is verifying the authenticity of the hadith, distinguishing between its authentic and weak narrations.',
     },
     {
       type: 'p',
@@ -457,7 +457,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'It is distinguished by several features, most importantly:',
+      text: 'These are its most important new features.',
     },
     {
       type: 'ol',
@@ -488,8 +488,8 @@ const jamiAlKamil = {
     {
       type: 'notes',
       items: [
-        'Translator\u2019s note. *Tadlis* refers to concealment in the chain of narration, and *mudallis* are those deficient narrators who practice *tadlis*. A *mawquf* chain transmits from a Companion and doesn\u2019t reach the Prophet \uFDFA. A *marfu* chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *muadal* chain is when two or more consecutive narrators are missing from the chain of transmission.',
-        'Translator\u2019s note. *Tashkil* refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include: *fatha*, *kasra*, *damma*, *sukun*, and *shadda*.',
+        'Translator\u2019s note. *Tadlis* refers to concealment in the chain of narration, and *mudallis* are those deficient narrators who practice *tadlis*. A *mawquf* chain transmits from a Companion and does not reach the Prophet \uFDFA. A *marfu* chain is attributed directly to the Prophet \uFDFA, whether the chain is continuous or not. A *mursal* chain is when a tabii quotes directly from the Prophet \uFDFA, without mentioning the Companion who transmitted it. A *muadal* chain is when two or more consecutive narrators are missing from the chain of transmission.',
+        'Translator\u2019s note. *Tashkil* refers to the small marks placed above or below letters to indicate vowels and pronunciation. These marks include *fatha*, *kasra*, *damma*, *sukun*, and *shadda*.',
       ],
     },
 
@@ -545,7 +545,7 @@ const jamiAlKamil = {
     { type: 'h4', text: '*Adherence to the Sunnah in Beliefs and Rulings*' },
     {
       type: 'p',
-      text: 'The first edition was published in 1996 by Ghuraba Library in Madinah. An Urdu translation was done in 1997 by Dr. Abu Hassan Taher Mahmoud, a professor at the International Islamic University in Islamabad. This edition was later published by Darussalam Library in Riyadh. Several more editions were subsequently released.',
+      text: 'The first edition was published in 1996 by Ghuraba Library in Madinah. An Urdu translation was done in 1997 by Dr. Abu Hassan Taher Mahmud, a professor at the International Islamic University in Islamabad. This edition was later published by Darussalam Library in Riyadh. Several more editions were subsequently released.',
     },
 
     { type: 'h4', text: '*Judaism and Christianity*' },
@@ -567,7 +567,7 @@ const jamiAlKamil = {
 
     {
       type: 'h4',
-      text: '*Judgments of the Messenger of Allah [[r9]]* by Ibn al-Tala Qurtubi (d. 1103)',
+      text: '*Judgments of the Messenger of Allah [[r9]]* by Ibn Tala Qurtubi (d. 1103)',
     },
     {
       type: 'p',
@@ -585,7 +585,7 @@ const jamiAlKamil = {
     },
     {
       type: 'p',
-      text: 'The first edition was published in 1983 by Dar al-Khalifah in Kuwait, and the second edition was released in 1999 by Adwa al-Salaf Library in Riyadh. Shaykh al-Hakim Muhammad Yahya Khan translated the book into Urdu, which was printed in Lahore in 1992.',
+      text: 'The first edition was published in 1983 by Dar al-Khalifah in Kuwait, and the second edition was released in 1999 by Adwa al-Salaf Library in Riyadh. Shaykh Hakim Muhammad Yahya Khan translated the book into Urdu, which was printed in Lahore in 1992.',
     },
 
     {
@@ -605,7 +605,7 @@ const jamiAlKamil = {
 
     {
       type: 'h4',
-      text: '*Fath al-Ghafoor: Placement of the Hands on the Chest* by Shaykh Muhammad Hayat Sindi (d. 1749)',
+      text: '*Fath al-Ghafur: Placement of the Hands on the Chest* by Shaykh Muhammad Hayat Sindi (d. 1749)',
     },
     {
       type: 'p',
